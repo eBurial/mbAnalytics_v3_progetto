@@ -1,7 +1,6 @@
 
 
 <?php
-//prova commit
 include("controllaAccessoMedico.php");
 ?>
 <!DOCTYPE html>
