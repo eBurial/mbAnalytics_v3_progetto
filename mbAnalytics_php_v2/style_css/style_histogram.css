@@ -1,0 +1,23 @@
+/*@CHARSET "ISO-8859-1";*/
+/* Foglio di stile per l'istogramma */
+
+.bar-histogram rect {
+  fill: steelblue;
+  /*shape-rendering: crispEdges;*/
+}
+
+.bar-histogram  text {
+  fill: #00ff00;
+}
+
+.axis-histogram path, 
+.axis-histogram line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.axis-histogram  text {
+    font-family: sans-serif;
+    font-size: 11px;
+}

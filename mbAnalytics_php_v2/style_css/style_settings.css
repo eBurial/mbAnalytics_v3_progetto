@@ -1,0 +1,48 @@
+#contenitore-tbl-settings {
+    width: 100%;
+    margin: auto;	
+}
+
+#tbl-settings {
+    display: table;
+    width: 100%;
+    margin: auto;
+    border-collapse: collapse;
+}
+
+.tbl-cell-width {
+    width: 50%;
+}
+
+.container-settings {
+    margin: 25px auto 10px 10px;
+    font-size: 22px;
+    box-sizing: border-box;
+    padding-left: 10px;
+    vertical-align: middle;
+}
+
+.container-settings-right form {
+    float: right;
+}
+
+.languages {
+    width: 200px;
+    padding: 5px 0px;
+    border: 1px solid #999999;
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.bt-languages {
+    width: 200px;
+    margin-left: 10px;
+    padding: 5px 0px;
+    border: 2px solid #4D90FE;
+    color: #fff;
+    background-color: #4D90FE;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}

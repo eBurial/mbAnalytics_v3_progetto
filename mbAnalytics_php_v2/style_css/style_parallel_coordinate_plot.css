@@ -1,0 +1,28 @@
+/*@CHARSET "ISO-8859-1";*/
+
+.canvas-parallel-coordinates, 
+.svg-parallel-coordinates {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.brush-parallel-coordinates, 
+.extent {
+  fill-opacity: .3;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+.axis-parallel-coordinates line, 
+.axis-parallel-coordinates path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+
+.axis-parallel-coordinates text {
+    font-family: sans-serif;
+    font-size: 11px;
+}

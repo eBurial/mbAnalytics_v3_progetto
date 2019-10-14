@@ -1,0 +1,661 @@
+/*@CHARSET "ISO-8859-1";*/
+/* Foglio di stile per i controlli */
+
+/* Stile per le label */
+.lb-nuovo-grafico {
+    width: 300px;
+    margin-left: 25px;
+    font-size: 17px;
+    display: block;
+    float: left;
+}
+
+.lb-variabile {
+    width: 75px;
+    margin-left: 10px;
+    font-size: 16px;
+    display: block;
+    float: left;
+    margin-top: 3px;
+}
+
+.lb-welcome {
+    width: 90%;
+    margin: 20px auto 5px auto;
+    font-size: 18px;
+}
+
+.lb-parametro {
+    width: 80px;
+    margin-left: 5px;
+    font-size: 16px;
+    display: block;
+    float: left;
+}
+
+.lb-filtro {
+    width: 150px;
+    margin-left: 5px;
+    font-size: 16px;
+    display: block;
+    float: left;
+}
+
+.lb-parametri-caption,
+.lb-filtri-caption {
+    margin: 5px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.lb-dati-maschera {
+    width: 20%;
+    margin-left: 25px;
+    font-size: 18px;
+    display: inline-block;
+}
+
+.lb-detail {
+    width: 80px;
+    margin-left: 15px;
+    margin-top: 0px;
+    margin-bottom: px;
+    margin-right: 10px;
+    font-size: 18px;
+    display: inline-block;
+}
+
+.lb-detail-value {
+    width: 220px;
+    margin-left: 15px;
+    margin-top: 15px;
+    margin-bottom: px;
+    margin-right: 10px;
+    font-size: 18px;
+    display: inline-block;
+}
+
+.lb-detail-ridotta {
+    width: 80px;
+    font-size: 12px;
+    margin-left: 15px;
+    margin-right: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    display: inline-block;
+}
+
+.lb-detail-value-ridotta {
+    width: 100px;
+    font-size: 12px;
+    margin-left: 15px;
+    margin-right: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    display: inline-block;
+}
+
+/* Tipo grafico */
+.lb-tipo-grafico {
+    margin: 5px;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.lb-esercizio-grafico {
+    margin: 5px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.lb-esercizio-grafico:first-letter,
+.lb-tipo-grafico:first-letter {
+    text-transform: capitalize;
+}
+
+.lb-totale-session {
+    float: left;
+    margin-left: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-right: 20px;
+}
+
+/* Stile per le combobox e spinbox */
+.cb-standard {
+    width: 300px;
+    margin: 5px 25px 5px 0px;
+    font-size: 17px;
+    display: block;
+}
+
+.cb-parametro {
+    width: 250px;
+    margin: 5px;
+    font-size: 16px;
+    display: block;
+    box-sizing: border-box;
+}
+
+.sp-filtro,
+.cb-filtro {
+    width: 150px;
+    margin: 5px;
+    font-size: 16px;
+    display: block;
+    box-sizing: border-box;
+}
+
+.cb-variabile {
+    width: 195px;
+    vertical-align: middle;
+    display: inline-block;
+    margin: 3px 0px;
+}
+
+/* Stile per il testo che guida l'utente */
+.txt-crea-grafico {
+    margin: 5px 10px;
+    font-size: 18px;
+}
+
+.txt-seleziona-variabili {
+    margin: 5px 0px 5px 25px;
+    font-size: 17px;
+}
+
+/* Pulsanti per i login */
+.bt-login,
+.bt-admin-login,
+.bt-standard {
+    display: block;
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    padding: 12px 100px;
+    border: 0px;
+    color: #FFFFFF;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    background-color: #4D90FE;
+    cursor: pointer;
+}
+
+.bt-login:hover,
+.bt-admin-login:hover,
+.bt-standard:hover {
+    background-color: #357AE8;
+}
+
+/* Pulsante per l'eliminazione posizionato top-right */
+.bt-chiudi-bottom-right {
+    display: block;
+    margin: 0px 10px 0px auto;
+    padding: 5px;
+    border: 0px;
+    color: #FFFFFF;
+    font-size: 15px;
+    text-align: center;
+    text-decoration: none;
+    background-color: #ff0000;
+    cursor: pointer;
+}
+
+.bt-chiudi-bottom-right:hover {
+    background-color: #f00000;
+}
+
+.bt-elimina-bottom-right {
+    display: block;
+    width: 65px;
+    margin-top: 5px;
+    margin-left: 775px;
+    margin-right: 10px;
+    padding: 5px;
+    border: 0px;
+    color: #FFFFFF;
+    font-size: 15px;
+    text-align: center;
+    text-decoration: none;
+    background-color: #ff0000;
+    cursor: pointer;
+}
+
+.bt-elimina-bottom-right:hover {
+    background-color: #f00000;
+}
+
+.bt-muovi-bottom-right {
+    display: block;
+    width: 55px;
+    margin-top: 10px;
+    margin-left: 775px;
+    margin-right: 10px;
+    padding: 5px;
+    border: 0px;
+    color: #FFFFFF;
+    font-size: 15px;
+    text-align: center;
+    text-decoration: none;
+    background-color: #009900;
+    cursor: n-resize;
+    font-family: sans-serif;
+}
+
+.bt-muovi-bottom-right:hover {
+    background-color: #009000;
+}
+
+.bt-esporta-bottom-right {
+    display: block;
+    width: 65px;
+    margin-top: 5px;
+    margin-left: 775px;
+    margin-right: 10px;
+    padding: 5px;
+    border: 0px;
+    color: #FFFFFF;
+    font-size: 15px;
+    text-align: center;
+    text-decoration: none;
+    background-color: #999999;
+    cursor: pointer;
+}
+
+.bt-esporta-bottom-right:hover {
+    background-color: #909090;
+}
+
+/* Pulsante per modificare lo status della sessione */
+.bt-modifica-status-sessione {
+    display: block;
+    margin: 0px auto 0px 10px;
+    padding: 5px 10px;
+    border: 0px;
+    color: #FFFFFF;
+    font-size: 15px;
+    text-align: center;
+    text-decoration: none;
+    background-color: #0000ff;
+    cursor: pointer;
+    float: left;
+}
+
+.status-escludi {
+    color: #000000;
+    background-color: #ffff00;
+}
+
+.status-escludi:hover {
+    color: #000000;
+    background-color: #f2f200;
+}
+
+.status-includi {
+    color: #000000;
+    background-color: #80ff80;
+}
+
+.status-includi:hover {
+    color: #000000;
+    background-color: #66ff66;
+}
+
+/* Pulsante per esportazione dati singola sessione */
+.bt-esporta-sessione {
+    display: block;
+    margin: 0px auto 0px 10px;
+    padding: 5px 10px;
+    border: 0px;
+    color: #FFFFFF;
+    font-size: 15px;
+    text-align: center;
+    text-decoration: none;
+    background-color: #999999;
+    cursor: pointer;
+    float: left;
+}
+
+.bt-esporta-sessione:hover {
+    background-color: #909090;
+}
+
+
+/* Pulsanti per conferma e annulla */
+.bt-positive,
+.bt-negative {
+    display: inline-block;
+    width: 200px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    padding: 12px 0px;
+    border: 0px;
+    color: #FFFFFF;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.bt-positive {
+    background-color: #4D90FE;
+    margin-left: 20px;
+    margin-right: 50px;
+}
+
+.bt-positive:hover {
+    background-color: #357AE8;
+}
+
+.bt-positive:disabled {
+    background-color: #659EFE;
+}
+
+.bt-negative {
+    background-color: #ff0000;
+    margin-left: 50px;
+    margin-right: 74px;
+
+}
+
+.bt-negative:hover {
+    background-color: #f00000;
+}
+
+.bt-aggiungi-grafico {
+    margin-left: 20px;
+    padding: 20px;
+}
+
+.bt-salva-maschera {
+    float: right;
+    margin-right: 0px;
+    padding: 20px;
+}
+
+.bt-esci-maschera {
+    float: right;
+    margin-right: 20px;
+    padding: 20px;
+}
+
+#bt-nuova-maschera {
+    float: right;
+    margin: 0px;
+}
+
+.bt-aggiungi-variabile {
+    margin: 0px 0px 5px 10px;
+    font-size: 13px;
+    padding: 2px;
+    width: 70px;
+    display: block;
+}
+
+.bt-elimina-variabile {
+    font-size: 13px;
+    width: 50px;
+    margin: 0px 0px 0px 3px;
+    padding: 2px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.bt-sessione {
+    display: block;
+    width: 150px;
+    margin: 2px auto;
+    padding: 5px;
+    border: 0px;
+    color: #FFFFFF;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    background-color: #4D90FE;
+    opacity: 0.85;
+    cursor: pointer;
+}
+
+.bt-sessione:hover {
+    opacity: 1;
+}
+
+/* Buttone circolare */
+.bt-session-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    font-size: 20px;
+    color: #fff;
+    line-height: 50px;
+    text-align: center;
+    background: #000;
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+/* Stile textbox */
+.input-text-login {
+    display: block;
+    width: 400px;
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    padding: 10px;
+    border: 1px solid #CCCCCC;
+    font-size: 18px;
+}
+
+.input-textarea-maschera,
+.input-text-maschera {
+    display: inline-block;
+    width: 74%;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    padding: 10px;
+    border: 1px solid #CCCCCC;
+    font-size: 18px;
+    vertical-align: middle;
+}
+
+.input-textarea-maschera {
+    resize: none;
+    margin-bottom: 10px;
+}
+
+.p-info-login {
+    font-size: 22px;
+    text-align: center;
+}
+
+/* Componente disabilitato */
+.disable-element {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height:100%;
+    z-index:2;
+    background-color: #dedede;
+    opacity: 0.4;
+    display: none;
+}
+
+/* Informazioni sulle variabili della sessione */
+.div-info-sessione {
+    position: absolute;
+    bottom: 5px;
+    max-width: 200px;	
+    font-size: 12px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+/* Messaggio di errore nel login e nella registrazione*/
+.messaggio-errore {
+    width: 400px;
+    margin: auto;
+    font-size: 15px;
+    color: red;
+    font-weight: bold;
+}
+
+/* Campo non compilato */
+.non-compilato {
+    box-shadow: 0 0 5px 2px #ff0000;
+}
+
+/* Placeholder */
+::-webkit-input-placeholder { 
+    color: #166399;
+    font-style: italic; 
+}
+
+::-moz-placeholder {	/* Firefox 19+ */ 
+    color: #166399; 
+    font-style: italic;
+} 
+
+:-ms-input-placeholder /* IE */ 
+{ 
+    color: #166399; 
+    font-style: italic;
+} 
+
+input:-moz-placeholder { 
+    color: #166399; 
+    font-style: italic;
+}
+
+/* Feedback per caricamento dati */
+.img-loader-inside-chart-container {
+    width: 200px;
+    height: 200px;
+    margin: auto;
+    display: block;
+}
+
+/* NON utilizzato, test per aggiornamento grafico */
+.update-chart-img-loader {
+    width: 100px;
+    height: 100px;
+    margin: auto;
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px;
+    margin-top: -50px;
+}
+
+
+#img-loader {
+    width: 200px;
+    height: 200px;
+}
+
+.detail-img-loader {
+    width: 100px;
+    height: 100px;
+    margin: auto;
+    display: block;
+}
+
+/* Feedback per errore */
+.error {
+    display: none;
+    width: 300px;
+    height: 20px;
+    height: auto;
+    position: fixed;
+    left: 50%;
+    margin-left: -150px;
+    bottom: 20px;
+    background-color: #383838;
+    color: #F0F0F0;
+    font-size: 18px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0px 0px 5px 2px #ff0000;
+}
+
+/* Feedback per input dati grafico */
+#fade-crea-grafico,
+#fade-dettaglio-grafico {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-width: 800px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.15);
+    z-index: 1001;
+}
+
+#modal-crea-grafico,
+#modal-dettaglio-grafico {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1002;
+    overflow: auto;
+}
+
+/* Tooltip d3 */
+.d3-tip {
+    line-height: 1;
+    font-weight: bold;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 2px;
+}
+
+/* Creo un piccolo triangolo per il tooltip d3 */
+.d3-tip:after {
+    box-sizing: border-box;
+    display: inline;
+    font-size: 10px;
+    width: 100%;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.8);
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
+}
+
+.d3-tip.n:after {
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+}
+
+/* Tooltip creato per supportare i casi non gestiti dal tooltip d3 */        
+div.tooltip {
+    position: absolute;           
+    line-height: 1;
+    font-weight: bold;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 2px;
+    pointer-events: none;
+}
+
+/* Etichetta del tooltip: comune a tutti i tooltip */
+.tip-label {
+    color: #DDDDDD;
+}
+
+/* Valore dell'etichetta del tooltip: comune a tutti i tooltip */
+.tip-value {
+    color: #EEEEEE;
+}

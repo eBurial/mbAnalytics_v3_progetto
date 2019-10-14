@@ -1,0 +1,29 @@
+/*@CHARSET "ISO-8859-1";*/
+/* Foglio di stile per l'istogramma */
+
+
+.bt-filter-age-range.active rect {
+  fill: #8CE196;
+  stroke-width: 1;
+  stroke: #fff;;
+  shape-rendering: crispEdges;
+  cursor: pointer;
+}
+
+.bt-filter-age-range.inactive rect {
+  fill: red;
+  stroke-width: 1;
+  stroke: #fff;;
+  shape-rendering: crispEdges;
+  cursor: pointer;
+}
+
+.bt-filter-age-range text {
+	cursor: pointer;
+  fill: #fff;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* IE/Edge */
+}

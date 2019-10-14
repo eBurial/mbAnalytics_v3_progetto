@@ -1,0 +1,23 @@
+/* @CHARSET "ISO-8859-1"; */
+/* Foglio di stile per lo scatterplot */
+
+.axis-scatterplot path,
+.axis-scatterplot line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.axis-scatterplot text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+.dot-scatterplot {
+  stroke: #000;
+}
+
+.rect-scatterplot {
+  fill: transparent;
+  shape-rendering: crispEdges;
+}

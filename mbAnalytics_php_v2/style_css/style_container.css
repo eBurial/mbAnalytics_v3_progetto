@@ -1,0 +1,196 @@
+/*@CHARSET "ISO-8859-1";*/
+/* Foglio di stile per i container */
+
+html,
+body {
+    height: 100%;
+    min-width: 850px;
+    max-width: 1250px;
+    margin: 5px auto;
+}
+
+/* Utilizzato per i contenuti delle tabs */
+.contenitore-tabs {
+    clear: both;
+    margin: 10px auto;
+    min-height: 300px; 
+    height: auto !important; 
+    height: 300px;
+    padding: 10px;
+    overflow: auto;
+    border: 1px solid #999;
+}
+
+/* Form per il login e la registrazione */
+.form-login {
+    margin-top: 20px;
+}
+
+/* Utilizzato per contenere i grafici */
+.graphics-grid {
+    background-color: white; 
+    width: 100%;
+    margin: auto;
+}
+
+/* Utilizzato per contenere un grafico e i filtri */
+.container-grafico-con-strumenti {
+    position: relative;
+    background-color: #ffffff; 
+    box-sizing: border-box;
+    min-width: 800px;
+    width: 1200px;
+    max-width: 1200px;
+    /*float: left;*/
+    margin: 10px auto;
+    border: 1px solid #000000;
+    box-shadow: 0 0 5px 2px #969696;
+}
+
+/* Contenitore per i dati del grafico */
+.dati-grafico-container {
+    display: inline-block;
+    background-color: #ffffff; 
+    vertical-align: top;
+    width: 345px;
+}
+
+/* Contenitore del grafico */
+.grafico-container {
+    display: block;
+    background-color: #ffffff; 
+    position: relative;
+    width: 850px;
+    margin-top: 25px;
+    min-height: 100px;
+}
+
+/* Contenitore per i filtri */
+.parameters-container,
+.filters-container {
+    display: block;
+    background-color: #ffffff; 
+    box-sizing: border-box;
+    margin: 5px 0px 5px 5px;
+    border: 1px solid #000000;
+    position: relative;
+
+}
+
+.parametro-container,
+.filter-container {
+    display: block;
+    margin: 10px auto;
+}
+
+/* Contenitore per il dettaglio del grafico */
+.dettaglio-container {
+    display: block;
+    background-color: #ffffff; 
+    box-sizing: border-box;
+    width: 900px;
+    margin: 15px auto;
+    border: 1px solid #000000;
+    box-shadow: 0 0 5px 2px #969696;
+    max-height: 650px;
+}
+
+.dettaglio-grafico-container {
+    display: block;
+    background-color: #ffffff; 
+    position: relative;
+    min-height: 100px;
+}
+
+.lb-detail-container {
+    width: 350px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.session-summary-container {
+    display: inline-block;
+}
+
+.session-chart-container {
+    display: inline-block;
+    width: 200px;
+    border: 1px solid black;
+    margin: 0px 10px 0px 10px;
+    /*padding-bottom: 50px;*/
+}
+
+.svg-session-detail {
+    margin: auto;
+    display: block;
+}
+
+/* Contenitore block */
+.block-container {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/* Contenitore inline-block */
+.inline-block-container {
+    display: inline-block;
+    margin: 0px;
+    min-height: 150px;
+    position: relative;
+}
+
+/* Benvenuto */
+.container-welcome {
+    font-size: 22px;
+    margin: 25px auto 10px 10px;
+}
+
+/* Impostazioni */
+#container-impostazioni{
+    width: 90%;
+    margin: auto;	
+}
+
+/* Info maschere */
+.info-maschere {
+    font-size: 18px;
+    margin: 30px auto 10px 50px;
+}
+
+.container-info-maschere {
+    margin: 5px;
+}
+
+#contenitore-tbl-maschere {
+    width: 90%;
+    margin: auto;	
+}
+
+.container-text-lavori {
+    font-size: 22px;
+    font-weight: bold;
+    display: inline-block;
+    width: 75%;
+    box-sizing: border-box;
+    padding-left: 10px;
+}
+
+.container-bt-nuova-maschera {
+    display: inline-block;
+    vertical-align: middle;
+    width: 24%;
+    margin-bottom: 5px;
+}
+
+/* Sovrascrivo le impostazioni predefinite per il widget di salvataggio*/
+.ui-widget-header {
+    background: #333 !important;
+    color: #fff !important;
+}
+
+.ui-dialog-buttonset button {
+    border: 0px !important;
+    background: #4D90FE !important;
+    color: #fff !important;
+}

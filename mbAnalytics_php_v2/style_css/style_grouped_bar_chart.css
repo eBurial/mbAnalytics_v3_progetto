@@ -1,0 +1,22 @@
+/*CHARSET "ISO-8859-1";*/
+
+.axis-grouped-bar-chart path,
+.axis-grouped-bar-chart line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar-grouped-bar-chart {
+  fill: steelblue;
+}
+
+/* Commentato
+.x-grouped-bar-chart.axis-grouped-bar-chart path {
+  display: none;
+}*/
+
+.axis-grouped-bar-chart text {
+    font-family: sans-serif;
+    font-size: 11px;
+}

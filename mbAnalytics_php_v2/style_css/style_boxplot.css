@@ -1,0 +1,40 @@
+/*@CHARSET "ISO-8859-1";*/
+/* Foglio di stile per il boxplot */
+
+.box-boxplot {
+  font: 10px sans-serif;
+}
+
+.box-boxplot line,
+.box-boxplot rect,
+.box-boxplot circle {
+  fill: steelblue;
+  stroke: #000;
+  stroke-width: 1px;
+}
+
+.box-boxplot .center {
+  stroke-dasharray: 3,3;
+}
+
+.box-boxplot .outlier {
+  fill: none;
+  stroke: #000000;
+}
+
+.axis-boxplot {
+  font: 11px sans-serif;
+}
+ 
+.axis-boxplot path,
+.axis-boxplot line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+ 
+.x.axis-boxplot path { 
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}

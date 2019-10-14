@@ -1,0 +1,121 @@
+/*@CHARSET "ISO-8859-1";*/
+/* Foglio di stile per le tabelle */
+
+.tbl-descrizione {
+    width: 90%;
+    margin: 20px auto 5px auto;
+    font-size: 18px;
+}
+
+.tbl-standard,
+.tbl-pannello-controllo {
+    display: table;
+    width: 90%;
+    margin: auto;
+    margin-top: 30px;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+#tbl-maschere {
+    display: table;
+    width: 100%;
+    margin: auto;
+    border-collapse: collapse;
+}
+
+.tbl-header {
+    display: table-row;
+    background-color: steelblue;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: left;
+    border-bottom: 1px solid #000000;
+}
+
+.tbl-row {
+    display: table-row;
+    text-align: left;
+    font-size: 16px;
+    border-bottom: 1px solid #000000;
+}
+
+.tbl-row:nth-child(odd) {
+    background-color: #f0f3f5;
+}
+
+.tbl-row:hover {
+    background-color: #b6cde9;
+}
+
+.tbl-cell-header {
+    display: table-cell;
+    padding: 12px 8px 12px 8px;
+}
+
+.tbl-cell {
+    display: table-cell;
+    padding: 8px;
+}
+
+.tbl-cell-min-width {
+    width: 10%;
+}
+
+.tbl-cell-max-width {
+    width: 20%;
+}
+
+.tbl-cell-right {
+    display: table-cell;
+    text-align: right;
+    padding: 8px;
+}
+
+.bt-tbl {
+    width: 100%;
+    padding: 5px 10px 5px 10px;
+    border: 0px;
+    color: #FFFFFF;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.bt-green {
+    color: #000000;
+    background-color: #80ff80;
+}
+
+.bt-green:hover {
+    color: #000000;
+    background-color: #66ff66;
+}
+
+.bt-yellow {
+    color: #000000;
+    background-color: #ffff00;
+}
+
+.bt-yellow:hover {
+    color: #000000;
+    background-color: #f2f200;
+}
+
+.bt-red {
+    background-color: #f44336;
+}
+
+.bt-red:hover {
+    background-color: #e81d0d;
+}
+
+.bt-blue {
+    background-color: #4D90FE;
+}
+
+.bt-blue:hover {
+    background-color: #357AE8;
+}

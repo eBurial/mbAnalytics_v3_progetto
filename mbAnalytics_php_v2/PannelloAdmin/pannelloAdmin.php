@@ -1,0 +1,482 @@
+<?php
+include("sessionAdmin.php");
+
+require_once(dirname(__FILE__) . "/../dbMotorbrainMedico.php");
+require_once(dirname(__FILE__) . "/../dbMotorbrainMaschera.php");
+require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
+?>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Pannello Admin</title>
+
+        <!-- Fogli di stile per i vari componenti -->
+        <link rel="stylesheet" type="text/css" href="../style_css/style_menu.css">
+        <link rel="stylesheet" type="text/css" href="../style_css/style_container.css">
+        <link rel="stylesheet" type="text/css" href="../style_css/style_controls.css">
+        <link rel="stylesheet" type="text/css" href="../style_css/style_table.css">
+
+        <!-- jQuery library -->
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+        <script>
+            $(document).ready(function() {
+
+                // array per gestire i database dei medici
+                var databases = [];
+
+                // Quando la pagina viene caricata
+                // Nascondi tutti i contenuti delle tabs
+                $(".contenuto-tab").hide(); 
+                // Attiva la prima tab
+                $("ul.tabs li:first").addClass("active").show();
+                //Mostra il contenuto della prima tab 
+                $(".contenuto-tab:first").show();
+
+                // Al click sulla tab
+                $("ul.tabs li").click(function() {
+
+                    //Rimuovi ogni classe "active"	
+                    $("ul.tabs li").removeClass("active");
+                    //E aggiungila solo a quella su cui ho cliccato 
+                    $(this).addClass("active");
+                    //Nascondi tutti i contenuti delle tab
+                    $(".contenuto-tab").hide(); 
+
+                    //Trova l'href per identificare in modo univoco la tab ed il contenuto
+                    var activeTab = $(this).find("a").attr("href"); 
+                    //Mostrami quest'ultimo con effetto di fadeIn
+                    $(activeTab).fadeIn(); 
+                    return false;
+                });
+
+                // al click sul checkbox inserisco/tolgo il valore in un array
+                $('.databases :checkbox').click(function(e) {
+
+                    // Recupero l'id del contenitore
+                    var parentID = $(this).parent().attr("id");
+
+                    // Se sto selezionando il valore ...
+                    if($(this).is(":checked")) {
+                        // ... gli metto l'attributo checked
+                        $(this).attr("checked", true);
+                    } else {
+                        // ... altrimenti glielo rimuovo
+                        $(this).attr("checked", false);
+                    }
+
+                    // Inserisco nell'array dei database i valori selezionati
+                    $("#" + parentID + " :checkbox").each(function(){
+                        var $this = $(this);
+
+                        // controllo che il valore sia checked e che l'id del contenitore coincida con quello della checkbox cliccata
+                        if($this.is(":checked")) {
+                            var db = $(this).val();
+
+                            var index = $.inArray(db, databases);
+
+                            if (index == -1) {
+                                databases.push(db);
+                            }
+                        }
+                        else {
+                            var db = $(this).val();
+
+                            var index = $.inArray(db, databases);
+
+                            if (index != -1) {
+                                databases.splice(index, 1);
+                            }
+                        }
+                    });
+
+                    databases.sort();
+                });
+
+                //Funzione per settare i database utilizzabili da un medico
+                $("#tbl-medici").on("click", "button.bt-attiva-database", function() {
+
+                    // Memorizzo il bottone
+                    var btAttiva = $(this);
+                    // Recupero l'id
+                    var idMedico = $(this).attr("id").replace("bt-attiva-database-", "");
+                    // Memorizzo il parent
+                    var parentCorrente = $(this).parent();	
+                    $.post("gestioneMedici.php",
+                           {
+                        "id_medico": idMedico,
+                        "databases": databases.toString()
+                    }).done( function() {
+                        window.alert("Database attivati.");
+                        
+                        // svuoto l'array dei database per il prossimo medico;
+                        databases.splice(0, databases.length);
+                    }).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
+                        alert(thrownError); //Messaggio di avviso con l'errore HTTP
+                    });
+                });
+
+                //Funzione per abilitare un medico
+                $("#tbl-medici").on("click", "button.bt-abilita-medico", function() {
+
+                    // Memorizzo il bottone
+                    var btAbilita = $(this);
+                    // Recupero l'id
+                    var idMedico = $(this).attr("id").replace("bt-abilita-", "");	
+                    // Memorizzo il parent
+                    var parentCorrente = $(this).parent();	
+                    $.post("gestioneMedici.php",
+                           {
+                        "abilita_medico": idMedico
+                    }).done( function() {
+                        // Rimuovo il bottone
+                        btAbilita.remove();
+
+                        // Aggiungo il sostituto
+                        var htmlButton = '<button id="bt-disabilita-' + idMedico + '"'+
+                            ' type="button" class="bt-disabilita-medico bt-tbl bt-yellow">' +
+                            'Disabilita</button>';
+                        parentCorrente.append(htmlButton);
+
+                        // svuoto l'array dei database per il prossimo medico;
+                        databases.splice(0, databases.length);
+                    }).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
+                        alert(thrownError); //Messaggio di avviso con l'errore HTTP
+                    });
+                });
+
+                //Funzione per disabilitare un medico
+                $("#tbl-medici").on("click", "button.bt-disabilita-medico", function() {
+                    // Memorizzo il bottone
+                    var btDisabilita = $(this);
+                    // Recupero l'id
+                    var idMedico = $(this).attr("id").replace("bt-disabilita-", "");	
+                    // Memorizzo il parent
+                    var parentCorrente = $(this).parent();	
+                    $.post("gestioneMedici.php",
+                           {
+                        "disabilita_medico": idMedico
+                    }, 
+                           function() 
+                           {
+                        // Rimuovo il bottone
+                        btDisabilita.remove();
+
+                        // Aggiungo il sostituto
+                        var htmlButton = '<button id="bt-abilita-' + idMedico + '"'+
+                            ' type="button" class="bt-abilita-medico bt-tbl bt-green">' +
+                            'Abilita</button>';
+                        parentCorrente.append(htmlButton);
+                    }
+                          ).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
+                        alert(thrownError); //Messaggio di avviso con l'errore HTTP
+                    });
+                });
+
+                //Funzione per eliminare un medico
+                $("#tbl-medici").on("click", "button.bt-elimina-medico", function() {
+                    // Memorizzo il bottone
+                    var btElimina = $(this);
+                    // Recupero l'id
+                    var idMedico = $(this).attr("id").replace("bt-elimina-", "");	
+                    // Memorizzo il parent
+                    var parentCorrente = $(this).parent();	
+                    $.post("gestioneMedici.php",
+                           {
+                        "elimina_medico": idMedico
+                    }, 
+                           function() 
+                           {
+                        $("#tbl-row-" + idMedico).fadeOut(1000, function() {
+                            $(this).remove();
+                        });
+                    }
+                          ).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
+                        alert(thrownError); //Messaggio di avviso con l'errore HTTP
+                    });
+                });
+
+
+                //Funzione per eliminare un medico
+                $("#bt-crea-tbl-medicodata").on("click", function() {
+                    // Memorizzo il bottone
+                    var btCreaMedicidata = $(this);
+                    // Memorizzo il parent
+                    var parentCorrente = $(this).parent();
+                    $.post("gestioneDbMotorbrain.php",
+                           {
+                        "crea_tabella": "medicodata"
+                    }, 
+                           function() 
+                           {
+                        btCreaMedicidata.remove();
+                        parentCorrente.text("Nessuna azione disponibile");
+                        $("#stato-tbl-medicodata").text("Esiste");
+                    }
+                          ).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
+                        alert(thrownError); //Messaggio di avviso con l'errore HTTP
+                    });
+                });
+
+                //Funzione per eliminare una maschera
+                $("#bt-crea-tbl-mascheradata").on("click", function() {
+                    // Memorizzo il bottone
+                    var btCreaMascheradata = $(this);
+                    // Memorizzo il parent
+                    var parentCorrente = $(this).parent();
+                    $.post("gestioneDbMotorbrain.php",
+                           {
+                        "crea_tabella": "mascheradata"
+                    }, 
+                           function() 
+                           {
+                        btCreaMascheradata.remove();
+                        parentCorrente.text("Nessuna azione disponibile");
+                        $("#stato-tbl-mascheradata").text("Esiste");
+                    }
+                          ).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
+                        alert(thrownError); //Messaggio di avviso con l'errore HTTP
+                    });
+                });
+
+                //Funzione per eliminare un medico
+                $("#bt-crea-tbl-graficodata").on("click", function() {
+                    // Memorizzo il bottone
+                    var btCreaGraficodata = $(this);
+                    // Memorizzo il parent
+                    var parentCorrente = $(this).parent();
+                    $.post("gestioneDbMotorbrain.php",
+                           {
+                        "crea_tabella": "graficodata"
+                    }, 
+                           function() 
+                           {
+                        btCreaGraficodata.remove();
+                        parentCorrente.text("Nessuna azione disponibile");
+                        $("#stato-tbl-graficodata").text("Esiste");
+                    }
+                          ).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
+                        alert(thrownError); //Messaggio di avviso con l'errore HTTP
+                    });
+                });
+            });
+        </script>
+    </head>
+    <body>		
+        <ul class="tabs">
+            <li><a href="#elenco-medici">Elenco Medici</a></li>
+            <li><a href="#stato-database">Stato Database</a></li>
+            <li class="right-element"><a href="./logoutAdmin.php">Logout</a></li>
+        </ul>
+        <div id="contenitore-tabs">
+            <div id="elenco-medici" class="contenuto-tab">
+                <?php
+
+                define("VALUE_NOT_SELECTED", "-");
+
+                // Array con i valori da visualizzare nel campo text
+                // della combo relativa al filtro sul database
+                // IMPORTANTE: attenzione all'ordine
+                $databaseArrayText = ["mbFirstStudy", "mbPublicIT", "mbClinicElderly", "mbClinicDisabled"];
+
+                $elencoMedici = getMedici();
+
+                echo '<div id="tbl-medici" class="tbl-pannello-controllo">';
+                echo '<div class="tbl-header">';
+                echo '<div class="tbl-cell-header tbl-cell-max-width">';
+                echo 'Cognome';
+                echo '</div>';
+                echo '<div class="tbl-cell-header tbl-cell-max-width">';
+                echo 'Nome';
+                echo '</div>';
+                echo '<div class="tbl-cell-header tbl-cell-max-width">';
+                echo 'Email';
+                echo '</div>';
+                echo '<div class="tbl-cell-header tbl-cell-max-width">';
+                echo 'Data registrazione';
+                echo '</div>';
+                echo '<div class="tbl-cell-header tbl-cell-max-width">';
+                echo 'Database utilizzabili';
+                echo '</div>';
+                echo '<div class="tbl-cell-header tbl-cell-max-width">';
+                echo 'Stato';
+                echo '</div>';
+                echo '<div class="tbl-cell-header tbl-cell-min-width">';
+                echo '';
+                echo '</div>';
+                echo '</div>';
+
+                foreach ($elencoMedici as $medico) {
+
+                    $activeDatabases = explode(",", $medico["activeDatabases"]);
+
+                    echo '<div id="tbl-row-' . $medico["medicoID"] . '" class="tbl-row">';
+                    echo '<div class="tbl-cell tbl-cell-max-width">';
+                    echo $medico["cognome"];
+                    echo '</div>';
+                    echo '<div class="tbl-cell tbl-cell-max-width">';
+                    echo $medico["nome"];
+                    echo '</div>';
+                    echo '<div class="tbl-cell tbl-cell-max-width">';
+                    echo $medico["email"];
+                    echo '</div>';
+                    echo '<div class="tbl-cell tbl-cell-max-width">';
+                    echo $medico["dataInserimento"];
+                    echo '</div>';
+                    echo '<div id="databases-' . $medico["medicoID"] . '" class="tbl-cell tbl-cell-max-width databases" style="overflow: auto;">';
+
+                    for ($i = 0; $i < count($databaseArrayText); $i++) {
+                        if (in_array($databaseArrayText[$i], $activeDatabases)) {
+                            echo '<input id="' . $databaseArrayText[$i] . '" class="databases" type="checkbox" value="' . $databaseArrayText[$i] . '" checked="checked">';
+                            echo '<label for="' . $databaseArrayText[$i] . '">' . $databaseArrayText[$i] . '</label>';
+                            echo '<br>';
+                        }
+                        else {
+                            echo '<input id="' . $databaseArrayText[$i] . '" class="databases" type="checkbox" value="' . $databaseArrayText[$i] . '">';
+                            echo '<label for="' . $databaseArrayText[$i] . '">' . $databaseArrayText[$i] . '</label>';
+                            echo '<br>';
+                        }
+                    }
+
+                    echo '<div class="tbl-cell tbl-cell-min-width tbl-cell-right">';
+                    echo '<button id="bt-attiva-database-' . $medico["medicoID"] . '"';
+                    echo ' type="button" class="bt-attiva-database bt-tbl bt-green">Attiva</button>';
+                    echo '</div>';
+                    echo '</div>';
+                    echo '<div class="tbl-cell tbl-cell-min-width">';
+                    if ($medico["attivo"] == 0) 
+                    {
+                        //echo "Non attivo";
+                        echo '<button id="bt-abilita-' . $medico["medicoID"] . '"';
+                        echo ' type="button" class="bt-abilita-medico bt-tbl bt-green">Abilita</button>';
+                    }
+                    else if ($medico["attivo"] == 1)
+                    {
+                        //echo "Attivo";
+                        echo '<button id="bt-disabilita-' . $medico["medicoID"] . '"';
+                        echo ' type="button" class="bt-disabilita-medico bt-tbl bt-yellow">Disabilita</button>';
+                    }
+                    echo '</div>';
+                    echo '<div class="tbl-cell tbl-cell-min-width tbl-cell-right">';
+                    echo '<button id="bt-elimina-' . $medico["medicoID"] . '"';
+                    echo ' type="button" class="bt-elimina-medico bt-tbl bt-red">Elimina</button>';
+                    echo '</div>';
+                    echo '</div>';
+                }
+
+                echo '</div>';
+                ?>
+            </div>
+            <div id="stato-database" class="contenuto-tab"> 
+                <div class="tbl-descrizione">Riepilogo sulle nuove tabelle e sugli aggiornamenti del database</div>
+                <?php 
+                echo '<div id="tbl-agg-database" class="tbl-pannello-controllo">';
+                echo '<div class="tbl-header">';
+                echo '<div class="tbl-cell-header tbl-cell-max-width">';
+                echo 'Tabella';
+                echo '</div>';
+                echo '<div class="tbl-cell-header tbl-cell-max-width">';
+                echo 'Note';
+                echo '</div>';
+                echo '<div class="tbl-cell-header tbl-cell-max-width">';
+                echo 'Stato';
+                echo '</div>';
+                echo '<div class="tbl-cell-header tbl-cell-max-width">';
+                echo 'Azione';
+                echo '</div>';
+                echo '</div>';
+
+                // Tabella medicidata
+                echo '<div class="tbl-row">';
+                echo '<div class="tbl-cell tbl-cell-max-width">';
+                echo 'medicodata';
+                echo '</div>';
+                echo '<div class="tbl-cell tbl-cell-max-width">';
+                echo 'Contiene i dati dei medici che utilizzano Motorbrain Web';
+                echo '</div>';
+                echo '<div id="stato-tbl-medicodata" class="tbl-cell tbl-cell-max-width">';
+                // Controllo se la tabella medicodata esiste
+                if (checkExistMedicodataTable() == false)
+                {
+                    echo "Non esiste";
+                    echo '</div>';
+                    echo '<div class="tbl-cell tbl-cell-min-width">';
+                    echo '<button id="bt-crea-tbl-medicodata"';
+                    echo ' type="button" class="bt-tbl bt-green">Crea tabella</button>';
+                    echo '</div>';
+                }
+                else
+                {
+                    echo "Esiste";
+                    echo '</div>';
+                    echo '<div>';
+                    echo 'Nessuna azione disponibile';
+                    echo '</div>';
+                }
+                echo '</div>';
+
+                // Tabella mascheradata
+                echo '<div class="tbl-row">';
+                echo '<div class="tbl-cell tbl-cell-max-width">';
+                echo 'mascheradata';
+                echo '</div>';
+                echo '<div class="tbl-cell tbl-cell-max-width">';
+                echo 'Contiene i dati relativi alle maschere (insieme di grafici) salvati dai medici';
+                echo '</div>';
+                echo '<div id="stato-tbl-mascheradata" class="tbl-cell tbl-cell-max-width">';
+                // Controllo se la tabella maschera esiste
+                if (checkExistMascheradataTable() == false)
+                {
+                    echo "Non esiste";
+                    echo '</div>';
+                    echo '<div class="tbl-cell tbl-cell-min-width">';
+                    echo '<button id="bt-crea-tbl-mascheradata"';
+                    echo ' type="button" class="bt-tbl bt-green">Crea tabella</button>';
+                    echo '</div>';
+                }
+                else
+                {
+                    echo "Esiste";
+                    echo '</div>';
+                    echo '<div>';
+                    echo 'Nessuna azione disponibile';
+                    echo '</div>';
+                }
+                echo '</div>';
+
+                // Tabella graficodata
+                echo '<div class="tbl-row">';
+                echo '<div class="tbl-cell tbl-cell-max-width">';
+                echo 'graficodata';
+                echo '</div>';
+                echo '<div class="tbl-cell tbl-cell-max-width">';
+                echo 'Contiene i dati dei grafici (database, tipo grafico, esercizio collegato, filtri) salvati dal medico';
+                echo '</div>';
+                echo '<div id="stato-tbl-graficodata" class="tbl-cell tbl-cell-max-width">';
+                // Controllo se tutte le tabelle graficodata esistono
+                if (checkExistGraficodataTable() == false)
+                {
+                    echo "Non esiste";
+                    echo '</div>';
+                    echo '<div class="tbl-cell tbl-cell-min-width">';
+                    echo '<button id="bt-crea-tbl-graficodata"';
+                    echo ' type="button" class="bt-tbl bt-green">Crea tabella</button>';
+                    echo '</div>';
+                }
+                else
+                {
+                    echo "Esiste";
+                    echo '</div>';
+                    echo '<div>';
+                    echo 'Nessuna azione disponibile';
+                    echo '</div>';
+                }
+                echo '</div>';
+
+                echo '</div>';
+                ?>
+            </div>
+        </div>
+    </body>
+</html>

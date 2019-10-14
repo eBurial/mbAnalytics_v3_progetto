@@ -1,0 +1,40 @@
+/*@CHARSET "ISO-8859-1";*/
+
+
+.axis-scatterplot-matrix,
+.frame-scatterplot-matrix {
+  shape-rendering: crispEdges;
+}
+
+.axis-scatterplot-matrix line {
+  stroke: #ddd;
+}
+
+.axis-scatterplot-matrix path {
+  display: none;
+}
+
+.frame-scatterplot-matrix {
+  fill: none;
+  stroke: #aaa;
+}
+
+.circle-scatterplot-matrix {
+  fill-opacity: .7;
+}
+
+.axis-scatterplot-matrix text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+.canvas-container-sm,
+.svg-scatterplot-matrix {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.canvas-scatterplot-matrix {
+  position: absolute;
+}
