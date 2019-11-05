@@ -1,5 +1,5 @@
 <?php
-//prova
+//provaprovaasd
 //Costanti per la sicurezza
 define("SECRET_KEY", "z8y5f3sdr2qax78bhg93oiulfrtb7cse");	//32, 256 bits
 define("SECRET_IV", "bt7h4s3c8ul0agj1");	//16, 128 bits
