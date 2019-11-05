@@ -1,6 +1,5 @@
 <?php
 require_once("dbMotorbrainInfo.php");
-//a
 function getDataFromAverageHeader($database, $exerciseType, $varList) {
 
     $results = null;

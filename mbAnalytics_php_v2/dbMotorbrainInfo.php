@@ -4,7 +4,7 @@ ini_set('error_reporting', E_ALL);
 ini_set('max_execution_time', 300); 	//300 seconds = 5 minutes
 
 // Configurazione parametri database
-$dbUser = 'user';		// Username
+$dbUser = 'admin';		// Username
 $dbPwd = 'pwd';			// Password
 
 // Funzione per creare la connessione ad database
