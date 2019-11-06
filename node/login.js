@@ -4,12 +4,16 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var path = require('path');
 
+var CONFIG = require('./config.json');
+
+//Credenziali di accesso al database
+
 var connection = mysql.createConnection({
-	host: "localhost",
-  	user: "admin",
-  	password: "pwd",
-	database : 'mbadmin'
-});
+	host: CONFIG.host,
+	user: CONFIG.user,
+	password: CONFIG.password,
+	database: CONFIG.database
+	});
 
 var app = express();
 app.use(session({
@@ -37,8 +41,11 @@ app.post('/auth', function(request, response) {
 		connection.query('SELECT * FROM medicodata;', [username, password], function(error, results, fields) {
 			console.log(results);		
 			if (results) {
+				//sessione avviata
 				request.session.loggedin = true;
+				//user name della sessione
 				request.session.username = username;
+				//reindirizzamento
 				response.redirect('/home');
 			} else {
 				response.send('Incorrect Username and/or Password!');
