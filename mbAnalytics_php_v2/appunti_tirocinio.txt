@@ -1,0 +1,16 @@
+Gestire le sessioni. Express va bene?
+Ho visto che per gestire le sessioni bisogna creare un server sempre in ascolto alle varie richieste. puo andare bene? Ne faccio uno unico?
+Con express creo il server che mi gestisce le richieste di post ed è ok, il problema è: devo fare un server unico sempre in esecuzione e in grado di gestire i comandi di tutti gli utenti ecc.?
+
+//risolto ---->Refused to apply style from '<URL>' because its MIME type ('text/html') is not a supported stylesheet MIME type, and strict MIME checking is enabled.
+public contiene i file statici e devo far riferimento a quella cartella li quando carico css, per gli script javascript forse
+
+variabile di sessione come $errAdminLogin
+
+var sess //global session not recommended
+
+redis, a session store for multiple sessions, funziona con NoSQL database, ma con MySQL? Non supporta windows
+
+i controlli se la sessione è attivata li faccio nella pagina come per php 
+
+uso del return quando mando una richiesta da una parte all'altra

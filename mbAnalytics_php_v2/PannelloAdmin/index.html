@@ -6,18 +6,16 @@ include("controllaAccessoAdmin.php");
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>Motorbrain Admin</title>
-
         <!-- Fogli di stile per i vari componenti -->
-        <link rel="stylesheet" type="text/css" href="../style_css/style_menu.css">
-        <link rel="stylesheet" type="text/css" href="../style_css/style_container.css">
-        <link rel="stylesheet" type="text/css" href="../style_css/style_controls.css">
+        <link rel="stylesheet" type="text/css" href="/style_css/style_menu.css">
+        <link rel="stylesheet" type="text/css" href="/style_css/style_container.css">
+        <link rel="stylesheet" type="text/css" href="/style_css/style_controls.css">
 
         <!-- jQuery library -->
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 
         <script>
             $(document).ready(function() {
-
                 // Quando la pagina viene caricata
                 // Nascondi tutti i contenuti delle tabs
                 $(".contenuto-tab").hide(); 
@@ -35,8 +33,7 @@ include("controllaAccessoAdmin.php");
         </ul>
         <div id="contenitore-tabs">
             <div id="login-admin" class="contenuto-tab">
-                <p class="p-info-login">Inserisci le credenziali per accedere al pannello di controllo:</p>
-                
+                <p class="p-info-login">Inserisci le credenziali per accedere al pannello di controllo:</p>   
                 <!-- <?php
                 if (!empty($errAdminLogin))
                 {	
@@ -46,7 +43,7 @@ include("controllaAccessoAdmin.php");
                 }
                 ?> -->
                 <form class="form-admin-login" 
-                      action="auth" 
+                      action="authAdmin" 
                       method="POST">
                     <input id="txt-username-admin-login" 
                            name="username_admin_login" 

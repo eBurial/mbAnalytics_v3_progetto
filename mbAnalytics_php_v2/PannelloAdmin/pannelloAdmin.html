@@ -1,10 +1,10 @@
-<?php
+<!--<?php
 include("sessionAdmin.php");
 
 require_once(dirname(__FILE__) . "/../dbMotorbrainMedico.php");
 require_once(dirname(__FILE__) . "/../dbMotorbrainMaschera.php");
 require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
-?>
+?> -->
 <!DOCTYPE html>
 <html>
     <head>
@@ -20,6 +20,7 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
         <!-- jQuery library -->
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 
+        <!-- script relativi alle funzioni del pannello -->
         <script>
             $(document).ready(function() {
 
@@ -271,8 +272,8 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
         </ul>
         <div id="contenitore-tabs">
             <div id="elenco-medici" class="contenuto-tab">
+                <!--
                 <?php
-
                 define("VALUE_NOT_SELECTED", "-");
 
                 // Array con i valori da visualizzare nel campo text
@@ -366,10 +367,11 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                 }
 
                 echo '</div>';
-                ?>
+                ?> -->
             </div>
             <div id="stato-database" class="contenuto-tab"> 
                 <div class="tbl-descrizione">Riepilogo sulle nuove tabelle e sugli aggiornamenti del database</div>
+                <!--
                 <?php 
                 echo '<div id="tbl-agg-database" class="tbl-pannello-controllo">';
                 echo '<div class="tbl-header">';
@@ -475,7 +477,7 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                 echo '</div>';
 
                 echo '</div>';
-                ?>
+                ?> -->
             </div>
         </div>
     </body>
