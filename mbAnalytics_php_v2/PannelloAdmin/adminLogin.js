@@ -1,43 +1,97 @@
-var mysql = require('mysql');
-var express = require('express');
-var session = require('express-session');
-var bodyParser = require('body-parser');
-var path = require('path');
+    var mysql = require('mysql');
+    var express = require('express');
+    var session = require('express-session');
+    //Gestore delle session store
+    var MySQLStore = require('express-mysql-session')(session);
+    var bodyParser = require('body-parser');
+    var path = require('path');
+    var CONFIG = require('../../node/config.json');
 
-var CONFIG = require('../../node/config.json');
-
-//Credenziali di accesso al database
-
-var connection = mysql.createConnection({
-	host: CONFIG.host,
-	user: CONFIG.user,
-	password: CONFIG.password,
-	database: CONFIG.database
+    //Credenziali di accesso al database
+    var connection = mysql.createConnection({
+        host: CONFIG.host,
+        user: CONFIG.user,
+        password: CONFIG.password,
+        database: CONFIG.database
     });
-    
-
+    var sessionStore = new MySQLStore(options_session, connection);
     var app = express();
-    
     app.use(express.static(path.join(__dirname,'/public')));
-    
+
+    var options_session = {
+            host: CONFIG.host,
+            port: 3306,
+            user: CONFIG.user,
+            password: CONFIG.password,
+            database: CONFIG.database,
+            clearExpired: true,
+            checkExpirationInterval: 900000,
+            expiration: 86400000,
+            createDatabaseTable: true,
+            connectionLimit: 1,
+            endConnectionOnClose: true,
+            charset: 'utf8mb4_bin',
+            schema: {
+                tableName: 'sessions',
+                columnNames: {
+                    session_id: 'session_id',
+                    expires: 'expires',
+                    data: 'data',
+                }
+            }
+        };
+        
     app.use(session({
         secret: 'secret',
-        resave: true,
-        saveUninitialized: true
+        resave: false,
+        saveUninitialized: true,
+        store: new MySQLStore({
+            host: CONFIG.host,
+            port: 3306,
+            user: CONFIG.user,
+            password: CONFIG.password,
+            database: CONFIG.database
+        })
     }));
 
     //cartella che contiene file statici come script e css
     app.use(express.static("../public"));
+    //serve per accedere alle richieste del body
     app.use(bodyParser.urlencoded({extended : true}));
     app.use(bodyParser.json());
 
-    app.get('/', function(request, response) {
-        response.sendFile(path.join(__dirname + '/index.html'));
+
+    //il next significa semplicemente di passare alla prossima richiesta
+    const redirectLogin = (req,res,next) => {
+        console.log(req.session.userId);
+        if(!req.session.userId){
+            console.log("Sono qui in redirect login");
+            res.redirect('/login')
+        }else{
+            next();
+        }
+    }
+    
+    const redirectAdminPanel = (req,res,next) => {
+        console.log(req.session.userId);
+        if(req.session.userId){
+            console.log("Sono qui in redirect panel");
+
+            return res.redirect('/pannelloAdmin')
+        }else{
+            next();
+        }
+    }
+
+    app.get('/',redirectLogin, function(request, response) {
+        const {userId} = request.session;
     });
 
+    app.get('/login',redirectAdminPanel,function(request,response){
+        response.sendfile(__dirname + '/index.html')})
     
     
-    app.post('/authAdmin', function(request, response) {
+    app.post('/authAdmin',redirectAdminPanel, function(request, response) {
         var username = request.body.username_admin_login;
         var password = request.body.pwd_admin_login;
         if (username && password) {
@@ -46,9 +100,11 @@ var connection = mysql.createConnection({
                     //sessione avviata
                     request.session.loggedin = true;
                     //user name della sessione
-                    request.session.username = username;
+                    request.session.userId = username;
                     //reindirizzamento
-                    return response.redirect('/pannelloAdmin');
+                    request.session.save(function(){
+                        response.redirect('/pannelloAdmin');
+                    })
                 } else {
                     response.send('Incorrect Username and/or Password!');
                 }			
@@ -59,8 +115,7 @@ var connection = mysql.createConnection({
             response.end();
         }
     });
-    
-    app.get('/pannelloAdmin', function(request, response) {
+    app.get('/pannelloAdmin',redirectLogin, function(request, response) {
         if (request.session.loggedin) {
             console.log("sono qui");
             return response.sendFile(path.join(__dirname+"/pannelloAdmin.html"));
@@ -69,6 +124,16 @@ var connection = mysql.createConnection({
         }
         return response.end();
     });
+
+    app.post('/logout',redirectLogin,(request,response) =>{
+            res.store.destroy(request.session.userId,function(error){
+                if(error){
+                    return res.send("Errore nel logout")
+                }
+                
+            })
+        })
+    
     
     app.listen(3000,function(){
         console.log("Listning on 3000");

@@ -14,3 +14,10 @@ redis, a session store for multiple sessions, funziona con NoSQL database, ma co
 i controlli se la sessione è attivata li faccio nella pagina come per php 
 
 uso del return quando mando una richiesta da una parte all'altra
+
+07/11
+per le sessioni uso sempre express session, nel costruttore si puo specificare lo store delle sessioni che puo essere direttamente sulla memoria 
+o in un database. facendo uso di mysql salviamo le sessioni nel database
+
+tentativo di utilizzo di express-mysql-session
+express templating - per pagine dinamiche
