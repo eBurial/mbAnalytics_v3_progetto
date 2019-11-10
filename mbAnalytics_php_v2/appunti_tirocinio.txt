@@ -21,3 +21,5 @@ o in un database. facendo uso di mysql salviamo le sessioni nel database
 
 tentativo di utilizzo di express-mysql-session
 express templating - per pagine dinamiche
+
+configurato il logout però i dati della sessione non vengono rimossi dal database, devo provare con piu utenti e vedere se funge

@@ -14,7 +14,7 @@
         password: CONFIG.password,
         database: CONFIG.database
     });
-    var sessionStore = new MySQLStore(options_session, connection);
+    //var sessionStore = new MySQLStore(options_session, connection);
     var app = express();
     app.use(express.static(path.join(__dirname,'/public')));
 
@@ -51,7 +51,8 @@
             user: CONFIG.user,
             password: CONFIG.password,
             database: CONFIG.database
-        })
+        }),
+        cookie: {maxAge: 180 * 60 *1000}
     }));
 
     //cartella che contiene file statici come script e css
@@ -65,7 +66,6 @@
     const redirectLogin = (req,res,next) => {
         console.log(req.session.userId);
         if(!req.session.userId){
-            console.log("Sono qui in redirect login");
             res.redirect('/login')
         }else{
             next();
@@ -75,8 +75,6 @@
     const redirectAdminPanel = (req,res,next) => {
         console.log(req.session.userId);
         if(req.session.userId){
-            console.log("Sono qui in redirect panel");
-
             return res.redirect('/pannelloAdmin')
         }else{
             next();
@@ -85,12 +83,13 @@
 
     app.get('/',redirectLogin, function(request, response) {
         const {userId} = request.session;
+        
+        return response.redirect('/pannelloAdmin');
     });
 
     app.get('/login',redirectAdminPanel,function(request,response){
-        response.sendfile(__dirname + '/index.html')})
-    
-    
+        return response.sendfile(__dirname + '/index.html')})
+
     app.post('/authAdmin',redirectAdminPanel, function(request, response) {
         var username = request.body.username_admin_login;
         var password = request.body.pwd_admin_login;
@@ -115,9 +114,9 @@
             response.end();
         }
     });
+    
     app.get('/pannelloAdmin',redirectLogin, function(request, response) {
         if (request.session.loggedin) {
-            console.log("sono qui");
             return response.sendFile(path.join(__dirname+"/pannelloAdmin.html"));
         } else {
             response.send('Please login to view this page!');
@@ -125,13 +124,13 @@
         return response.end();
     });
 
-    app.post('/logout',redirectLogin,(request,response) =>{
-            res.store.destroy(request.session.userId,function(error){
-                if(error){
-                    return res.send("Errore nel logout")
+    app.get('/logout',redirectLogin,function(request,response){
+                request.session.destroy(function(error){
+                if(error){ 
+                    console.log("Errore nel logout");
                 }
-                
             })
+            return response.redirect("/");
         })
     
     

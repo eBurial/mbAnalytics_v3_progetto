@@ -300,12 +300,9 @@ function getMedicoAttivoByMedicoID($medicoID) {
 
 // Recupero tutti i medici
 function getMedici() {
-
     $result = null;
     $pdo = null;
-
     try {
-
         // Creo la connessione
         $pdo = createDbConnection(DB_ADMIN);
 
