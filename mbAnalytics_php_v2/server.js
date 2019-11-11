@@ -5,8 +5,8 @@ var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session);
 var bodyParser = require('body-parser');
 var path = require('path');
-var CONFIG = require('../node/config.json');
-var services = require('./services');
+const CONFIG = require('../node/config.json');
+const admin_services = require('./admin_services');
 
 
 
@@ -16,7 +16,6 @@ var connection = mysql.createConnection({
     user: CONFIG.user,
     password: CONFIG.password,
     database: CONFIG.database,
-    socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock.lock'
 });
 //var sessionStore = new MySQLStore(options_session, connection);
 var app = express();
@@ -96,9 +95,9 @@ app.get('/login',redirectAdminPanel,function(request,response){
 app.post('/authAdmin',redirectAdminPanel, function(request, response) {
     var username = request.body.username_admin_login;
     var password = request.body.pwd_admin_login;
+
     if (username && password) {
-        connection.query('SELECT * FROM medicodata WHERE email = ? AND password = ? ;', [username, password], function(error, results, fields) {
-            console.log(results);		
+        connection.query('SELECT * FROM medicodata WHERE ? = email AND ? = password;', [username, password], function(error, results, fields) {
             if (results.length > 0) {
                 //sessione avviata
                 request.session.loggedin = true;
@@ -120,11 +119,10 @@ app.post('/authAdmin',redirectAdminPanel, function(request, response) {
 });
 
 app.get('/pannelloAdmin',redirectLogin, function(request, response) {
-    if (request.session.loggedin) {
-        return response.sendFile(path.join(__dirname+"/PannelloAdmin/pannelloAdmin.html"));
-    } else {
-        response.send('Please login to view this page!');
-    }
+    admin_services.getMedici(function(data){
+        console.log(data);
+    });
+    response.sendFile(path.join(__dirname+"/PannelloAdmin/pannelloAdmin.html"));
     return response.end();
 });
 
