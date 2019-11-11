@@ -38,7 +38,7 @@ function createMascheradataTable() {
     } catch(PDOException $e) {
         echo $e->getMessage();
     }
-    finally 
+    finally
     {
         // Chiudo la connessione con il database
         $pdo = null;
@@ -90,7 +90,7 @@ function insertMaschera($mascheraID, $medicoID, $titolo, $descrizione, $ordine) 
         // Query
         $stmt = $pdo->prepare("INSERT INTO " . MASCHERA_DATA . " (
 												   mascheraID, medicoID, titolo, descrizione, ordine)
-													 VALUES 
+													 VALUES
 													 (:mascheraID, :medicoID, :titolo, :descrizione, :ordine)");
 
         // Sostituzione dei parametri
@@ -176,7 +176,7 @@ function getMascheraByMascheraID($mascheraID) {
 
         // Recupero i risultati
         $result = $stmt->fetchAll(PDO::FETCH_BOTH);
-        
+
         foreach ($result as $m) {
             $maschera = $m;
         }
@@ -194,7 +194,7 @@ function getMascheraByMascheraID($mascheraID) {
 }
 
 // Elimino una maschera dato il valore mascheraID
-function deleteMascheraByMascheraId($mascheraID) {
+function i($mascheraID) {
 
     $result = false;
     $pdo = null;

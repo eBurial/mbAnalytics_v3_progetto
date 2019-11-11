@@ -6,7 +6,7 @@ var MySQLStore = require('express-mysql-session')(session);
 var bodyParser = require('body-parser');
 var path = require('path');
 var CONFIG = require('../node/config.json');
-
+var services = require('./services');
 
 
 
@@ -15,16 +15,18 @@ var connection = mysql.createConnection({
     host: CONFIG.host,
     user: CONFIG.user,
     password: CONFIG.password,
-    database: CONFIG.database
+    database: CONFIG.database,
+    socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock.lock'
 });
 //var sessionStore = new MySQLStore(options_session, connection);
 var app = express();
 app.use(express.static(path.join(__dirname,'/public')));
+
+//Setting del template engine
 app.set('view engine','ejs');
 
 var options_session = {
         host: CONFIG.host,
-        port: 3306,
         user: CONFIG.user,
         password: CONFIG.password,
         database: CONFIG.database,
@@ -51,7 +53,6 @@ app.use(session({
     saveUninitialized: true,
     store: new MySQLStore({
         host: CONFIG.host,
-        port: 3306,
         user: CONFIG.user,
         password: CONFIG.password,
         database: CONFIG.database
@@ -68,7 +69,6 @@ app.use(bodyParser.json());
 
 //il next significa semplicemente di passare alla prossima richiesta
 const redirectLogin = (req,res,next) => {
-    console.log(req.session.userId);
     if(!req.session.userId){
         res.redirect('/login')
     }else{
@@ -77,7 +77,6 @@ const redirectLogin = (req,res,next) => {
 }
 
 const redirectAdminPanel = (req,res,next) => {
-    console.log(req.session.userId);
     if(req.session.userId){
         return res.redirect('/pannelloAdmin')
     }else{
@@ -87,7 +86,7 @@ const redirectAdminPanel = (req,res,next) => {
 
 app.get('/',redirectLogin, function(request, response) {
     const {userId} = request.session;
-    
+    //services.getMedici();
     return response.redirect('/pannelloAdmin');
 });
 
@@ -98,7 +97,8 @@ app.post('/authAdmin',redirectAdminPanel, function(request, response) {
     var username = request.body.username_admin_login;
     var password = request.body.pwd_admin_login;
     if (username && password) {
-        connection.query('SELECT * FROM medicodata WHERE email = ? AND password = ? ;', [username, password], function(error, results, fields) {		
+        connection.query('SELECT * FROM medicodata WHERE email = ? AND password = ? ;', [username, password], function(error, results, fields) {
+            console.log(results);		
             if (results.length > 0) {
                 //sessione avviata
                 request.session.loggedin = true;
@@ -139,5 +139,5 @@ app.get('/logout',redirectLogin,function(request,response){
 
 
 app.listen(3000,function(){
-    console.log("Listning on 3000");
+    console.log("Listening on 3000");
 });
