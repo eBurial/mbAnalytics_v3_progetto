@@ -1,6 +1,7 @@
 var mysql = require('mysql');
 var express = require('express');
 var session = require('express-session');
+var async = require("async");
 //Gestore delle session store
 var MySQLStore = require('express-mysql-session')(session);
 var bodyParser = require('body-parser');
@@ -23,29 +24,6 @@ app.use(express.static(path.join(__dirname,'/public')));
 
 //Setting del template engine
 app.set('view engine','ejs');
-
-var options_session = {
-        host: CONFIG.host,
-        user: CONFIG.user,
-        password: CONFIG.password,
-        database: CONFIG.database,
-        clearExpired: true,
-        checkExpirationInterval: 900000,
-        expiration: 86400000,
-        createDatabaseTable: true,
-        connectionLimit: 1,
-        endConnectionOnClose: true,
-        charset: 'utf8mb4_bin',
-        schema: {
-            tableName: 'sessions',
-            columnNames: {
-                session_id: 'session_id',
-                expires: 'expires',
-                data: 'data',
-            }
-        }
-    };
-    
 app.use(session({
     secret: 'secret',
     resave: false,
@@ -119,11 +97,25 @@ app.post('/authAdmin',redirectAdminPanel, function(request, response) {
 });
 
 app.get('/pannelloAdmin',redirectLogin, function(request, response) {
-    admin_services.getMedici(function(data){
-        console.log(data);
-    });
-    response.sendFile(path.join(__dirname+"/PannelloAdmin/pannelloAdmin.html"));
-    return response.end();
+    var lista_medici;
+    async.series([
+        function queryMedici(callback){
+            admin_services.getMedici(function(err,res){
+                if(err){
+                    callback(err,null);
+                    return
+                }
+                lista_medici = res;
+                callback(null);
+            });
+        },
+    ],function(err){
+        if(err) throw err
+        else{
+            response.render(path.join(__dirname + '/views/pannelloAdmin.ejs'),{results:lista_medici});
+            return response.end(); 
+        }
+    })
 });
 
 app.get('/logout',redirectLogin,function(request,response){

@@ -23,8 +23,10 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
         <!-- script relativi alle funzioni del pannello -->
         <script>
             $(document).ready(function() {
+
                 // array per gestire i database dei medici
                 var databases = [];
+
                 // Quando la pagina viene caricata
                 // Nascondi tutti i contenuti delle tabs
                 $(".contenuto-tab").hide(); 
@@ -32,8 +34,10 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                 $("ul.tabs li:first").addClass("active").show();
                 //Mostra il contenuto della prima tab 
                 $(".contenuto-tab:first").show();
+
                 // Al click sulla tab
                 $("ul.tabs li").click(function() {
+
                     //Rimuovi ogni classe "active"	
                     $("ul.tabs li").removeClass("active");
                     //E aggiungila solo a quella su cui ho cliccato 
@@ -261,6 +265,7 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
         </script>
     </head>
     <body>		
+        <h1> ciao</h1>
         <ul class="tabs">
             <li><a href="#elenco-medici">Elenco Medici</a></li>
             <li><a href="#stato-database">Stato Database</a></li>
@@ -270,57 +275,57 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
             <div id="elenco-medici" class="contenuto-tab">
                 <!--
                 <?php
-                define("VALUE_NOT_SELECTED", "-");
+                define("VALUE_NOT_SELECTED", "-"); 
 
                 // Array con i valori da visualizzare nel campo text
                 // della combo relativa al filtro sul database
                 // IMPORTANTE: attenzione all'ordine
-                $databaseArrayText = ["mbFirstStudy", "mbPublicIT", "mbClinicElderly", "mbClinicDisabled"];
-                    
-                $elencoMedici = getMedici();
+                $databaseArrayText = ["mbFirstStudy", "mbPublicIT", "mbClinicElderly", "mbClinicDisabled"]; 
 
-                echo '<div id="tbl-medici" class="tbl-pannello-controllo">';
-                echo '<div class="tbl-header">';
-                echo '<div class="tbl-cell-header tbl-cell-max-width">';
-                echo 'Cognome';
-                echo '</div>';
-                echo '<div class="tbl-cell-header tbl-cell-max-width">';
-                echo 'Nome';
-                echo '</div>';
-                echo '<div class="tbl-cell-header tbl-cell-max-width">';
-                echo 'Email';
-                echo '</div>';
-                echo '<div class="tbl-cell-header tbl-cell-max-width">';
-                echo 'Data registrazione';
-                echo '</div>';
-                echo '<div class="tbl-cell-header tbl-cell-max-width">';
-                echo 'Database utilizzabili';
-                echo '</div>';
-                echo '<div class="tbl-cell-header tbl-cell-max-width">';
-                echo 'Stato';
-                echo '</div>';
-                echo '<div class="tbl-cell-header tbl-cell-min-width">';
-                echo '';
-                echo '</div>';
-                echo '</div>';
+                $elencoMedici = getMedici(); -->
 
-                foreach ($elencoMedici as $medico) {
-
-                    $activeDatabases = explode(",", $medico["activeDatabases"]);
-
-                    echo '<div id="tbl-row-' . $medico["medicoID"] . '" class="tbl-row">';
-                    echo '<div class="tbl-cell tbl-cell-max-width">';
-                    echo $medico["cognome"];
-                    echo '</div>';
-                    echo '<div class="tbl-cell tbl-cell-max-width">';
-                    echo $medico["nome"];
-                    echo '</div>';
-                    echo '<div class="tbl-cell tbl-cell-max-width">';
-                    echo $medico["email"];
-                    echo '</div>';
-                    echo '<div class="tbl-cell tbl-cell-max-width">';
-                    echo $medico["dataInserimento"];
-                    echo '</div>';
+                <div id="tbl-medici" class="tbl-pannello-controllo">
+                <div class="tbl-header">
+                <div class="tbl-cell-header tbl-cell-max-width">
+                Cognome
+                </div>
+                <div class="tbl-cell-header tbl-cell-max-width">
+                Nome
+                </div>
+                <div class="tbl-cell-header tbl-cell-max-width">
+                Email
+                </div>
+                <div class="tbl-cell-header tbl-cell-max-width">
+                Data registrazione
+                </div>
+                <div class="tbl-cell-header tbl-cell-max-width">
+                Database utilizzabili
+                </div>
+                <div class="tbl-cell-header tbl-cell-max-width">
+                Stato
+                </div>
+                <div class="tbl-cell-header tbl-cell-min-width">
+                
+                </div>
+                </div>
+                <%results.forEach(function(item){ %>
+                    <!--    $activeDatabases = explode(",", $medico["activeDatabases"]); -->
+                    <!-- INGLOBARE IL MEDICO ID NELL ID DEL DIV-->
+                    <div id="tbl-row- METTERE IL MEDICO ID" class="tbl-row">
+                    <div class="tbl-cell tbl-cell-max-width">
+                    <%= item.cognome %>
+                    </div>
+                    <div class="tbl-cell tbl-cell-max-width">
+                    <%= item.cognome %>
+                    </div>
+                    <div class="tbl-cell tbl-cell-max-width">
+                    <%= item.email %>
+                    </div>
+                    <div class="tbl-cell tbl-cell-max-width">
+                    <%= item.dataInserimento %>
+                    </div>
+                    <% }); %>
+                    <!--
                     echo '<div id="databases-' . $medico["medicoID"] . '" class="tbl-cell tbl-cell-max-width databases" style="overflow: auto;">';
 
                     for ($i = 0; $i < count($databaseArrayText); $i++) {
