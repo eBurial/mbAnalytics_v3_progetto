@@ -122,12 +122,13 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     var idMedico = $(this).attr("id").replace("bt-abilita-", "");	
                     // Memorizzo il parent
                     var parentCorrente = $(this).parent();	
-                    $.post("gestioneMedici.php",
+                    $.post("/gestioneMedici",
                            {
                         "abilita_medico": idMedico
                     }).done( function() {
                         // Rimuovo il bottone
                         btAbilita.remove();
+                        document.getElementById("etichetta-medico-attivo").innerHTML="Attivo";
 
                         // Aggiungo il sostituto
                         var htmlButton = '<button id="bt-disabilita-' + idMedico + '"'+
@@ -150,20 +151,20 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     var idMedico = $(this).attr("id").replace("bt-disabilita-", "");	
                     // Memorizzo il parent
                     var parentCorrente = $(this).parent();	
-                    $.post("gestioneMedici.php",
-                           {
+                    $.post("/gestioneMedici",
+                        {
                         "disabilita_medico": idMedico
-                    }, 
-                           function() 
-                           {
+                        }, 
+                    function(){
                         // Rimuovo il bottone
                         btDisabilita.remove();
-
+                        document.getElementById("etichetta-medico-attivo").innerHTML ="Non attivo";
                         // Aggiungo il sostituto
                         var htmlButton = '<button id="bt-abilita-' + idMedico + '"'+
                             ' type="button" class="bt-abilita-medico bt-tbl bt-green">' +
                             'Abilita</button>';
                         parentCorrente.append(htmlButton);
+
                     }
                           ).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
                         alert(thrownError); //Messaggio di avviso con l'errore HTTP
@@ -178,17 +179,13 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     var idMedico = $(this).attr("id").replace("bt-elimina-", "");	
                     // Memorizzo il parent
                     var parentCorrente = $(this).parent();	
-                    $.post("gestioneMedici.php",
-                           {
-                        "elimina_medico": idMedico
-                    }, 
-                           function() 
-                           {
+                    $.post("gestioneMedici",
+                           {"elimina_medico": idMedico},function() 
+                        {
                         $("#tbl-row-" + idMedico).fadeOut(1000, function() {
                             $(this).remove();
                         });
-                    }
-                          ).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
+                        }).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
                         alert(thrownError); //Messaggio di avviso con l'errore HTTP
                     });
                 });
@@ -203,8 +200,7 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     $.post("gestioneDbMotorbrain.php",
                            {
                         "crea_tabella": "medicodata"
-                    }, 
-                           function() 
+                    }, function() 
                            {
                         btCreaMedicidata.remove();
                         parentCorrente.text("Nessuna azione disponibile");
@@ -245,9 +241,7 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     $.post("gestioneDbMotorbrain.php",
                            {
                         "crea_tabella": "graficodata"
-                    }, 
-                           function() 
-                           {
+                    },function() {
                         btCreaGraficodata.remove();
                         parentCorrente.text("Nessuna azione disponibile");
                         $("#stato-tbl-graficodata").text("Esiste");
@@ -304,7 +298,7 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                 <% results.forEach(function(item){ %>
                     <% var activeDatabases = item.activeDatabases.split(","); %>
                     <!-- INGLOBARE IL MEDICO ID NELL ID DEL DIV-->
-                    <div id="tbl-row-item-<%= item.medicoID %>"class="tbl-row">
+                    <div id="tbl-row-<%= item.medicoID %>"class="tbl-row">
                     <div class="tbl-cell tbl-cell-max-width">
                     <%= item.cognome %>
                     </div>
@@ -339,12 +333,12 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     <%    
                     if(item.attivo == 0) 
                     { %>
-                        Non attivo
+                        <p id="etichetta-medico-attivo">Non attivo </p>
                         <button id="bt-abilita-<%= item.medicoID %>" type="button" class="bt-abilita-medico bt-tbl bt-green">Abilita</button>
                     <% }
                     else if (item.attivo == 1)
                     { %>
-                        Attivo
+                        <p id="etichetta-medico-attivo">Attivo</p>
                         <button id="bt-disabilita-<%= item.medicoID %>" type="button" class="bt-disabilita-medico bt-tbl bt-yellow">Disabilita</button>
                     <% } %>
                     </div>

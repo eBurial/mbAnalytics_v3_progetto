@@ -53,7 +53,6 @@ const redirectLogin = (req,res,next) => {
         next();
     }
 }
-
 const redirectAdminPanel = (req,res,next) => {
     if(req.session.userId){
         return res.redirect('/pannelloAdmin')
@@ -61,16 +60,13 @@ const redirectAdminPanel = (req,res,next) => {
         next();
     }
 }
-
 app.get('/',redirectLogin, function(request, response) {
     const {userId} = request.session;
     //services.getMedici();
     return response.redirect('/pannelloAdmin');
 });
-
 app.get('/login',redirectAdminPanel,function(request,response){
     return response.sendfile(__dirname + '/PannelloAdmin/index.html')})
-
 app.post('/authAdmin',redirectAdminPanel, function(request, response) {
     var username = request.body.username_admin_login;
     var password = request.body.pwd_admin_login;
@@ -113,11 +109,7 @@ app.get('/pannelloAdmin',redirectLogin, function(request, response) {
                     callback(err,null);
                     return
                 }
-                if(res.length > 0){
-                    medicodataTableExists = true;
-                }else{
-                    medicodataTableExists = false;
-                }
+                medicodataTableExists = res;
                 callback(null);
             })
         },
@@ -127,11 +119,7 @@ app.get('/pannelloAdmin',redirectLogin, function(request, response) {
                     callback(err,null);
                     return
                 }
-                if(res.length > 0){
-                    mascheradataTableExists = true;
-                }else{
-                    mascheradataTableExists = false;
-                }
+                mascheradataTableExists = res;
                 callback(null);
             })
         },
@@ -141,11 +129,7 @@ app.get('/pannelloAdmin',redirectLogin, function(request, response) {
                     callback(err,null);
                     return
                 }
-                if(res.length > 0){
-                    graficodataTableExists = true;
-                }else{
-                    graficodataTableExists = false;
-                }
+                mascheradataTableExists = res;
                 callback(null);
             })
         }
@@ -166,8 +150,30 @@ app.get('/pannelloAdmin',redirectLogin, function(request, response) {
         }
     })
 });
+app.post('/gestioneMedici',function(request,response){
+    if(request.body.disabilita_medico){
+        admin_services.updateStatoMedico("0",request.body.disabilita_medico,function(err){
+            if(err) throw err;
+            else done();
+        });
+    }
+    if(request.body.abilita_medico){
+        console.log("Richiesta di abilitare un medico");
+        admin_services.updateStatoMedico("1",request.body.abilita_medico,function(err){
+            if(err) throw err;
+            else done();
+        });
+    }
+    if(request.body.elimina_medico){
+        console.log("Richiesta di eliminare un medico");
+        admin_services.eliminaMedico(request.body.elimina_medico,function(err){
+            if(err) throw err;
+            else done();
+        });
 
-
+    }
+    return response.end();       
+});
 
 
 app.get('/logout',redirectLogin,function(request,response){
@@ -178,7 +184,6 @@ app.get('/logout',redirectLogin,function(request,response){
         })
         return response.redirect("/");
     })
-
 
 app.listen(3000,function(){
     console.log("Listening on 3000");
