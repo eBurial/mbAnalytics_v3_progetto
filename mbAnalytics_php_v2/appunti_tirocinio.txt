@@ -23,3 +23,9 @@ tentativo di utilizzo di express-mysql-session
 express templating - per pagine dinamiche
 
 configurato il logout però i dati della sessione non vengono rimossi dal database, devo provare con piu utenti e vedere se funge
+
+utilizzo EJS lint per stamparmi gli errori delle pagine .EJS
+
+si potrebbe valutare di fare una funzione unica che mi esegue la query passata come parametro se quello che mi serve è solo result
+
+le funzioni che exist fanno tutte la stessa cosa potrei parametrizzarle e bona

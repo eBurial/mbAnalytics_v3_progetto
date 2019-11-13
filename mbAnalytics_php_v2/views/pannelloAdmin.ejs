@@ -23,10 +23,8 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
         <!-- script relativi alle funzioni del pannello -->
         <script>
             $(document).ready(function() {
-
                 // array per gestire i database dei medici
                 var databases = [];
-
                 // Quando la pagina viene caricata
                 // Nascondi tutti i contenuti delle tabs
                 $(".contenuto-tab").hide(); 
@@ -51,7 +49,6 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     $(activeTab).fadeIn(); 
                     return false;
                 });
-
                 // al click sul checkbox inserisco/tolgo il valore in un array
                 $('.databases :checkbox').click(function(e) {
 
@@ -97,7 +94,6 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
 
                 //Funzione per settare i database utilizzabili da un medico
                 $("#tbl-medici").on("click", "button.bt-attiva-database", function() {
-
                     // Memorizzo il bottone
                     var btAttiva = $(this);
                     // Recupero l'id
@@ -120,7 +116,6 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
 
                 //Funzione per abilitare un medico
                 $("#tbl-medici").on("click", "button.bt-abilita-medico", function() {
-
                     // Memorizzo il bottone
                     var btAbilita = $(this);
                     // Recupero l'id
@@ -265,7 +260,6 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
         </script>
     </head>
     <body>		
-        <h1> ciao</h1>
         <ul class="tabs">
             <li><a href="#elenco-medici">Elenco Medici</a></li>
             <li><a href="#stato-database">Stato Database</a></li>
@@ -280,10 +274,9 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                 // Array con i valori da visualizzare nel campo text
                 // della combo relativa al filtro sul database
                 // IMPORTANTE: attenzione all'ordine
-                $databaseArrayText = ["mbFirstStudy", "mbPublicIT", "mbClinicElderly", "mbClinicDisabled"]; 
+                 
 
-                $elencoMedici = getMedici(); -->
-
+                -->
                 <div id="tbl-medici" class="tbl-pannello-controllo">
                 <div class="tbl-header">
                 <div class="tbl-cell-header tbl-cell-max-width">
@@ -308,10 +301,10 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                 
                 </div>
                 </div>
-                <%results.forEach(function(item){ %>
-                    <!--    $activeDatabases = explode(",", $medico["activeDatabases"]); -->
+                <% results.forEach(function(item){ %>
+                    <% var activeDatabases = item.activeDatabases.split(","); %>
                     <!-- INGLOBARE IL MEDICO ID NELL ID DEL DIV-->
-                    <div id="tbl-row- METTERE IL MEDICO ID" class="tbl-row">
+                    <div id="tbl-row-item-<%= item.medicoID %>"class="tbl-row">
                     <div class="tbl-cell tbl-cell-max-width">
                     <%= item.cognome %>
                     </div>
@@ -324,161 +317,141 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     <div class="tbl-cell tbl-cell-max-width">
                     <%= item.dataInserimento %>
                     </div>
-                    <% }); %>
-                    <!--
-                    echo '<div id="databases-' . $medico["medicoID"] . '" class="tbl-cell tbl-cell-max-width databases" style="overflow: auto;">';
-
-                    for ($i = 0; $i < count($databaseArrayText); $i++) {
-                        if (in_array($databaseArrayText[$i], $activeDatabases)) {
-                            echo '<input id="' . $databaseArrayText[$i] . '" class="databases" type="checkbox" value="' . $databaseArrayText[$i] . '" checked="checked">';
-                            echo '<label for="' . $databaseArrayText[$i] . '">' . $databaseArrayText[$i] . '</label>';
-                            echo '<br>';
-                        }
-                        else {
-                            echo '<input id="' . $databaseArrayText[$i] . '" class="databases" type="checkbox" value="' . $databaseArrayText[$i] . '">';
-                            echo '<label for="' . $databaseArrayText[$i] . '">' . $databaseArrayText[$i] . '</label>';
-                            echo '<br>';
-                        }
-                    }
-
-                    echo '<div class="tbl-cell tbl-cell-min-width tbl-cell-right">';
-                    echo '<button id="bt-attiva-database-' . $medico["medicoID"] . '"';
-                    echo ' type="button" class="bt-attiva-database bt-tbl bt-green">Attiva</button>';
-                    echo '</div>';
-                    echo '</div>';
-                    echo '<div class="tbl-cell tbl-cell-min-width">';
-                    if ($medico["attivo"] == 0) 
-                    {
-                        //echo "Non attivo";
-                        echo '<button id="bt-abilita-' . $medico["medicoID"] . '"';
-                        echo ' type="button" class="bt-abilita-medico bt-tbl bt-green">Abilita</button>';
-                    }
-                    else if ($medico["attivo"] == 1)
-                    {
-                        //echo "Attivo";
-                        echo '<button id="bt-disabilita-' . $medico["medicoID"] . '"';
-                        echo ' type="button" class="bt-disabilita-medico bt-tbl bt-yellow">Disabilita</button>';
-                    }
-                    echo '</div>';
-                    echo '<div class="tbl-cell tbl-cell-min-width tbl-cell-right">';
-                    echo '<button id="bt-elimina-' . $medico["medicoID"] . '"';
-                    echo ' type="button" class="bt-elimina-medico bt-tbl bt-red">Elimina</button>';
-                    echo '</div>';
-                    echo '</div>';
-                }
-
-                echo '</div>';
-                ?> -->
+                    
+                    <div id="databases-<%= item.medicoID %>" class="tbl-cell tbl-cell-max-width databases" style="overflow: auto;">
+                    <% for(var i = 0; i < databaseArrayText.lenght; i++){ %>
+                        <% if(activeDatabases.includes(databaseArrayText[i])){ %>
+                            <input id="' . $databaseArrayText[$i] . '" class="databases" type="checkbox" value="' . $databaseArrayText[$i] . '" checked="checked">
+                            <label for="' . $databaseArrayText[$i] . '"><%=  databaseArrayText[i] %></label>
+                            <br>
+                        <% }
+                        else { %>
+                            <input id="' . $databaseArrayText[$i] . '" class="databases" type="checkbox" value="' . $databaseArrayText[$i] . '">
+                            <label for="' . $databaseArrayText[$i] . '"><%= databaseArrayText[i] %></label>
+                            <br>
+                        <% }
+                    } %>
+                    <div class="tbl-cell tbl-cell-min-width tbl-cell-right">
+                    <button id="bt-attiva-database<%= item.medicoID %>" type="button" class="bt-attiva-database bt-tbl bt-green">Attiva</button>
+                    </div>
+                    </div>
+                    <div class="tbl-cell tbl-cell-min-width">
+                    <%    
+                    if(item.attivo == 0) 
+                    { %>
+                        Non attivo
+                        <button id="bt-abilita-<%= item.medicoID %>" type="button" class="bt-abilita-medico bt-tbl bt-green">Abilita</button>
+                    <% }
+                    else if (item.attivo == 1)
+                    { %>
+                        Attivo
+                        <button id="bt-disabilita-<%= item.medicoID %>" type="button" class="bt-disabilita-medico bt-tbl bt-yellow">Disabilita</button>
+                    <% } %>
+                    </div>
+                    <div class="tbl-cell tbl-cell-min-width tbl-cell-right">
+                    <button id="bt-elimina-<%= item.medicoID %>" type="button" class="bt-elimina-medico bt-tbl bt-red">Elimina</button>
+                    </div>
+                    </div>
+                <% }); %>
+                </div>
             </div>
             <div id="stato-database" class="contenuto-tab"> 
                 <div class="tbl-descrizione">Riepilogo sulle nuove tabelle e sugli aggiornamenti del database</div>
-                <!--
-                <?php 
-                echo '<div id="tbl-agg-database" class="tbl-pannello-controllo">';
-                echo '<div class="tbl-header">';
-                echo '<div class="tbl-cell-header tbl-cell-max-width">';
-                echo 'Tabella';
-                echo '</div>';
-                echo '<div class="tbl-cell-header tbl-cell-max-width">';
-                echo 'Note';
-                echo '</div>';
-                echo '<div class="tbl-cell-header tbl-cell-max-width">';
-                echo 'Stato';
-                echo '</div>';
-                echo '<div class="tbl-cell-header tbl-cell-max-width">';
-                echo 'Azione';
-                echo '</div>';
-                echo '</div>';
-
-                // Tabella medicidata
-                echo '<div class="tbl-row">';
-                echo '<div class="tbl-cell tbl-cell-max-width">';
-                echo 'medicodata';
-                echo '</div>';
-                echo '<div class="tbl-cell tbl-cell-max-width">';
-                echo 'Contiene i dati dei medici che utilizzano Motorbrain Web';
-                echo '</div>';
-                echo '<div id="stato-tbl-medicodata" class="tbl-cell tbl-cell-max-width">';
-                // Controllo se la tabella medicodata esiste
-                if (checkExistMedicodataTable() == false)
-                {
-                    echo "Non esiste";
-                    echo '</div>';
-                    echo '<div class="tbl-cell tbl-cell-min-width">';
-                    echo '<button id="bt-crea-tbl-medicodata"';
-                    echo ' type="button" class="bt-tbl bt-green">Crea tabella</button>';
-                    echo '</div>';
-                }
+            
+                <div id="tbl-agg-database" class="tbl-pannello-controllo">
+                <div class="tbl-header">
+                <div class="tbl-cell-header tbl-cell-max-width">
+                Tabella
+                </div>
+                <div class="tbl-cell-header tbl-cell-max-width">
+                Note
+                </div>
+                <div class="tbl-cell-header tbl-cell-max-width">
+                Stato
+                </div>
+                <div class="tbl-cell-header tbl-cell-max-width">
+                Azione
+                </div>
+                </div>
+                <div class="tbl-row">
+                <div class="tbl-cell tbl-cell-max-width">
+                medicodata
+                </div>
+                <div class="tbl-cell tbl-cell-max-width">
+                Contiene i dati dei medici che utilizzano Motorbrain Web
+                </div>
+                <div id="stato-tbl-medicodata" class="tbl-cell tbl-cell-max-width">
+                
+                <% if (medicodataTableExists == false)
+                { %>
+                    Non esiste
+                    </div>
+                    <div class="tbl-cell tbl-cell-min-width">
+                    <button id="bt-crea-tbl-medicodata" type="button" class="bt-tbl bt-green">Crea tabella</button>
+                    </div>
+                <% }
                 else
-                {
-                    echo "Esiste";
-                    echo '</div>';
-                    echo '<div>';
-                    echo 'Nessuna azione disponibile';
-                    echo '</div>';
-                }
-                echo '</div>';
+                { %>
+                    Esiste
+                    </div>
+                    <div>
+                    Nessuna azione disponibile
+                    </div>
+                <% } %>
+                </div>
+                <div class="tbl-row">
+                <div class="tbl-cell tbl-cell-max-width">
+                mascheradata
+                </div>
+                <div class="tbl-cell tbl-cell-max-width">
+                Contiene i dati relativi alle maschere (insieme di grafici) salvati dai medici
+                </div>
+                <div id="stato-tbl-mascheradata" class="tbl-cell tbl-cell-max-width">
 
-                // Tabella mascheradata
-                echo '<div class="tbl-row">';
-                echo '<div class="tbl-cell tbl-cell-max-width">';
-                echo 'mascheradata';
-                echo '</div>';
-                echo '<div class="tbl-cell tbl-cell-max-width">';
-                echo 'Contiene i dati relativi alle maschere (insieme di grafici) salvati dai medici';
-                echo '</div>';
-                echo '<div id="stato-tbl-mascheradata" class="tbl-cell tbl-cell-max-width">';
-                // Controllo se la tabella maschera esiste
-                if (checkExistMascheradataTable() == false)
-                {
-                    echo "Non esiste";
-                    echo '</div>';
-                    echo '<div class="tbl-cell tbl-cell-min-width">';
-                    echo '<button id="bt-crea-tbl-mascheradata"';
-                    echo ' type="button" class="bt-tbl bt-green">Crea tabella</button>';
-                    echo '</div>';
-                }
+                <% if (mascheradataTableExists == false)
+                { %>
+                    Non esiste
+                    </div>
+                    <div class="tbl-cell tbl-cell-min-width">
+                    <button id="bt-crea-tbl-mascheradata" type="button" class="bt-tbl bt-green">Crea tabella</button>
+                    </div>
+                <% }
                 else
-                {
-                    echo "Esiste";
-                    echo '</div>';
-                    echo '<div>';
-                    echo 'Nessuna azione disponibile';
-                    echo '</div>';
-                }
-                echo '</div>';
+                { %>
+                    Esiste
+                    </div>
+                    <div>
+                    Nessuna azione disponibile
+                    </div>
+                <% } %>
+                </div>
 
-                // Tabella graficodata
-                echo '<div class="tbl-row">';
-                echo '<div class="tbl-cell tbl-cell-max-width">';
-                echo 'graficodata';
-                echo '</div>';
-                echo '<div class="tbl-cell tbl-cell-max-width">';
-                echo 'Contiene i dati dei grafici (database, tipo grafico, esercizio collegato, filtri) salvati dal medico';
-                echo '</div>';
-                echo '<div id="stato-tbl-graficodata" class="tbl-cell tbl-cell-max-width">';
-                // Controllo se tutte le tabelle graficodata esistono
-                if (checkExistGraficodataTable() == false)
-                {
-                    echo "Non esiste";
-                    echo '</div>';
-                    echo '<div class="tbl-cell tbl-cell-min-width">';
-                    echo '<button id="bt-crea-tbl-graficodata"';
-                    echo ' type="button" class="bt-tbl bt-green">Crea tabella</button>';
-                    echo '</div>';
-                }
+                <div class="tbl-row">
+                <div class="tbl-cell tbl-cell-max-width">
+                graficodata
+                </div>
+                <div class="tbl-cell tbl-cell-max-width">
+                Contiene i dati dei grafici (database, tipo grafico, esercizio collegato, filtri) salvati dal medico
+                </div>
+                <div id="stato-tbl-graficodata" class="tbl-cell tbl-cell-max-width">
+                <% if (mascheradataTableExists == false)
+                { %>
+                    Non esiste
+                    </div>
+                    <div class="tbl-cell tbl-cell-min-width">
+                    <button id="bt-crea-tbl-graficodata" type="button" class="bt-tbl bt-green">Crea tabella</button>
+                    </div>
+                <% }
                 else
-                {
-                    echo "Esiste";
-                    echo '</div>';
-                    echo '<div>';
-                    echo 'Nessuna azione disponibile';
-                    echo '</div>';
-                }
-                echo '</div>';
-
-                echo '</div>';
-                ?> -->
+                { %>
+                    Esiste
+                    </div>
+                    <div>
+                    Nessuna azione disponibile
+                    </div>
+                <% } %>
+                </div>
+                </div>
             </div>
         </div>
     </body>

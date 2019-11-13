@@ -10,12 +10,39 @@ const connection = mysql.createConnection({
 //metodo che ritorna la lista dei medici
 module.exports.getMedici = function(callback){
     connection.query("SELECT medicoID, nome, cognome, email,password, dataInserimento, attivo, activeDatabases, lastLanguage FROM medicodata ORDER BY Cognome, Nome",
-    function (err, result, fields) {
+    function (err, result) {
         if (err){
             callback(err,null)
         }else{
             callback(null,result);   
         }
     }); 
+}
+module.exports.checkExistMedicodataTable = function(callback){
+    connection.query("SHOW TABLES LIKE 'medicodata'",function(err,result){
+        if(err){
+            callback(err,null)
+        }else{
+            callback(null,result);
+        }
+    });
+}
+module.exports.checkExistMascheradataTable = function(callback){
+    connection.query("SHOW TABLES LIKE 'mascheradata'",function(err,result){
+        if(err){
+            callback(err,null)
+        }else{
+            callback(null,result);
+        }
+    });
+}
+module.exports.checkExistGraficodataTable = function(callback){
+    connection.query("SHOW TABLES LIKE 'graficodata'",function(err,result){
+        if(err){
+            callback(err,null)
+        }else{
+            callback(null,result);
+        }
+    });
 }
 

@@ -9,7 +9,8 @@ var path = require('path');
 const CONFIG = require('../node/config.json');
 const admin_services = require('./admin_services');
 
-
+const ejsLint = require('ejs-lint');
+console.log(ejsLint.lint("./views/pannelloAdmin.ejs",null));
 
 //Credenziali di accesso al database
 var connection = mysql.createConnection({
@@ -73,15 +74,11 @@ app.get('/login',redirectAdminPanel,function(request,response){
 app.post('/authAdmin',redirectAdminPanel, function(request, response) {
     var username = request.body.username_admin_login;
     var password = request.body.pwd_admin_login;
-
     if (username && password) {
         connection.query('SELECT * FROM medicodata WHERE ? = email AND ? = password;', [username, password], function(error, results, fields) {
             if (results.length > 0) {
-                //sessione avviata
                 request.session.loggedin = true;
-                //user name della sessione
                 request.session.userId = username;
-                //reindirizzamento
                 request.session.save(function(){
                     response.redirect('/pannelloAdmin');
                 })
@@ -97,7 +94,8 @@ app.post('/authAdmin',redirectAdminPanel, function(request, response) {
 });
 
 app.get('/pannelloAdmin',redirectLogin, function(request, response) {
-    var lista_medici;
+    var lista_medici,medicodataTableExists,mascheradataTableExists,graficodataTableExists;
+    databaseArrayText = ["mbFirstStudy", "mbPublicIT", "mbClinicElderly", "mbClinicDisabled"];
     async.series([
         function queryMedici(callback){
             admin_services.getMedici(function(err,res){
@@ -109,14 +107,68 @@ app.get('/pannelloAdmin',redirectLogin, function(request, response) {
                 callback(null);
             });
         },
+        function queryExistMedicodataTable(callback){
+            admin_services.checkExistMedicodataTable(function(err,res){
+                if(err){
+                    callback(err,null);
+                    return
+                }
+                if(res.length > 0){
+                    medicodataTableExists = true;
+                }else{
+                    medicodataTableExists = false;
+                }
+                callback(null);
+            })
+        },
+        function queryExistMascheradataTable(callback){
+            admin_services.checkExistMascheradataTable(function(err,res){
+                if(err){
+                    callback(err,null);
+                    return
+                }
+                if(res.length > 0){
+                    mascheradataTableExists = true;
+                }else{
+                    mascheradataTableExists = false;
+                }
+                callback(null);
+            })
+        },
+        function queryExistGraficodataTable(callback){
+            admin_services.checkExistGraficodataTable(function(err,res){
+                if(err){
+                    callback(err,null);
+                    return
+                }
+                if(res.length > 0){
+                    graficodataTableExists = true;
+                }else{
+                    graficodataTableExists = false;
+                }
+                callback(null);
+            })
+        }
     ],function(err){
-        if(err) throw err
+        if(err){
+            throw err;
+        }
         else{
-            response.render(path.join(__dirname + '/views/pannelloAdmin.ejs'),{results:lista_medici});
+            response.render(path.join(__dirname + '/views/pannelloAdmin.ejs'),
+                {results:lista_medici,
+                 databaseArrayText:databaseArrayText,
+                 medicodataTableExists:medicodataTableExists,
+                 mascheradataTableExists:mascheradataTableExists,
+                 graficodataTableExists:graficodataTableExists
+                });
+            console.log(ejsLint("./views/pannelloAdmin.ejs"),null);
             return response.end(); 
         }
     })
 });
+
+
+
 
 app.get('/logout',redirectLogin,function(request,response){
             request.session.destroy(function(error){
