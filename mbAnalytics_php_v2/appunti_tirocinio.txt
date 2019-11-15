@@ -29,3 +29,6 @@ utilizzo EJS lint per stamparmi gli errori delle pagine .EJS
 si potrebbe valutare di fare una funzione unica che mi esegue la query passata come parametro se quello che mi serve è solo result
 
 le funzioni che exist fanno tutte la stessa cosa potrei parametrizzarle e bona
+
+la funzione che crea le tabelle delle maschere eccetera non serve a niente perchè le tabelle si creano una volta e fine.
+Te le fa creare anche se sono già create.

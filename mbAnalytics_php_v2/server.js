@@ -88,7 +88,7 @@ app.post('/authAdmin',redirectAdminPanel, function(request, response) {
         response.end();
     }
 });
-
+//Gestisce il pannello admin 
 app.get('/pannelloAdmin',redirectLogin, function(request, response) {
     var lista_medici,medicodataTableExists,mascheradataTableExists,graficodataTableExists;
     databaseArrayText = ["mbFirstStudy", "mbPublicIT", "mbClinicElderly", "mbClinicDisabled"];
@@ -170,11 +170,36 @@ app.post('/gestioneMedici',function(request,response){
             if(err) throw err;
             else done();
         });
-
     }
-    return response.end();       
+    if(request.body.databases){
+        console.log("Richiesta di aggiornamento databases");
+        admin_services.updateDatabaseMedico(request.body.id_medico,request.body.databases,function(err){
+            if(err)throw err;
+            else done();
+        });
+    }
+    return response.end();  
+        
+});
+app.post("/gestioneDbMotorbrain",function(request,response){
+    if(request.body.crea_tabella){
+        console.log("Creazione tabella mancante");
+        admin_services.creaTabella(request.body.crea_tabella,function(err){
+            if(err) throw err;
+            else done();
+        });
+    }
+    return response.end();
 });
 
+
+//Gestisce la home page dell'utente 
+app.get("/index",function(request,response){
+    
+
+
+
+});
 
 app.get('/logout',redirectLogin,function(request,response){
             request.session.destroy(function(error){

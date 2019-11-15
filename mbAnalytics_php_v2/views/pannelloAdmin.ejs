@@ -35,7 +35,6 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
 
                 // Al click sulla tab
                 $("ul.tabs li").click(function() {
-
                     //Rimuovi ogni classe "active"	
                     $("ul.tabs li").removeClass("active");
                     //E aggiungila solo a quella su cui ho cliccato 
@@ -100,7 +99,7 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     var idMedico = $(this).attr("id").replace("bt-attiva-database-", "");
                     // Memorizzo il parent
                     var parentCorrente = $(this).parent();	
-                    $.post("gestioneMedici.php",
+                    $.post("/gestioneMedici",
                            {
                         "id_medico": idMedico,
                         "databases": databases.toString()
@@ -197,7 +196,7 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     var btCreaMedicidata = $(this);
                     // Memorizzo il parent
                     var parentCorrente = $(this).parent();
-                    $.post("gestioneDbMotorbrain.php",
+                    $.post("/gestioneDbMotorbrain",
                            {
                         "crea_tabella": "medicodata"
                     }, function() 
@@ -217,7 +216,7 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     var btCreaMascheradata = $(this);
                     // Memorizzo il parent
                     var parentCorrente = $(this).parent();
-                    $.post("gestioneDbMotorbrain.php",
+                    $.post("/gestioneDbMotorbrain",
                            {
                         "crea_tabella": "mascheradata"
                     }, 
@@ -238,7 +237,7 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     var btCreaGraficodata = $(this);
                     // Memorizzo il parent
                     var parentCorrente = $(this).parent();
-                    $.post("gestioneDbMotorbrain.php",
+                    $.post("/gestioneDbMotorbrain",
                            {
                         "crea_tabella": "graficodata"
                     },function() {
@@ -261,16 +260,6 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
         </ul>
         <div id="contenitore-tabs">
             <div id="elenco-medici" class="contenuto-tab">
-                <!--
-                <?php
-                define("VALUE_NOT_SELECTED", "-"); 
-
-                // Array con i valori da visualizzare nel campo text
-                // della combo relativa al filtro sul database
-                // IMPORTANTE: attenzione all'ordine
-                 
-
-                -->
                 <div id="tbl-medici" class="tbl-pannello-controllo">
                 <div class="tbl-header">
                 <div class="tbl-cell-header tbl-cell-max-width">
@@ -297,7 +286,6 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                 </div>
                 <% results.forEach(function(item){ %>
                     <% var activeDatabases = item.activeDatabases.split(","); %>
-                    <!-- INGLOBARE IL MEDICO ID NELL ID DEL DIV-->
                     <div id="tbl-row-<%= item.medicoID %>"class="tbl-row">
                     <div class="tbl-cell tbl-cell-max-width">
                     <%= item.cognome %>
