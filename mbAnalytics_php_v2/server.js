@@ -45,7 +45,7 @@ app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 
 
-//il next significa semplicemente di passare alla prossima richiesta
+//redirext alla pagina di login (per admin)
 const redirectLogin = (req,res,next) => {
     if(!req.session.userId){
         res.redirect('/login')
@@ -53,6 +53,7 @@ const redirectLogin = (req,res,next) => {
         next();
     }
 }
+//redirect al pannello admin 
 const redirectAdminPanel = (req,res,next) => {
     if(req.session.userId){
         return res.redirect('/pannelloAdmin')
@@ -60,13 +61,15 @@ const redirectAdminPanel = (req,res,next) => {
         next();
     }
 }
+
 app.get('/',redirectLogin, function(request, response) {
     const {userId} = request.session;
-    //services.getMedici();
     return response.redirect('/pannelloAdmin');
 });
 app.get('/login',redirectAdminPanel,function(request,response){
     return response.sendfile(__dirname + '/PannelloAdmin/index.html')})
+
+//autenticazione admin
 app.post('/authAdmin',redirectAdminPanel, function(request, response) {
     var username = request.body.username_admin_login;
     var password = request.body.pwd_admin_login;
@@ -88,6 +91,35 @@ app.post('/authAdmin',redirectAdminPanel, function(request, response) {
         response.end();
     }
 });
+
+app.post('/authUser',function(request,response){
+    var username = request.body.email_login_user;
+    var password = request.body.pwd_login_user;
+    if(username && password){
+        connection.query('SELECT * FROM medicodata WHERE ? = email AND ? = password;', [username, password], function(error, results, fields) {
+            if (results.length > 0) {
+                request.session.loggedin = true;
+                request.session.userId = username;
+                request.session.save(function(){
+                    response.redirect('/views/mainpage.ejs');
+                })
+            } else {
+                response.send('Incorrect Username and/or Password!');
+            }			
+             return response.end();
+        });
+    }
+});
+
+const redirectMainPage = function(){
+
+}
+
+app.get('/mainpage',function(request,response){
+    response.sendFile("/mainpage.php");
+    response.end();
+});
+
 //Gestisce il pannello admin 
 app.get('/pannelloAdmin',redirectLogin, function(request, response) {
     var lista_medici,medicodataTableExists,mascheradataTableExists,graficodataTableExists;
@@ -152,6 +184,7 @@ app.get('/pannelloAdmin',redirectLogin, function(request, response) {
 });
 app.post('/gestioneMedici',function(request,response){
     if(request.body.disabilita_medico){
+        console.log("Richiesta di disabilitare un medico");
         admin_services.updateStatoMedico("0",request.body.disabilita_medico,function(err){
             if(err) throw err;
             else done();
@@ -178,8 +211,7 @@ app.post('/gestioneMedici',function(request,response){
             else done();
         });
     }
-    return response.end();  
-        
+    return response.end();       
 });
 app.post("/gestioneDbMotorbrain",function(request,response){
     if(request.body.crea_tabella){
@@ -192,12 +224,20 @@ app.post("/gestioneDbMotorbrain",function(request,response){
     return response.end();
 });
 
+app.post("/registrazioneUtente",function(request,response){
+    console.log("Sono qui");
+    console.log(request.body.medicoID);
+    admin_services.registraMedico(request.body,function(err){
+        if(err) throw err;
+    });
+    response.redirect("/index");
+    response.end();
+
+});
 
 //Gestisce la home page dell'utente 
 app.get("/index",function(request,response){
-    
-
-
+    response.render(path.join(__dirname + '/views/index.ejs'));
 
 });
 
@@ -208,7 +248,7 @@ app.get('/logout',redirectLogin,function(request,response){
             }
         })
         return response.redirect("/");
-    })
+    });
 
 app.listen(3000,function(){
     console.log("Listening on 3000");

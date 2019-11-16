@@ -157,12 +157,15 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     function(){
                         // Rimuovo il bottone
                         btDisabilita.remove();
+                        
                         document.getElementById("etichetta-medico-attivo").innerHTML ="Non attivo";
+                        var paragrafo = "<p> Non attivo </p>";
                         // Aggiungo il sostituto
                         var htmlButton = '<button id="bt-abilita-' + idMedico + '"'+
                             ' type="button" class="bt-abilita-medico bt-tbl bt-green">' +
                             'Abilita</button>';
                         parentCorrente.append(htmlButton);
+                        parentCorrente.append(paragrafo);
 
                     }
                           ).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
@@ -285,7 +288,13 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                 </div>
                 </div>
                 <% results.forEach(function(item){ %>
-                    <% var activeDatabases = item.activeDatabases.split(","); %>
+                    <%
+                    if(item.activeDatabases != null){
+                        var activeDatabases = item.activeDatabases.split(",");
+                    }else{
+                        var activeDatabases = "";
+                    }
+                     %>
                     <div id="tbl-row-<%= item.medicoID %>"class="tbl-row">
                     <div class="tbl-cell tbl-cell-max-width">
                     <%= item.cognome %>

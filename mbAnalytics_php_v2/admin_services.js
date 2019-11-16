@@ -98,3 +98,25 @@ module.exports.updateDatabaseMedico = function(medicoID,databases,callback){
         }
     });
 }
+
+module.exports.registraMedico = function(credenziali,callback){
+    var currentTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    //var id = funzione per generare id random
+
+    var ID = function () {
+        // Math.random should be unique because of its seeding algorithm.
+        // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+        // after the decimal.
+        return '_' + Math.random().toString(36).substr(2, 9);
+    };
+    var idUser = ID();
+    connection.query("INSERT INTO " + MEDICO_DATA + " (medicoID, nome, cognome, email,password, dataInserimento, attivo, activeDatabases, lastLanguage) VALUES ('"+idUser+"','"+ credenziali.nome_registrazione+"','"+ credenziali.cognome_registrazione +"','"+ credenziali.email_registrazione+"','"+credenziali.pwd_registrazione+"','"+currentTime+"','0',"+ null+",'EN');",function(err){
+        if(err){
+            callback(err);
+        }else{
+            console.log("Registrazione medico effettuata");
+        }
+    });
+
+
+}

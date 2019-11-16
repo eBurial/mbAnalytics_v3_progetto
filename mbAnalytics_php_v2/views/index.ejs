@@ -18,8 +18,9 @@ include("controllaAccessoMedico.php");
 
         <script>
             $(document).ready(function() {
-                var opEseguita = <?php echo '"' . $opEseguita . '"'; ?>;
-
+                
+                //var opEseguita = <?php echo '"' . $opEseguita . '"'; ?>; 
+                var opEseguita = "";
                 // Quando la pagina viene caricata
                 // Nascondi tutti i contenuti delle tabs
                 $(".contenuto-tab").hide();
@@ -76,6 +77,7 @@ include("controllaAccessoMedico.php");
         <div id="contenitore-tabs">
             <div id="login" class="contenuto-tab">
                 <p class="p-info-login">Inserisci le tue credenziali per accedere a Motorbrain Web:</p>
+                <!--
                 <?php
                 if (!empty($errLogin))
                 {
@@ -83,17 +85,17 @@ include("controllaAccessoMedico.php");
                     echo $errLogin;
                     echo "</div>";
                 }
-                ?>
+                ?> -->
                 <form class="form-login"
-                      action=""
+                      action="/authUser"
                       method="post">
                     <input id="txt-email-login"
-                           name="email-login"
+                           name="email_login_user"
                            class="input-text-login"
                            placeholder="Email"
                            type="text">
                     <input id="txt-pwd-login"
-                           name="pwd-login"
+                           name="pwd_login_user"
                            class="input-text-login"
                            placeholder="Password"
                            type="password">
@@ -105,6 +107,7 @@ include("controllaAccessoMedico.php");
             </div>
             <div id="registrazione" class="contenuto-tab">
                 <p class="p-info-login">Esegui la registrazione per accedere a Motorbrain Web:</p>
+                <!--
                 <?php
                 if (!empty($esitoRegistrazione))
                 {
@@ -112,30 +115,35 @@ include("controllaAccessoMedico.php");
                     echo $esitoRegistrazione;
                     echo "</div>";
                 }
-                ?>
+                ?> -->
                 <form class="form-login"
-                      action=""
+                      action="registrazioneUtente"
                       method="post">
                     <input id="txt-email-registrazione"
-                           name="email-registrazione"
+                           name="email_registrazione"
                            class="input-text-login"
                            placeholder="Email"
                            type="text"
-                           value="<?php echo $emailRegistrazione ?>">
+                           value=""
+                           required>
+                    <!--
                     <?php
-    if (!empty($errEmailRegistrazione))
-    {
-        echo "<div class=\"messaggio-errore\">";
-        echo $errEmailRegistrazione;
-        echo "</div>";
-    }
-                    ?>
+                if (!empty($errEmailRegistrazione))
+                {
+                  echo "<div class=\"messaggio-errore\">";
+                  echo $errEmailRegistrazione;
+                  echo "</div>";
+                  }
+                    ?> -->
                     <input id="txt-nome-registrazione"
-                           name="nome-registrazione"
+                           name="nome_registrazione"
                            class="input-text-login"
                            placeholder="Nome"
                            type="text"
-                           value="<?php echo $nomeRegistrazione ?>">
+                           value=""
+                           required
+                           >
+                <!--
                     <?php
     if (!empty($errNomeRegistrazione))
     {
@@ -143,13 +151,16 @@ include("controllaAccessoMedico.php");
         echo $errNomeRegistrazione;
         echo "</div>";
     }
-                    ?>
+                    ?> -->
                     <input id="txt-cognome-registrazione"
-                           name="cognome-registrazione"
+                           name="cognome_registrazione"
                            class="input-text-login"
                            placeholder="Cognome"
                            type="text"
-                           value="<?php echo $cognomeRegistrazione ?>">
+                           value=""
+                           required
+                           >
+                <!--
                     <?php
     if (!empty($errCognomeRegistrazione))
     {
@@ -157,12 +168,13 @@ include("controllaAccessoMedico.php");
         echo $errCognomeRegistrazione;
         echo "</div>";
     }
-                    ?>
+                    ?> -->
                     <input id="txt-pwd-registrazione"
-                           name="pwd-registrazione"
+                           name="pwd_registrazione"
                            class="input-text-login"
                            placeholder="Password"
                            type="password">
+                    <!--
                     <?php
                     if (!empty($errPwdRegistrazione))
                     {
@@ -170,21 +182,21 @@ include("controllaAccessoMedico.php");
                         echo $errPwdRegistrazione;
                         echo "</div>";
                     }
-                    ?>
+                    ?> -->
                     <input
                            id="txt-conferma-pwd-registrazione"
-                           name="conferma-pwd-registrazione"
+                           name="conferma_pwd_registrazione"
                            class="input-text-login"
                            placeholder="Conferma password"
                            type="password">
-                    <?php
+                    <!-- <?php
                     if (!empty($errConfermaPwdRegistrazione))
                     {
                         echo "<div class=\"messaggio-errore\">";
                         echo $errConfermaPwdRegistrazione;
                         echo "</div>";
                     }
-                    ?>
+                    ?> -->>
                     <input class="bt-login"
                            name="esegui-registrazione"
                            type="submit"
