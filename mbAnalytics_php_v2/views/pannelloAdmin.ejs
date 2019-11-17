@@ -127,14 +127,13 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     }).done( function() {
                         // Rimuovo il bottone
                         btAbilita.remove();
-                        document.getElementById("etichetta-medico-attivo").innerHTML="Attivo";
-
+                        var paragrafo ="<p id='etichetta-attivo'>Attivo</p>";
                         // Aggiungo il sostituto
                         var htmlButton = '<button id="bt-disabilita-' + idMedico + '"'+
                             ' type="button" class="bt-disabilita-medico bt-tbl bt-yellow">' +
                             'Disabilita</button>';
+                        console.log("Sono qui in abilita");
                         parentCorrente.append(htmlButton);
-
                         // svuoto l'array dei database per il prossimo medico;
                         databases.splice(0, databases.length);
                     }).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
@@ -156,19 +155,14 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                         }, 
                     function(){
                         // Rimuovo il bottone
+                        var parentCorrente = $(this).parent();	
                         btDisabilita.remove();
-                        
-                        document.getElementById("etichetta-medico-attivo").innerHTML ="Non attivo";
-                        var paragrafo = "<p> Non attivo </p>";
+                        var paragrafo = "<p id='etichetta-non-attivo'> Non attivo </p>";
                         // Aggiungo il sostituto
-                        var htmlButton = '<button id="bt-abilita-' + idMedico + '"'+
-                            ' type="button" class="bt-abilita-medico bt-tbl bt-green">' +
-                            'Abilita</button>';
+                        console.log("Sono qui");
+                        var htmlButton = '<button id="bt-abilita-'+ idMedico +'"'+' type="button" class="bt-abilita-medico bt-tbl bt-green">' +'Abilita</button>';
                         parentCorrente.append(htmlButton);
-                        parentCorrente.append(paragrafo);
-
-                    }
-                          ).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
+                    }).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
                         alert(thrownError); //Messaggio di avviso con l'errore HTTP
                     });
                 });
@@ -200,15 +194,11 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     // Memorizzo il parent
                     var parentCorrente = $(this).parent();
                     $.post("/gestioneDbMotorbrain",
-                           {
-                        "crea_tabella": "medicodata"
-                    }, function() 
-                           {
+                           {"crea_tabella": "medicodata"}, function(){
                         btCreaMedicidata.remove();
                         parentCorrente.text("Nessuna azione disponibile");
                         $("#stato-tbl-medicodata").text("Esiste");
-                    }
-                          ).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
+                        }).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
                         alert(thrownError); //Messaggio di avviso con l'errore HTTP
                     });
                 });
@@ -222,14 +212,11 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     $.post("/gestioneDbMotorbrain",
                            {
                         "crea_tabella": "mascheradata"
-                    }, 
-                           function() 
-                           {
+                    }, function(){
                         btCreaMascheradata.remove();
                         parentCorrente.text("Nessuna azione disponibile");
                         $("#stato-tbl-mascheradata").text("Esiste");
-                    }
-                          ).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
+                    }).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
                         alert(thrownError); //Messaggio di avviso con l'errore HTTP
                     });
                 });
@@ -330,12 +317,10 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     <%    
                     if(item.attivo == 0) 
                     { %>
-                        <p id="etichetta-medico-attivo">Non attivo </p>
                         <button id="bt-abilita-<%= item.medicoID %>" type="button" class="bt-abilita-medico bt-tbl bt-green">Abilita</button>
                     <% }
                     else if (item.attivo == 1)
                     { %>
-                        <p id="etichetta-medico-attivo">Attivo</p>
                         <button id="bt-disabilita-<%= item.medicoID %>" type="button" class="bt-disabilita-medico bt-tbl bt-yellow">Disabilita</button>
                     <% } %>
                     </div>

@@ -8,6 +8,8 @@ const connection = mysql.createConnection({
 });
 
 const MEDICO_DATA = "medicodata";
+const MASCHERA_DATA = "mascheradata";
+
 //metodo che ritorna la lista dei medici
 module.exports.getMedici = function(callback){
     connection.query("SELECT medicoID, nome, cognome, email,password, dataInserimento, attivo, activeDatabases, lastLanguage FROM medicodata ORDER BY Cognome, Nome",
@@ -50,8 +52,6 @@ module.exports.checkExistGraficodataTable = function(callback){
         }
     });
 }
-
-
 module.exports.updateStatoMedico = function(stato,id,callback){
     console.log(id);
     connection.query("UPDATE "+MEDICO_DATA+" SET attivo = "+stato+" WHERE medicoID = '"+id+"';",function(err){
@@ -72,8 +72,6 @@ module.exports.eliminaMedico = function(medicoID,callback){
         }
     });
 }
-
-
 module.exports.creaTabella = function(nome_tabella,callback){
     switch(nome_tabella){
         case 'medicodata': var query = "CREATE TABLE IF NOT EXISTS " + nome_tabella + " (ID int(11) NOT NULL AUTO_INCREMENT,medicoID varchar(255) COLLATE utf8_bin DEFAULT NULL,nome varchar(255) COLLATE utf8_bin DEFAULT NULL,cognome varchar(255) COLLATE utf8_bin DEFAULT NULL,email varchar(255) COLLATE utf8_bin DEFAULT NULL,password varchar(255) COLLATE utf8_bin DEFAULT NULL,dataInserimento datetime DEFAULT NULL,attivo varchar(255) DEFAULT NULL,activeDatabases varchar(255) DEFAULT NULL,lastLanguage varchar(2),PRIMARY KEY (ID)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;"; break;
@@ -119,4 +117,15 @@ module.exports.registraMedico = function(credenziali,callback){
     });
 
 
+}
+
+module.exports.getMascheraByMedicoId = function(medicoID,callback){
+    connection.query("SELECT mascheraID, medicoID, titolo, descrizione, ordine FROM " + MASCHERA_DATA +" WHERE medicoID = '"  +medicoID + "';",function(err,result){
+        if(err){
+            callback(err,null)
+        }else{
+            if(result.lenght > 0) callback(null,result);
+            else callback(null,-1);
+        }
+    });
 }
