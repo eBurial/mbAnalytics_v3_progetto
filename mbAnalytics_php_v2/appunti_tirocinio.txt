@@ -44,3 +44,8 @@ capire dove viene settata last languages
 manca la gestione degli errori in index.EJS
 devo verificare se funziona la multi utenza con le sessioni dopo aver finito mainpage, prima di andare avanti
 non mi visualizza la griglia delle maschere anche se è vuota
+
+
+//viene gestita una richiesta post["languages"] ma non si capisce chi la manda
+
+assicurarsi che il selected mantenga la lingua corrente nelle impostazioni 

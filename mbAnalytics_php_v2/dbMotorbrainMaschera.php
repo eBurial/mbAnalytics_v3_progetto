@@ -116,6 +116,7 @@ function insertMaschera($mascheraID, $medicoID, $titolo, $descrizione, $ordine) 
 }
 
 // Recupero le maschere salvate dato il medicoID
+//------------IMPLEMENTATA ---------------- 
 function getMaschereByMedicoID($medicoID) {
 
     $result = null;

@@ -22,7 +22,6 @@ var connection = mysql.createConnection({
 //var sessionStore = new MySQLStore(options_session, connection);
 var app = express();
 app.use(express.static(path.join(__dirname,'/public')));
-
 //Setting del template engine
 app.set('view engine','ejs');
 app.use(session({
@@ -39,11 +38,10 @@ app.use(session({
 }));
 //cartella che contiene file statici come script e css
 app.use(express.static("/public"));
+app.use(express.static("/public/script_js"));
 //serve per accedere alle richieste del body
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
-
-
 //redirext alla pagina di login (per admin)
 const redirectLogin = (req,res,next) => {
     if(!req.session.userId){
@@ -74,10 +72,13 @@ const redirectUserLogin = (req,res,next) => {
         next();
     }
 }
+
+
 app.get('/',redirectLogin, function(request, response) {
     const {userId} = request.session;
     return response.redirect('/pannelloAdmin');
 });
+
 app.get('/login',redirectAdminPanel,function(request,response){
     return response.sendfile(__dirname + '/PannelloAdmin/index.html')})
 //autenticazione admin
@@ -113,6 +114,7 @@ app.post('/authUser',function(request,response){
                 request.session.userId = results[0].medicoID;
                 request.session.nome = results[0].nome;
                 request.session.cognome = results[0].cognome;
+                request.session.last_language = results[0].lastLanguage;
                 request.session.save(function(){
                     response.redirect("/mainpage");
                 })
@@ -123,22 +125,33 @@ app.post('/authUser',function(request,response){
         });
     }
 });
+
 app.get('/mainpage',redirectUserLogin,function(request,response){
     var maschere;
     //debug console 
     console.log(ejsLint.lint("./views/mainpage.ejs",null));
-    async.setImmediate(() => admin_services.getMascheraByMedicoId(request.session.userId,function(err,result){
+    async.parallel([
+        function queryMascheraById(callback){
+            admin_services.getMascheraByMedicoId(request.session.userId,function(err,result){
+                if(err) throw err;
+                else{
+                    maschere = result;
+                    callback(null);
+                }
+            })
+        }
+    ],function(err){
         if(err) throw err;
         else{
-            maschere = result;
+            response.render(path.join(__dirname + '/views/mainpage.ejs'),{
+                maschere: maschere,
+                nome_medico: request.session.nome,
+                cognome_medico: request.session.cognome,
+                last_language: request.session.last_language
+            });
+            return response.end();
         }
-    })); 
-    response.render(path.join(__dirname + '/views/mainpage.ejs'),{
-        maschere: maschere,
-        nome_medico: request.session.nome,
-        cognome_medico: request.session.cognome,
     });
-    response.end();
 });
 
 //Gestisce il pannello admin 
@@ -203,6 +216,25 @@ app.get('/pannelloAdmin',redirectLogin, function(request, response) {
         }
     })
 });
+
+app.post('/cambioLingua',function(request,response){
+    async.series([
+        function queryUpdateLingua(callback){
+            admin_services.updateLinguaMedico(request.session.userId,request.body.languages,function(err){
+            if(err) callback(err);
+            else {
+                console.log("Lingua aggiornata");
+                request.session.last_language = request.body.languages;
+                callback(null);
+            }
+        });
+    }],function(err){
+        if(err) throw err;
+        else response.redirect("/mainpage");
+    return response.end();
+    });
+});
+
 //richiama tutte le funzioni che operano sul database dei medici
 app.post('/gestioneMedici',function(request,response){
     if(request.body.disabilita_medico){
@@ -235,6 +267,7 @@ app.post('/gestioneMedici',function(request,response){
     }
     return response.end();       
 });
+
 app.post("/gestioneDbMotorbrain",function(request,response){
     if(request.body.crea_tabella){
         console.log("Creazione tabella mancante");
@@ -245,6 +278,7 @@ app.post("/gestioneDbMotorbrain",function(request,response){
     }
     return response.end();
 });
+
 app.post("/registrazioneUtente",function(request,response){
     console.log(request.body.medicoID);
     admin_services.registraMedico(request.body,function(err){
@@ -254,19 +288,34 @@ app.post("/registrazioneUtente",function(request,response){
     response.end();
 
 });
+
 //Gestisce la home page dell'utente 
 app.get("/index",redirectMainPage,function(request,response){
     response.render(path.join(__dirname + '/views/index.ejs'));
     response.end();
 });
-app.get('/logout',redirectLogin,function(request,response){
+
+app.get('/logoutAdmin',redirectLogin,function(request,response){
             request.session.destroy(function(error){
             if(error){ 
                 console.log("Errore nel logout");
             }
         })
         return response.redirect("/");
+});
+
+app.get('/logoutMedico',redirectUserLogin,function(request,response){
+    request.session.destroy(function(error){
+    if(error){ 
+        console.log("Errore nel logout");
+        }
+    else{
+        console.log("Logout avvenuto correttamente");
+    }
     });
+return response.redirect("/index");
+});
+
 app.listen(3000,function(){
     console.log("Listening on 3000");
 });

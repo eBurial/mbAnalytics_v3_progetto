@@ -185,8 +185,6 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                         alert(thrownError); //Messaggio di avviso con l'errore HTTP
                     });
                 });
-
-
                 //Funzione per eliminare un medico
                 $("#bt-crea-tbl-medicodata").on("click", function() {
                     // Memorizzo il bottone
@@ -202,7 +200,6 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                         alert(thrownError); //Messaggio di avviso con l'errore HTTP
                     });
                 });
-
                 //Funzione per eliminare una maschera
                 $("#bt-crea-tbl-mascheradata").on("click", function() {
                     // Memorizzo il bottone
@@ -246,7 +243,7 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
         <ul class="tabs">
             <li><a href="#elenco-medici">Elenco Medici</a></li>
             <li><a href="#stato-database">Stato Database</a></li>
-            <li class="right-element"><a href="/logout">Logout</a></li>
+            <li class="right-element"><a href="/logoutAdmin">Logout</a></li>
         </ul>
         <div id="contenitore-tabs">
             <div id="elenco-medici" class="contenuto-tab">

@@ -6,7 +6,6 @@ const connection = mysql.createConnection({
     password: CONFIG.password,
     database: CONFIG.database
 });
-
 const MEDICO_DATA = "medicodata";
 const MASCHERA_DATA = "mascheradata";
 
@@ -21,7 +20,6 @@ module.exports.getMedici = function(callback){
         }
     }); 
 }
-
 module.exports.checkExistMedicodataTable = function(callback){
     connection.query("SHOW TABLES LIKE 'medicodata'",function(err,result){
         if(err){
@@ -96,7 +94,6 @@ module.exports.updateDatabaseMedico = function(medicoID,databases,callback){
         }
     });
 }
-
 module.exports.registraMedico = function(credenziali,callback){
     var currentTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
     //var id = funzione per generare id random
@@ -118,7 +115,6 @@ module.exports.registraMedico = function(credenziali,callback){
 
 
 }
-
 module.exports.getMascheraByMedicoId = function(medicoID,callback){
     connection.query("SELECT mascheraID, medicoID, titolo, descrizione, ordine FROM " + MASCHERA_DATA +" WHERE medicoID = '"  +medicoID + "';",function(err,result){
         if(err){
@@ -126,6 +122,15 @@ module.exports.getMascheraByMedicoId = function(medicoID,callback){
         }else{
             if(result.lenght > 0) callback(null,result);
             else callback(null,-1);
+        }
+    });
+}
+module.exports.updateLinguaMedico = function(medicoID,language,callback){
+    connection.query("UPDATE " + MEDICO_DATA + " SET lastLanguage = '"+language+"'  WHERE medicoID = '"+ medicoID +"';",function(err,result){
+        if(err){
+            callback(err,null)
+        }else{
+            callback(null,result);
         }
     });
 }
