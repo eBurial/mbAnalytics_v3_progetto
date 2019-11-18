@@ -72,19 +72,15 @@ if (isset($_POST["visualizza-maschera"])) {
         <link rel="stylesheet" type="text/css" href="./style_css/d3.parsets.css">	
 
         <!-- JS funzioni personalizzate -->
-        <?php
-        switch ($medicoSessione["lastLanguage"]) {
-            case "IT":
-                echo '<script type="text/javascript" src="./script_js/type_definition_ita.js"></script>';
-                break;
-            case "EN":
-                echo '<script type="text/javascript" src="./script_js/type_definition_eng.js"></script>';
-                break;
-            default:
-                echo '<script type="text/javascript" src="./script_js/type_definition_eng.js"></script>';
-                break;
+
+        
+        <%
+        switch (last_language) {
+            case "IT":%> <script  src="../script_js/type_definition_ita.js"></script> <% break;
+            case "EN":%> <script  src="../script_js/type_definition_eng.js"></script> <% break;
+            default: %><script    src="../script_js/type_definition_ita.js"> </script>  <% break;
         }
-        ?>
+        %>
 
         <script type="text/javascript" src="./script_js/FactoryChart.js"></script>
         <script type="text/javascript" src="./script_js/ChartEntity.js"></script>
@@ -107,8 +103,7 @@ if (isset($_POST["visualizza-maschera"])) {
 
         <script type="text/javascript">
             $(document).ready(function() {
-
-                var medicoID = <?php echo '"' . $medicoSessione["medicoID"] . '"'; ?>;
+                var medicoID = <%= medicoID %>;
 
                 // Definisco un array per tenere in memoria i grafici
                 var chartList = {};
@@ -134,15 +129,12 @@ if (isset($_POST["visualizza-maschera"])) {
                 $("#contenitore-grafici").on("sortupdate", function(event, ui) {
 
                     updated = true;
-
                     // ... trasformo il nuovo ordine in stringa ...
                     sorted = $(this).sortable("serialize");
                     // ... e la salvo nel sessionStorage
                     sessionStorage.setItem('sorted', sorted);
                 });
-
                 $("#contenitore-grafici").disableSelection();
-
                 // Funzione per aggiungere un nuovo grafico al click
                 $("#bt-aggiugi-grafico").click(function () {
 
@@ -169,13 +161,10 @@ if (isset($_POST["visualizza-maschera"])) {
 
                     bindVisualizzaGrafico(newChartEntity);
                 });
-
                 function bindVisualizzaGrafico(newChartEntity) {
                     // Collego la funzione all'evento click del bottone crea
                     $("#bt-visualizza-grafico-" + newChartEntity.id).on("click", function() {
-
                         updated = true;
-
                         // Controllo che il campo database sia valorizzato
                         if ((newChartEntity.database == null) || 
                             (newChartEntity.database == VALUE_NOT_SELECTED)) {
@@ -213,7 +202,6 @@ if (isset($_POST["visualizza-maschera"])) {
                                 }
                             }
                         });
-
                         // In caso di errori fermo la richiesta
                         if (errVarList) {
                             return;
@@ -991,8 +979,8 @@ if (isset($_POST["visualizza-maschera"])) {
 
                 // Creo il contenitore per grafico e filtri
                 function popolateChartContainer(newChartEntity) {
-
-                    var databaseString = "<?php echo $_SESSION["databases"]; ?>";
+                    // ----------------------------------------------
+                    //var databaseString = "<?php echo $_SESSION["databases"]; ?>";
 
                     var htmlString = 
                         '<div class="dati-grafico-container">' +	
@@ -1079,8 +1067,8 @@ if (isset($_POST["visualizza-maschera"])) {
 
                             jsonChartArray.push(jsonChart);
                         }
-
-                        if (jsonMaskID == "") {
+                        /*
+                        if (jsonMaskID == ""){
                             jsonMaskID = <?php
                                 if (isset($maschera)) {
                                     echo '"' . $maschera["mascheraID"] . '"';
@@ -1089,7 +1077,9 @@ if (isset($_POST["visualizza-maschera"])) {
                                     echo '""';
                                 }?>;
                         }
-
+                        */
+                        /*
+                        -------------------------------------------------------------------------
                         var jsonMask = {
                             id: jsonMaskID,
                             medicoID: medicoID,
@@ -1098,7 +1088,7 @@ if (isset($_POST["visualizza-maschera"])) {
                             jsonChartArray: jsonChartArray,
                             ordine: sessionStorage.getItem('sorted').replace("contenitore-", "").replace(/&contenitore\-/g, ";").replace(/\[\]=/g, "-")
                         }
-
+                        */
 						//debug
                         //console.log(jsonMask);
 
@@ -1165,7 +1155,7 @@ if (isset($_POST["visualizza-maschera"])) {
 
                                         jsonChartArray.push(jsonChart);
                                     }
-
+                                    /*
                                     if (jsonMaskID == "") {
                                         jsonMaskID = <?php
                                             if (isset($maschera)) {
@@ -1175,7 +1165,7 @@ if (isset($_POST["visualizza-maschera"])) {
                                                 echo '""';
                                             } ?>;
                                     }
-
+                                    */
                                     var jsonMask = {
                                         id: jsonMaskID,
                                         medicoID: medicoID,
@@ -1319,42 +1309,40 @@ if (isset($_POST["visualizza-maschera"])) {
                 <label id="title-maschera" for="txt-titolo-maschera" class="lb-dati-maschera" ></label>
                 <input id="txt-titolo-maschera" class="input-text-maschera" type="text"
                        name="txt-titolo-maschera"
-                       placeholder="<?php 
-                                    switch ($medicoSessione["lastLanguage"]) {
-                                        case "IT":
-                                            echo 'Titolo';
+                       placeholder="<%
+                                    switch (last_language){
+                                        case 'IT':
+                                            %> Titolo <%;
                                             break;
-                                        case "EN":
-                                            echo 'Title';
+                                        case 'EN':
+                                            %>Title <%;
                                             break;
                                         default:
-                                            echo 'Title';
+                                            %>Title<%
                                             break;
                                     }
-                                    ?>"
-                       value="<?php 
-                              if (isset($maschera)) {
-                                  echo $maschera["titolo"];
-                              }
-                              ?>">
+                                    %>"
+                        value="<?php if (isset($maschera)) {echo $maschera['titolo'];}?>"
+                       
+                >
             </div>
             <div>
                 <label id="description-maschera"  for="txt-descrizione-maschera"  class="lb-dati-maschera"></label>					
                 <textarea id="txt-descrizione-maschera" class="input-textarea-maschera"
                           name="txt-descrizione-maschera" maxlength="255"
-                          placeholder="<?php 
-                                        switch ($medicoSessione["lastLanguage"]) {
-                                            case "IT":
-                                                echo 'Descrizione';
-                                                break;
-                                            case "EN":
-                                                echo 'Description';
-                                                break;
-                                            default:
-                                                echo 'Description';
-                                                break;
-                                        }
-                                        ?>"><?php 
+                          placeholder="<%
+                                switch (last_language){
+                                case 'IT':
+                                  %> Descrizione <%;
+                                  break;
+                              case 'EN':
+                                  %>Description <%;
+                                  break;
+                              default:
+                                  %>Description <%
+                                  break;
+                                }%>"
+                    <?php 
                     if (isset($maschera)) {
                         echo $maschera["descrizione"];
                     }	?></textarea>
@@ -1374,7 +1362,7 @@ if (isset($_POST["visualizza-maschera"])) {
         </div>
 
         <div id="contenitore-grafici" class="graphics-grid">
-
+            <!--
             <?php 
 
             if (isset($grafici)) {
@@ -1386,7 +1374,7 @@ if (isset($_POST["visualizza-maschera"])) {
                     echo '</div>';
                 }
             }
-            ?>
+            ?> -->
 
         </div>
 

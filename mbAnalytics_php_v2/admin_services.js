@@ -134,3 +134,12 @@ module.exports.updateLinguaMedico = function(medicoID,language,callback){
         }
     });
 }
+module.exports.getMascheraByMascheraID = function(mascheraID,callback){
+    connection.query("SELECT mascheraID, medicoID, titolo, descrizione, ordine FROM " + MASCHERA_DATA + " WHERE mascheraID = '"+ mascheraID+ "';",function(err,res){
+        if(err){
+            callback(err,null);
+        }else{
+            callback(null,res);
+        }
+    })
+}

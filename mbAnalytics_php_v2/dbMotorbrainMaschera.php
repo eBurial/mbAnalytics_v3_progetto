@@ -152,10 +152,9 @@ function getMaschereByMedicoID($medicoID) {
 
     return  $result;
 }
-
+//------------IMPLEMENTATA ---------------- 
 // Recupero la maschera dato il valore mascheraID
 function getMascheraByMascheraID($mascheraID) {
-
     $maschera = null;
     $pdo = null;
 

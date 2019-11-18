@@ -73,14 +73,13 @@ const redirectUserLogin = (req,res,next) => {
     }
 }
 
-
 app.get('/',redirectLogin, function(request, response) {
     const {userId} = request.session;
     return response.redirect('/pannelloAdmin');
 });
-
 app.get('/login',redirectAdminPanel,function(request,response){
-    return response.sendfile(__dirname + '/PannelloAdmin/index.html')})
+    return response.sendfile(__dirname + '/PannelloAdmin/index.html')
+})
 //autenticazione admin
 app.post('/authAdmin',redirectAdminPanel, function(request, response) {
     var username = request.body.username_admin_login;
@@ -103,7 +102,6 @@ app.post('/authAdmin',redirectAdminPanel, function(request, response) {
         response.end();
     }
 });
-
 app.post('/authUser',function(request,response){
     var username = request.body.email_login_user;
     var password = request.body.pwd_login_user;
@@ -153,7 +151,6 @@ app.get('/mainpage',redirectUserLogin,function(request,response){
         }
     });
 });
-
 //Gestisce il pannello admin 
 app.get('/pannelloAdmin',redirectLogin, function(request, response) {
     var lista_medici,medicodataTableExists,mascheradataTableExists,graficodataTableExists;
@@ -234,7 +231,6 @@ app.post('/cambioLingua',function(request,response){
     return response.end();
     });
 });
-
 //richiama tutte le funzioni che operano sul database dei medici
 app.post('/gestioneMedici',function(request,response){
     if(request.body.disabilita_medico){
@@ -295,6 +291,7 @@ app.get("/index",redirectMainPage,function(request,response){
     response.end();
 });
 
+// LOGOUT 
 app.get('/logoutAdmin',redirectLogin,function(request,response){
             request.session.destroy(function(error){
             if(error){ 
@@ -303,7 +300,6 @@ app.get('/logoutAdmin',redirectLogin,function(request,response){
         })
         return response.redirect("/");
 });
-
 app.get('/logoutMedico',redirectUserLogin,function(request,response){
     request.session.destroy(function(error){
     if(error){ 
@@ -316,6 +312,30 @@ app.get('/logoutMedico',redirectUserLogin,function(request,response){
 return response.redirect("/index");
 });
 
-app.listen(3000,function(){
-    console.log("Listening on 3000");
+app.get("/pannelloGrafici",redirectUserLogin,function(request,response){
+    var maschera;
+    async.series([
+        function queryMascheraById(callback){ 
+            admin_services.getMascheraByMascheraID(request.body.maschera_id,function(err,res){
+                if(err) callback(err,null);
+                else{
+                    maschera = res;
+                    callback(null,res);
+                }
+            })
+        }
+    ],function(err,res){
+        response.render(path.join(__dirname + '/views/pannelloGrafici.ejs'),{
+            last_language: request.session.last_language,
+            medicoID: request.session.userId,
+            maschera: maschera 
+        })
+    });
+    return response.end();
+});
+
+
+// SERVER IN ASCOLTO
+app.listen(3001,function(){
+    console.log("Listening on 3001");
 });

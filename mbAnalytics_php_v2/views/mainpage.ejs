@@ -51,7 +51,7 @@
                 });
 
                 $("#bt-nuova-maschera").on("click", function() {
-                    window.location.href = './pannelloGrafici.php';
+                    window.location.href = '/pannelloGrafici';
                 });
 
                 // Evento collegato al bottone per eliminare la maschera
@@ -149,8 +149,8 @@
                                 <%= maschera.descrizione %>
                                 </div>
                                 <div class="tbl-cell tbl-cell-min-width">
-                                <form action="./pannelloGrafici.php" method="post">
-                                <input type="hidden" id="maschera-id" name="maschera-id" value="<%= maschera.mascheraID %>">
+                                <form action="./pannelloGrafici" method="post">
+                                <input type="hidden" id="maschera-id" name="maschera_id" value="<%= maschera.mascheraID %>">
                                 <input class="bt-carica-maschera bt-tbl bt-blue" type="submit" name="visualizza-maschera" value="Visualizza">
                                 </form>
                                 </div>
