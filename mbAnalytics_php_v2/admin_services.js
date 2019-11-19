@@ -25,7 +25,7 @@ module.exports.checkExistMedicodataTable = function(callback){
         if(err){
             callback(err,null)
         }else{
-            if(result.lenght>0) callback(null,true);
+            if(result[0] != undefined) callback(null,true);
             else callback(null,false);
         }
     });
@@ -35,7 +35,7 @@ module.exports.checkExistMascheradataTable = function(callback){
         if(err){
             callback(err,null)
         }else{
-            if(result.lenght>0) callback(null,true);
+            if(result[0] != undefined) callback(null,true);
             else callback(null,false);
         }        
     });
@@ -45,7 +45,7 @@ module.exports.checkExistGraficodataTable = function(callback){
         if(err){
             callback(err,null)
         }else{
-            if(result.lenght>0) callback(null,true);
+            if(result[0] != undefined) callback(null,true);
             else callback(null,false);
         }
     });

@@ -34,6 +34,7 @@ if (isset($_POST["visualizza-maschera"])) {
 }
 ?>
 -->
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -62,13 +63,13 @@ if (isset($_POST["visualizza-maschera"])) {
         <script src="//d3js.org/d3.v3.min.js"></script>
 
         <!-- D3 library per tooltip -->
-        <script type="text/javascript" src="./script_js/d3-tip.js"></script>
+        <script type="text/javascript" src="../script_js/d3-tip.js"></script>
 
         <!-- Libreria per migliorare le performance -->
-        <script type="text/javascript" src="./script_js/render-queue.js"></script>
+        <script type="text/javascript" src="../script_js/render-queue.js"></script>
 
         <!-- Libreria per Parallel Sets Visualization -->
-        <script type="text/javascript" src="./script_js/d3.parsets.js"></script>
+        <script type="text/javascript" src="../script_js/d3.parsets.js"></script>
         <link rel="stylesheet" type="text/css" href="./style_css/d3.parsets.css">	
 
         <!-- JS funzioni personalizzate -->
@@ -81,30 +82,28 @@ if (isset($_POST["visualizza-maschera"])) {
             default: %><script    src="../script_js/type_definition_ita.js"> </script>  <% break;
         }
         %>
-
-        <script type="text/javascript" src="./script_js/FactoryChart.js"></script>
-        <script type="text/javascript" src="./script_js/ChartEntity.js"></script>
-        <script type="text/javascript" src="./script_js/utility.js"></script>
-        <script type="text/javascript" src="./script_js/session_detail.js"></script>
-        <script type="text/javascript" src="./script_js/Histogram.js"></script>
-        <script type="text/javascript" src="./script_js/box.js"></script>
-        <script type="text/javascript" src="./script_js/Boxplot.js"></script>
-        <script type="text/javascript" src="./script_js/Scatterplot.js"></script>
-        <script type="text/javascript" src="./script_js/ParallelCoordinatePlot.js"></script>
-        <script type="text/javascript" src="./script_js/ParallelSetPlot.js"></script>
-        <script type="text/javascript" src="./script_js/ScatterplotMatrix.js"></script>
-        <script type="text/javascript" src="./script_js/GroupedBarChart.js"></script>
-        <script type="text/javascript" src="./script_js/CirclePrecisionExerciseChart.js"></script>
-        <script type="text/javascript" src="./script_js/CircleSpeedExerciseChart.js"></script>
-        <script type="text/javascript" src="./script_js/SquarePrecisionExerciseChart.js"></script>
-        <script type="text/javascript" src="./script_js/LineSpeedExerciseChart.js"></script>
-        <script type="text/javascript" src="./script_js/TwoTargetExerciseChart.js"></script>
-        <script type="text/javascript" src="./script_js/FourTargetExerciseChart.js"></script>
+        <script type="text/javascript" src="../script_js/FactoryChart.js"></script>
+        <script type="text/javascript" src="../script_js/ChartEntity.js"></script>
+        <script type="text/javascript" src="../script_js/utility.js"></script>
+        <script type="text/javascript" src="../script_js/session_detail.js"></script>
+        <script type="text/javascript" src="../script_js/Histogram.js"></script>
+        <script type="text/javascript" src="../script_js/box.js"></script>
+        <script type="text/javascript" src="../script_js/Boxplot.js"></script>
+        <script type="text/javascript" src="../script_js/Scatterplot.js"></script>
+        <script type="text/javascript" src="../script_js/ParallelCoordinatePlot.js"></script>
+        <script type="text/javascript" src="../script_js/ParallelSetPlot.js"></script>
+        <script type="text/javascript" src="../script_js/ScatterplotMatrix.js"></script>
+        <script type="text/javascript" src="../script_js/GroupedBarChart.js"></script>
+        <script type="text/javascript" src="../script_js/CirclePrecisionExerciseChart.js"></script>
+        <script type="text/javascript" src="../script_js/CircleSpeedExerciseChart.js"></script>
+        <script type="text/javascript" src="../script_js/SquarePrecisionExerciseChart.js"></script>
+        <script type="text/javascript" src="../script_js/LineSpeedExerciseChart.js"></script>
+        <script type="text/javascript" src="../script_js/TwoTargetExerciseChart.js"></script>
+        <script type="text/javascript" src="../script_js/FourTargetExerciseChart.js"></script>
 
         <script type="text/javascript">
             $(document).ready(function() {
-                var medicoID = <%= medicoID %>;
-
+                var medicoID = "<%= medicoID ; %>";
                 // Definisco un array per tenere in memoria i grafici
                 var chartList = {};
                 var factoryChart = new FactoryChart();
@@ -237,11 +236,12 @@ if (isset($_POST["visualizza-maschera"])) {
                         // Richiesta ajax per recuperare i dati
                         $.ajax({
                             type: "POST",
-                            url: "getMotorbrainData.php",
+                            url: "/getMotorbrainData",
                             dataType: "json",
                             data: { chartInfo: JSON.stringify(jsonObjectToSend) },
                             success: function(jsonData, status) {
-
+                                console.log("SONO QUI");
+                                console.log(jsonData);
                                 // Per debug
                                 //console.log(jsonData);
 
@@ -571,16 +571,12 @@ if (isset($_POST["visualizza-maschera"])) {
                 function bindEventAggiungiVariable(chartEntity) {
                     // Rimuovo il feedback per l'errore in caso di cambio del valore
                     $("#bt-aggiungi-variabile-" + chartEntity.id).on("click", function() {
-
                         updated = true;
-
                         // Recupero il numero di variabili
                         var numCbVar = $(".cb-variabile-" + chartEntity.id).length;
-
                         if (chartEntity.variableList.length == numCbVar) {
                             chartEntity.variableList.push(VALUE_NOT_SELECTED);				
                         }
-
                         // Creo una nuova combo
                         var htmlCbVar = chartEntity.getHtmlCbVar(numCbVar, true);
 
@@ -978,10 +974,10 @@ if (isset($_POST["visualizza-maschera"])) {
                 }
 
                 // Creo il contenitore per grafico e filtri
+                
                 function popolateChartContainer(newChartEntity) {
                     // ----------------------------------------------
-                    //var databaseString = "<?php echo $_SESSION["databases"]; ?>";
-
+                    var databaseString = document.getElementById("activeDatabases").dataset.test;
                     var htmlString = 
                         '<div class="dati-grafico-container">' +	
                         // Parametri
@@ -1013,15 +1009,12 @@ if (isset($_POST["visualizza-maschera"])) {
 
                 // Funzione per rimuovere il feedback di errore
                 $("#txt-titolo-maschera").on("change", function() {
-
                     updated = true;
-
                     $("#txt-titolo-maschera").removeClass("non-compilato");
                 });
 
                 // Funzione per il salvataggio della maschera
                 $("#bt-salva-maschera").on("click", function() {
-
                     // Se il titolo non è compilato non permetto di salvare
                     if ($("#txt-titolo-maschera").val() == "") {
                         $("#txt-titolo-maschera").addClass("non-compilato");
@@ -1038,7 +1031,6 @@ if (isset($_POST["visualizza-maschera"])) {
                     }
 
                     if (updated) {
-
                         $("#dialog-salva").dialog({
                             height: "auto",
                             width: 300
@@ -1098,7 +1090,6 @@ if (isset($_POST["visualizza-maschera"])) {
                             data: { "salva_maschera": JSON.stringify(jsonMask) }, 
                             success: function(jsonData, status){ 
                                 updated = false;
-
                                 $("#dialog-salva").dialog( "close" );
                             },
                             error: function(xhr, desc, err) {
@@ -1301,7 +1292,7 @@ if (isset($_POST["visualizza-maschera"])) {
     <body>
         <ul>
             <li class="active"><a id="gestione" href="#gestione"></a></li>
-            <li class="right-element"><a href="./logoutMedico.php">Logout</a></li>
+            <li class="right-element"><a href="/logoutMedico">Logout</a></li>
         </ul>
 
         <div id="contenitore-dati-maschera" class="">
@@ -1320,35 +1311,20 @@ if (isset($_POST["visualizza-maschera"])) {
                                         default:
                                             %>Title<%
                                             break;
-                                    }
-                                    %>"
-                        value="<?php if (isset($maschera)) {echo $maschera['titolo'];}?>"
-                       
+                                    }%>"    
                 >
             </div>
             <div>
                 <label id="description-maschera"  for="txt-descrizione-maschera"  class="lb-dati-maschera"></label>					
-                <textarea id="txt-descrizione-maschera" class="input-textarea-maschera"
-                          name="txt-descrizione-maschera" maxlength="255"
+                <textarea id="txt-descrizione-maschera" class="input-textarea-maschera" name="txt-descrizione-maschera" maxlength="255"
                           placeholder="<%
                                 switch (last_language){
-                                case 'IT':
-                                  %> Descrizione <%;
-                                  break;
-                              case 'EN':
-                                  %>Description <%;
-                                  break;
-                              default:
-                                  %>Description <%
-                                  break;
-                                }%>"
-                    <?php 
-                    if (isset($maschera)) {
-                        echo $maschera["descrizione"];
-                    }	?></textarea>
+                                case 'IT': %>Descrizione <%; break;
+                                case 'EN': %>Description <%; break;
+                                default:   %>Description <%; break;
+                                }%>"></textarea>
             </div>
         </div>
-
         <div>
             <button id="bt-aggiugi-grafico" class="bt-positive bt-aggiungi-grafico"></button>
             <button id="bt-esci-maschera" class="bt-positive bt-esci-maschera"></button>
@@ -1377,8 +1353,7 @@ if (isset($_POST["visualizza-maschera"])) {
             ?> -->
 
         </div>
-
         <div class="error" ></div>
-
+        <div id="activeDatabases" data-test=<%= activeDatabases %>></div>
     </body>
 </html>

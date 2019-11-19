@@ -32,7 +32,6 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                 $("ul.tabs li:first").addClass("active").show();
                 //Mostra il contenuto della prima tab 
                 $(".contenuto-tab:first").show();
-
                 // Al click sulla tab
                 $("ul.tabs li").click(function() {
                     //Rimuovi ogni classe "active"	
@@ -185,6 +184,7 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                         alert(thrownError); //Messaggio di avviso con l'errore HTTP
                     });
                 });
+                
                 //Funzione per eliminare un medico
                 $("#bt-crea-tbl-medicodata").on("click", function() {
                     // Memorizzo il bottone
@@ -200,6 +200,7 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                         alert(thrownError); //Messaggio di avviso con l'errore HTTP
                     });
                 });
+                
                 //Funzione per eliminare una maschera
                 $("#bt-crea-tbl-mascheradata").on("click", function() {
                     // Memorizzo il bottone
@@ -294,8 +295,10 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     </div>
                     
                     <div id="databases-<%= item.medicoID %>" class="tbl-cell tbl-cell-max-width databases" style="overflow: auto;">
-                    <% for(var i = 0; i < databaseArrayText.lenght; i++){ %>
+                    <%  for(var i = 0; i < databaseArrayText.length; i++){ %>
+                        
                         <% if(activeDatabases.includes(databaseArrayText[i])){ %>
+
                             <input id="' . $databaseArrayText[$i] . '" class="databases" type="checkbox" value="' . $databaseArrayText[$i] . '" checked="checked">
                             <label for="' . $databaseArrayText[$i] . '"><%=  databaseArrayText[i] %></label>
                             <br>

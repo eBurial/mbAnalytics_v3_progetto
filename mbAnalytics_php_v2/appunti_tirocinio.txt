@@ -39,7 +39,6 @@ decido di rimuovere l'etichetta attivo e non attivo
 
 bug nel pannello dell'admin, problema coi pulsanti
 
-capire dove viene settata last languages
 
 manca la gestione degli errori in index.EJS
 devo verificare se funziona la multi utenza con le sessioni dopo aver finito mainpage, prima di andare avanti
@@ -49,3 +48,16 @@ non mi visualizza la griglia delle maschere anche se è vuota
 //viene gestita una richiesta post["languages"] ma non si capisce chi la manda
 
 assicurarsi che il selected mantenga la lingua corrente nelle impostazioni 
+
+si dovrebbe poter anche disabilitare i database utilizzabili da un utente
+
+generateUUID lo usa per generare un id ad ogni grafico creato, potrei usarlo anche per la registrazione degli utenti 
+
+procedo ad analizzare tutte le funzioni della pagina di pannelloGrafici che comunicano con l'esterno 
+
+chiedere come poter fare per passare una variabile dal server a javascript non necessariamente tramite EJS
+
+con che credenziali accede il medico al db? per ora accede come user: medico password: pwd, se metto admin non funziona
+
+
+ajax success, capire cosa fa come funziona come ritornargli i valori 

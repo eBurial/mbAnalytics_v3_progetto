@@ -8,8 +8,13 @@ var bodyParser = require('body-parser');
 var path = require('path');
 const CONFIG = require('../node/config.json');
 const admin_services = require('./admin_services');
+const data_services = require('./data_services');
 
 const ejsLint = require('ejs-lint');
+
+
+
+//DEBUGGER EJS
 console.log(ejsLint.lint("./views/pannelloAdmin.ejs",null));
 
 //Credenziali di accesso al database
@@ -39,10 +44,9 @@ app.use(session({
 //cartella che contiene file statici come script e css
 app.use(express.static("/public"));
 app.use(express.static("/public/script_js"));
-//serve per accedere alle richieste del body
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
-//redirext alla pagina di login (per admin)
+//Funzioni di redirect che vietano l'accesso a pagine non consentite
 const redirectLogin = (req,res,next) => {
     if(!req.session.userId){
         res.redirect('/login')
@@ -50,7 +54,6 @@ const redirectLogin = (req,res,next) => {
         next();
     }
 }
-//redirect al pannello admin 
 const redirectAdminPanel = (req,res,next) => {
     if(req.session.userId){
         return res.redirect('/pannelloAdmin')
@@ -80,7 +83,6 @@ app.get('/',redirectLogin, function(request, response) {
 app.get('/login',redirectAdminPanel,function(request,response){
     return response.sendfile(__dirname + '/PannelloAdmin/index.html')
 })
-//autenticazione admin
 app.post('/authAdmin',redirectAdminPanel, function(request, response) {
     var username = request.body.username_admin_login;
     var password = request.body.pwd_admin_login;
@@ -113,6 +115,7 @@ app.post('/authUser',function(request,response){
                 request.session.nome = results[0].nome;
                 request.session.cognome = results[0].cognome;
                 request.session.last_language = results[0].lastLanguage;
+                request.session.databases = results[0].activeDatabases;
                 request.session.save(function(){
                     response.redirect("/mainpage");
                 })
@@ -123,7 +126,6 @@ app.post('/authUser',function(request,response){
         });
     }
 });
-
 app.get('/mainpage',redirectUserLogin,function(request,response){
     var maschere;
     //debug console 
@@ -151,11 +153,10 @@ app.get('/mainpage',redirectUserLogin,function(request,response){
         }
     });
 });
-//Gestisce il pannello admin 
 app.get('/pannelloAdmin',redirectLogin, function(request, response) {
     var lista_medici,medicodataTableExists,mascheradataTableExists,graficodataTableExists;
-    databaseArrayText = ["mbFirstStudy", "mbPublicIT", "mbClinicElderly", "mbClinicDisabled"];
-    async.parallel([
+    var databaseArrayText = ["mbFirstStudy", "mbPublicIT", "mbClinicElderly", "mbClinicDisabled"];
+    async.series([
         function queryMedici(callback){
             admin_services.getMedici(function(err,res){
                 if(err){
@@ -213,7 +214,6 @@ app.get('/pannelloAdmin',redirectLogin, function(request, response) {
         }
     })
 });
-
 app.post('/cambioLingua',function(request,response){
     async.series([
         function queryUpdateLingua(callback){
@@ -231,7 +231,6 @@ app.post('/cambioLingua',function(request,response){
     return response.end();
     });
 });
-//richiama tutte le funzioni che operano sul database dei medici
 app.post('/gestioneMedici',function(request,response){
     if(request.body.disabilita_medico){
         console.log("Richiesta di disabilitare un medico");
@@ -263,7 +262,6 @@ app.post('/gestioneMedici',function(request,response){
     }
     return response.end();       
 });
-
 app.post("/gestioneDbMotorbrain",function(request,response){
     if(request.body.crea_tabella){
         console.log("Creazione tabella mancante");
@@ -274,7 +272,6 @@ app.post("/gestioneDbMotorbrain",function(request,response){
     }
     return response.end();
 });
-
 app.post("/registrazioneUtente",function(request,response){
     console.log(request.body.medicoID);
     admin_services.registraMedico(request.body,function(err){
@@ -284,8 +281,6 @@ app.post("/registrazioneUtente",function(request,response){
     response.end();
 
 });
-
-//Gestisce la home page dell'utente 
 app.get("/index",redirectMainPage,function(request,response){
     response.render(path.join(__dirname + '/views/index.ejs'));
     response.end();
@@ -311,7 +306,6 @@ app.get('/logoutMedico',redirectUserLogin,function(request,response){
     });
 return response.redirect("/index");
 });
-
 app.get("/pannelloGrafici",redirectUserLogin,function(request,response){
     var maschera;
     async.series([
@@ -324,15 +318,49 @@ app.get("/pannelloGrafici",redirectUserLogin,function(request,response){
                 }
             })
         }
-    ],function(err,res){
+    ],function(err){
+        if(err) throw err;
+        else{
         response.render(path.join(__dirname + '/views/pannelloGrafici.ejs'),{
             last_language: request.session.last_language,
             medicoID: request.session.userId,
-            maschera: maschera 
-        })
-    });
+            maschera: maschera,
+            activeDatabases: request.session.databases
+        });}
     return response.end();
+    });
 });
+
+
+
+//funzione per recuperare i dati dal database mbFirstStudy
+app.post("/getMotorBrainData",function(request,response){
+    var result;
+    if(request.body.chartInfo){
+        var json_request = JSON.parse(request.body.chartInfo);
+        data_services.getDataFromAverageHeader(json_request.esercizio,function(err,res){
+            if(err) throw err;
+            else{
+                result = res;
+
+            }
+        })
+    }
+    /*
+    async.series([
+        
+    ],function(err){
+        if(err) throw err;
+    
+    });
+    */
+   var bo = JSON.stringify(result)
+   response.end('{"success" :'+result+', "status" : 200}');
+   response.end();
+    
+});
+
+
 
 
 // SERVER IN ASCOLTO

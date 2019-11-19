@@ -149,7 +149,7 @@
                                 <%= maschera.descrizione %>
                                 </div>
                                 <div class="tbl-cell tbl-cell-min-width">
-                                <form action="./pannelloGrafici" method="post">
+                                <form action="/pannelloGrafici" method="post">
                                 <input type="hidden" id="maschera-id" name="maschera_id" value="<%= maschera.mascheraID %>">
                                 <input class="bt-carica-maschera bt-tbl bt-blue" type="submit" name="visualizza-maschera" value="Visualizza">
                                 </form>
@@ -171,7 +171,7 @@
                         <div id="tbl-settings">
                             <div id="language" class="tbl-cell tbl-cell-width container-settings"></div>
                             <div class="tbl-cell tbl-cell-width container-settings-right">
-                                <form method="post" action="./cambioLingua">
+                                <form method="post" action="/cambioLingua">
                                     <select class="languages" name="languages">
                                         <option value="IT"></option>
                                         <option value="EN"></option>

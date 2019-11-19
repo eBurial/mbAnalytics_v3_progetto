@@ -1,0 +1,6 @@
+{
+    "host": "localhost",
+  	"user": "medico",
+  	"password": "pwd",
+	"database" : "mbfirststudy"
+}
