@@ -8,6 +8,18 @@ const connection = mysql.createConnection({
 });
 const MEDICO_DATA = "medicodata";
 const MASCHERA_DATA = "mascheradata";
+const GRAFICO_DATA = "graficodata";
+
+
+module.exports.generateUUID = function(){
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    });
+    return uuid;
+};
 
 //metodo che ritorna la lista dei medici
 module.exports.getMedici = function(callback){
@@ -31,21 +43,26 @@ module.exports.checkExistMedicodataTable = function(callback){
     });
 }
 module.exports.checkExistMascheradataTable = function(callback){
+    console.log("Controllo se esiste la tabella mascheradata");
     connection.query("SHOW TABLES LIKE 'mascheradata'",function(err,result){
         if(err){
-            callback(err,null)
+            callback(err,null);
         }else{
+            console.log(result);
             if(result[0] != undefined) callback(null,true);
             else callback(null,false);
         }        
     });
 }
 module.exports.checkExistGraficodataTable = function(callback){
+    console.log("Controllo se esiste la tabella graficodata");
     connection.query("SHOW TABLES LIKE 'graficodata'",function(err,result){
         if(err){
             callback(err,null)
         }else{
-            if(result[0] != undefined) callback(null,true);
+            if(result[0] != undefined){   
+                callback(null,true);
+            }
             else callback(null,false);
         }
     });
@@ -81,7 +98,7 @@ module.exports.creaTabella = function(nome_tabella,callback){
         if(err){
             callback(err);
         }else{
-            console.log("Tabella creata");
+            console.log("Tabella "+nome_tabella+" creata");
         }
     });
 }
@@ -135,6 +152,7 @@ module.exports.updateLinguaMedico = function(medicoID,language,callback){
     });
 }
 module.exports.getMascheraByMascheraID = function(mascheraID,callback){
+    console.log("sono qui");
     connection.query("SELECT mascheraID, medicoID, titolo, descrizione, ordine FROM " + MASCHERA_DATA + " WHERE mascheraID = '"+ mascheraID+ "';",function(err,res){
         if(err){
             callback(err,null);
@@ -142,4 +160,39 @@ module.exports.getMascheraByMascheraID = function(mascheraID,callback){
             callback(null,res);
         }
     })
+}
+module.exports.getResultByGraficoID = function(graficoID,callback){
+    var query = "SELECT graficoID, mascheraID, medicoID,databaseID, tipoGrafico, tipoEsercizio,listaVariabili,	filtroEtaMin, filtroEtaMax,filtroAmpiezzaIntervalloEta, filtroListaValoriIntervalli,filtroGenere, filtroManoDominante, filtroManoSessione FROM " + GRAFICO_DATA +" WHERE graficoID = '"+graficoID+"';";
+    connection.query(query,function(err,res){
+        if(err){
+            callback(err,null);
+        }else{
+            callback(null,res);
+        }
+    });
+}
+module.exports.insertMaschera = function(mascheraID,medicoID,titolo,descrizione,ordine,callback){
+    console.log("inserisco maschera");
+    var query = "INSERT INTO " + MASCHERA_DATA + " (mascheraID, medicoID, titolo, descrizione, ordine) VALUES('"+mascheraID+"','"+ medicoID +"','"+titolo+"','"+descrizione+"','"+ordine+"');";
+    connection.query(query,function(err,res){
+        if(err){
+            console.log(err);
+            callback(err,null);
+        }else{
+
+            console.log(res);
+            callback(null,res);
+        }
+    });
+}
+module.exports.insertGrafico = function(grafico,mascheraID,medicoID,callback){
+    console.log(grafico);
+    var query = "INSERT INTO " + GRAFICO_DATA + " (graficoID, mascheraID, medicoID,databaseID, tipoGrafico, tipoEsercizio,listaVariabili,filtroEtaMin, filtroEtaMax,filtroAmpiezzaIntervalloEta, filtroListaValoriIntervalli,filtroGenere, filtroManoDominante, filtroManoSessione) VALUES ('"+grafico.id +"','"+mascheraID +"','"+medicoID+"','"+grafico.database+"','"+grafico.chartType+"','"+grafico.exerciseType+"','"+grafico.variableList+"','"+grafico.minAge+"','"+grafico.maxAge+"','"+grafico.rangeAge+"','"+grafico.valuesRange+"','"+grafico.gender+"','"+grafico.dominantHand+"','"+grafico.sessionHand+"')";
+    connection.query(query,function(err,res){
+        if(err){
+            callback(err,null);
+        }else{
+            callback(null,res);
+        }
+    });
 }

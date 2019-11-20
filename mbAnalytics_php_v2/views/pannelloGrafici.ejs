@@ -103,7 +103,8 @@ if (isset($_POST["visualizza-maschera"])) {
 
         <script type="text/javascript">
             $(document).ready(function() {
-                var medicoID = "<%= medicoID ; %>";
+                var medicoID = document.getElementById("medicoID").dataset.test;
+
                 // Definisco un array per tenere in memoria i grafici
                 var chartList = {};
                 var factoryChart = new FactoryChart();
@@ -240,11 +241,6 @@ if (isset($_POST["visualizza-maschera"])) {
                             dataType: "json",
                             data: { chartInfo: JSON.stringify(jsonObjectToSend) },
                             success: function(jsonData, status) {
-                                console.log("SONO QUI");
-                                console.log(jsonData);
-                                // Per debug
-                                //console.log(jsonData);
-
                                 // Controllo se è un grafico già esistente
                                 var newVisualChart = getChartFromList(chartList, newChartEntity.id);
 
@@ -515,7 +511,6 @@ if (isset($_POST["visualizza-maschera"])) {
 
                 // Funzione per collegare l'evento change alle select delle variabili
                 function bindEventVariablesControl(chartEntity) {
-
                     // Rimuovo il feedback per l'errore in caso di cambio del valore
                     $(".cb-variabile-" + chartEntity.id).off().on("change", function() {
 
@@ -565,7 +560,6 @@ if (isset($_POST["visualizza-maschera"])) {
                         }
                     });
                 }
-
                 // Funzione per collegare l'evento click al 
                 // bottone per aggiungere variabili
                 function bindEventAggiungiVariable(chartEntity) {
@@ -644,9 +638,7 @@ if (isset($_POST["visualizza-maschera"])) {
                     // Collego l'evento change della combo per il filtro sul sesso
                     // e aggiorno il grafico
                     $("#cb-genderfilter-" + newChart.chartEntity.id).on("change", function() {
-
                         updated = true;
-
                         var chartId = $(this).attr("id").replace("cb-genderfilter-", "");
                         var chartToBeUpd = getChartFromList(chartList, chartId);
                         chartToBeUpd.chartEntity.setGenderFilter($(this).val());
@@ -656,9 +648,7 @@ if (isset($_POST["visualizza-maschera"])) {
                     // Collego l'evento change della combo per il filtro sul mano
                     // e aggiorno il grafico
                     $("#cb-dominanthandfilter-" + newChart.chartEntity.id).on("change", function() {
-
                         updated = true;
-
                         var chartId = $(this).attr("id").replace("cb-dominanthandfilter-", "");
                         var chartToBeUpd = getChartFromList(chartList, chartId);
                         chartToBeUpd.chartEntity.setDominantHandFilter($(this).val());
@@ -668,9 +658,7 @@ if (isset($_POST["visualizza-maschera"])) {
                     // Collego l'evento change della combo per il filtro 
                     // sulla mano utilizzata nella sessione e aggiorno il grafico
                     $("#cb-sessionhandfilter-" + newChart.chartEntity.id).on("change", function() { 
-
                         updated = true;
-
                         var chartId = $(this).attr("id").replace("cb-sessionhandfilter-", "");
                         var chartToBeUpd = getChartFromList(chartList, chartId);
                         chartToBeUpd.chartEntity.setSessionHandFilter($(this).val());
@@ -678,11 +666,11 @@ if (isset($_POST["visualizza-maschera"])) {
                     });
 
                     // Collego l'evento change dello spin per l'età minima
-                    // e aggiorno il grafico
+                    // e aggiorno il grafico 
+
+                    // ------------------------ AJAX ------------------------------
                     $("#sp-agemin-" + newChart.chartEntity.id).on("change", function() {
-
                         updated = true;
-
                         var chartId = $(this).attr("id").replace("sp-agemin-", "");
                         var chartToBeUpd = getChartFromList(chartList, chartId);
                         chartToBeUpd.chartEntity.setMinAgeFilter($(this).val());
@@ -705,11 +693,11 @@ if (isset($_POST["visualizza-maschera"])) {
                         // Richiesta ajax per recuperare i nuovi dati
                         $.ajax({
                             type: "POST",
-                            url: "getMotorbrainData.php",
+                            url: "/getMotorbrainData",
                             dataType: "json",
                             data: { chartAge : JSON.stringify(jsonObjectToSend) },
                             success: function(jsonData, status) {
-
+                                console.log("Sono nella callback della richiesta ajax chartAge");
                                 // Controllo se è un grafico già esistente
                                 var newVisualChart = getChartFromList(chartList, chartToBeUpd.chartEntity.id);
 
@@ -735,14 +723,11 @@ if (isset($_POST["visualizza-maschera"])) {
                                     // Lo memorizzo nell'array
                                     delete chartList[chartEntityUpd.id];
                                     chartList[chartEntityUpd.id] = newVisualChart;
-
                                     try {
                                         // Creo il nuovo grafico
                                         newVisualChart.createVisualChart();
-
                                         // Riabilito il componente
                                         $("#contenitore-filtri-" + chartEntityUpd.id + " .disable-element").hide();
-
                                     }
                                     catch(err) {
                                         $(".error").text("Attenzione: errore nella creazione del grafico.");
@@ -760,10 +745,11 @@ if (isset($_POST["visualizza-maschera"])) {
 
                     // Collego l'evento change dello spin per l'età massima
                     // e aggiorno il grafico
+
+                    // ------------------------ AJAX ------------------------------
+
                     $("#sp-agemax-" + newChart.chartEntity.id).on("change", function() {
-
                         updated = true;
-
                         var chartId = $(this).attr("id").replace("sp-agemax-", "");
                         var chartToBeUpd = getChartFromList(chartList, chartId);
                         chartToBeUpd.chartEntity.setMaxAgeFilter($(this).val());
@@ -786,14 +772,12 @@ if (isset($_POST["visualizza-maschera"])) {
                         // Richiesta ajax per recuperare i nuovi dati
                         $.ajax({
                             type: "POST",
-                            url: "getMotorbrainData.php",
+                            url: "getMotorbrainData",
                             dataType: "json",
                             data: { chartAge : JSON.stringify(jsonObjectToSend) },
                             success: function(jsonData, status) {
-
                                 // Controllo se è un grafico già esistente
                                 var newVisualChart = getChartFromList(chartList, chartToBeUpd.chartEntity.id);
-
                                 // Creo il nuovo
                                 var chartEntityUpd = newVisualChart.chartEntity;
                                 chartEntityUpd.setDatabase(chartToBeUpd.chartEntity.database);
@@ -855,19 +839,14 @@ if (isset($_POST["visualizza-maschera"])) {
 
                     // Collego l'evento click al pulsante elimina
                     $("#bt-elimina-grafico-" + newChart.chartEntity.id).on("click", function() {
-
-                  
                         var chartId = $(this).attr("id").replace("bt-elimina-grafico-", "");
                         var chartToBeUpd = getChartFromList(chartList, chartId);
                         //var indexChartToRemove = chartList.indexOf(chartToBeUpd);
                         //chartList.splice(indexChartToRemove, 1);
-
                         if (chartToBeUpd != null) {
                             delete chartList[chartToBeUpd.chartEntity.id];
-
                             // Rimuovo eventuali tooltip
                             $("#d3-tip-" + chartToBeUpd.chartEntity.id).remove();
-
                             $("#contenitore-" + chartToBeUpd.chartEntity.id).fadeOut(1000, function() {
                                 $(this).remove();
 								
@@ -876,13 +855,9 @@ if (isset($_POST["visualizza-maschera"])) {
 								sorted = $("#contenitore-grafici").sortable("serialize");
 								// ... e la salvo nel sessionStorage
 								sessionStorage.setItem('sorted', sorted);
-								
 								// Segnalo aggiornamento maschera		
 								updated = true;	
 							});
-							
-											
-													
                         }				 
                     });
 
@@ -891,7 +866,6 @@ if (isset($_POST["visualizza-maschera"])) {
                         var chartId = $(this).attr("id").replace("bt-esporta-grafico-", "");
 
                         var jsonChart;
-
                         for (var chart in chartList) {
                             if (chartList[chart].chartEntity.id == chartId) {
                                 // Creo un json 
@@ -915,29 +889,22 @@ if (isset($_POST["visualizza-maschera"])) {
 
                         // Per debug
                         // console.log(jsonChart.database);
-						
 						// Mostro l'immagine per il caricamento
                         $("#update-img-loader-" + newChart.chartEntity.id).show();
-
                         $.post("gestioneGrafici.php", {
                             esporta_tutto: JSON.stringify(jsonChart) // chiamava esporta_grafico in originale
                         }).done(function() {
-
 							// Nascondo l'immagine per il caricamento
                             $("#update-img-loader-" + newChart.chartEntity.id).hide();
-                            
 							var fileName = jsonChart["id"] + ".txt.gz";
                             var url = "files/" + fileName;
-
                             var link = document.getElementById('a-esporta-grafico');
                             if (typeof link.download === 'string') {
                                 link.href = url;
                                 link.setAttribute('download', fileName);
                                 link.setAttribute('style', 'text-decoration: none;')
-
                                 //simulate click
                                 link.click();
-
                                 //remove the link when done
                                 link.setAttribute("href", "#");
                             }
@@ -946,15 +913,12 @@ if (isset($_POST["visualizza-maschera"])) {
                         });
                     });
                 }
-
                 // Funzione per collegare l'evento click 
                 // alle celle della griglia degli intervalli 
                 function bindEventToButtonGridAge() {
                     //Collego la funzione all'evento click
                     $(".bt-filter-age-range").off("click").on("click", function(d) {
-
                         updated = true;
-
                         var chartId = $(this).parent().attr("id").replace("age-svg-g-", "");
                         var chartToBeUpd = getChartFromList(chartList, chartId);
                         var btIndex = parseInt($(this).attr("bt-index"));
@@ -1022,20 +986,17 @@ if (isset($_POST["visualizza-maschera"])) {
                         $(".error").fadeIn(400).delay(3000).fadeOut(400);
                         return;
                     }
-
                     // Se non ci sono grafici non permetto di salvare
                     if (jQuery.isEmptyObject(chartList)) {
                         $(".error").text("Attenzione: nessun grafico inserito.");
                         $(".error").fadeIn(400).delay(3000).fadeOut(400);
                         return;
                     }
-
                     if (updated) {
                         $("#dialog-salva").dialog({
                             height: "auto",
                             width: 300
                         });
-
                         $(".ui-dialog").removeClass("ui-corner-all ui-draggable ui-resizable");
                         $(".ui-button").hide();
 
@@ -1056,22 +1017,18 @@ if (isset($_POST["visualizza-maschera"])) {
                                 dominantHand: chartList[chartId].chartEntity.dominantHand,
                                 sessionHand: chartList[chartId].chartEntity.sessionHand
                             };
-
                             jsonChartArray.push(jsonChart);
                         }
-                        /*
+                        var maschera = document.getElementById("maschera").dataset.test;
+
                         if (jsonMaskID == ""){
-                            jsonMaskID = <?php
-                                if (isset($maschera)) {
-                                    echo '"' . $maschera["mascheraID"] . '"';
+                                if (maschera){
+                                    jsonMaskID = maschera.mascheraID;
                                 } 
                                 else {
-                                    echo '""';
-                                }?>;
+                                    jsonMaskID = "";
+                                }
                         }
-                        */
-                        /*
-                        -------------------------------------------------------------------------
                         var jsonMask = {
                             id: jsonMaskID,
                             medicoID: medicoID,
@@ -1080,13 +1037,13 @@ if (isset($_POST["visualizza-maschera"])) {
                             jsonChartArray: jsonChartArray,
                             ordine: sessionStorage.getItem('sorted').replace("contenitore-", "").replace(/&contenitore\-/g, ";").replace(/\[\]=/g, "-")
                         }
-                        */
+                        
 						//debug
-                        //console.log(jsonMask);
+                        console.log(jsonMask);
 
                         $.ajax({
                             type: "POST",
-                            url: "gestioneGrafici.php", 
+                            url: "/salvaMaschera", 
                             data: { "salva_maschera": JSON.stringify(jsonMask) }, 
                             success: function(jsonData, status){ 
                                 updated = false;
@@ -1102,9 +1059,8 @@ if (isset($_POST["visualizza-maschera"])) {
 
                 // Funzione per il salvataggio della maschera
                 $("#bt-esci-maschera").on("click", function() {
-
+                    alert("SONO QUI 2");
                     if (updated) {
-
                         // Se il titolo non è compilato non permetto di salvare
                         if ($("#txt-titolo-maschera").val() == "") {
                             $("#txt-titolo-maschera").addClass("non-compilato");
@@ -1112,14 +1068,12 @@ if (isset($_POST["visualizza-maschera"])) {
                             $(".error").fadeIn(400).delay(3000).fadeOut(400);
                             return;
                         }
-
                         // Se non ci sono grafici non permetto di salvare
                         if (jQuery.isEmptyObject(chartList)) {
                             $(".error").text("Attenzione: nessun grafico inserito.");
                             $(".error").fadeIn(400).delay(3000).fadeOut(400);
                             return;
                         }
-
                         $("#dialog-esci").dialog({
                             height: "auto",
                             width: "auto",
@@ -1143,20 +1097,18 @@ if (isset($_POST["visualizza-maschera"])) {
                                             dominantHand: chartList[chartId].chartEntity.dominantHand,
                                             sessionHand: chartList[chartId].chartEntity.sessionHand
                                         };
-
                                         jsonChartArray.push(jsonChart);
                                     }
-                                    /*
-                                    if (jsonMaskID == "") {
-                                        jsonMaskID = <?php
-                                            if (isset($maschera)) {
-                                                echo '"' . $maschera["mascheraID"] . '"';
-                                            } 
-                                            else {
-                                                echo '""';
-                                            } ?>;
+                                    
+                                    if (jsonMaskID == ""){
+                                        if (maschera){
+                                            jsonMaskID = maschera.mascheraID;
+                                        } 
+                                    else {
+                                        jsonMaskID = "";
                                     }
-                                    */
+                                    }
+                                    
                                     var jsonMask = {
                                         id: jsonMaskID,
                                         medicoID: medicoID,
@@ -1191,22 +1143,22 @@ if (isset($_POST["visualizza-maschera"])) {
                         $(".ui-dialog button").removeClass("ui-corner-all");
                     }
                     else {
-                        window.location.href = './mainpage.php';
+                        window.location.href = './mainpage';
                     }
                 });
 
                 // Funzione utilizzata per il caricamento di una maschera salvata precedentemente
+                // ---------------- richiesta POST  --------------------
                 $(".container-grafico-con-strumenti").each(function() {
                     var contenitoreGraficoConStrumenti = $(this);
                     var graficoID = contenitoreGraficoConStrumenti.attr("id").replace("contenitore-", "");
 
                     $.ajax({
                         type: "POST",
-                        url: "getMotorbrainData.php",
+                        url: "getMotorbrainData",
                         dataType: "json",
                         data: { "graficoID": graficoID },
                         success: function(jsonData, status) {
-
                             // Per Debug
                             // console.log(jsonData);
 
@@ -1288,7 +1240,6 @@ if (isset($_POST["visualizza-maschera"])) {
             });
         </script>
     </head>
-
     <body>
         <ul>
             <li class="active"><a id="gestione" href="#gestione"></a></li>
@@ -1333,27 +1284,25 @@ if (isset($_POST["visualizza-maschera"])) {
             </div>
             <button id="bt-salva-maschera" class="bt-positive bt-salva-maschera"></button>
             <div id="dialog-salva" title="Salvataggio in corso..." hidden="true">
-                <p><center><img src="./images/spinner.gif" width="50" height="50"/></center></p>
+                <p><center><img src="./images/spinner.gif" width="50" height="50"/><center></p>
             </div>
         </div>
 
         <div id="contenitore-grafici" class="graphics-grid">
-            <!--
-            <?php 
-
-            if (isset($grafici)) {
-                foreach ($grafici as $grafico) {
-                    echo '<div id="contenitore-' . $grafico["graficoID"] . '" ';
-                    echo 'class="container-grafico-con-strumenti">';
-                    echo '<img id="img-loader-' . $grafico["graficoID"] . '" ';
-                    echo 'class="img-loader-inside-chart-container" src="./images/spinner.gif" />';
-                    echo '</div>';
-                }
-            }
-            ?> -->
-
+            <% if (grafici){
+                grafici.foreach (function(grafico){ %>
+                    <div id="contenitore-<%=grafico.graficoID%>" class="container-grafico-con-strumenti">
+                    <img id="img-loader-<%= grafico.graficoID%>" class="img-loader-inside-chart-container" src="./images/spinner.gif"/>
+                    </div>
+                <% })  
+            } %>
         </div>
+        <!-- div provvisori per passarmi i dati da EJS-->
         <div class="error" ></div>
         <div id="activeDatabases" data-test=<%= activeDatabases %>></div>
+        <div id="maschera" data-test=<%= maschera %>></div>
+        <div id="grafici" data-test=<%= grafici %>></div>
+        <div id="medicoID" data-test=<%= medicoID %>></div>
+
     </body>
 </html>

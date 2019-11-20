@@ -9,11 +9,8 @@ var path = require('path');
 const CONFIG = require('../node/config.json');
 const admin_services = require('./admin_services');
 const data_services = require('./data_services');
-
 const ejsLint = require('ejs-lint');
-
-
-
+var app = express();
 //DEBUGGER EJS
 console.log(ejsLint.lint("./views/pannelloAdmin.ejs",null));
 
@@ -25,7 +22,6 @@ var connection = mysql.createConnection({
     database: CONFIG.database,
 });
 //var sessionStore = new MySQLStore(options_session, connection);
-var app = express();
 app.use(express.static(path.join(__dirname,'/public')));
 //Setting del template engine
 app.set('view engine','ejs');
@@ -276,10 +272,9 @@ app.post("/registrazioneUtente",function(request,response){
     console.log(request.body.medicoID);
     admin_services.registraMedico(request.body,function(err){
         if(err) throw err;
+        response.redirect("/index");
     });
-    response.redirect("/index");
     response.end();
-
 });
 app.get("/index",redirectMainPage,function(request,response){
     response.render(path.join(__dirname + '/views/index.ejs'));
@@ -306,17 +301,40 @@ app.get('/logoutMedico',redirectUserLogin,function(request,response){
     });
 return response.redirect("/index");
 });
+
+
 app.get("/pannelloGrafici",redirectUserLogin,function(request,response){
+    // Recupero il valore che identifica la maschera
     var maschera;
+    var grafici;
     async.series([
         function queryMascheraById(callback){ 
-            admin_services.getMascheraByMascheraID(request.body.maschera_id,function(err,res){
-                if(err) callback(err,null);
-                else{
-                    maschera = res;
-                    callback(null,res);
-                }
+            if(request.body.maschera_id){
+                admin_services.getMascheraByMascheraID(request.body.maschera_id,function(err,res){
+                    if(err) callback(err);
+                    else{
+                        maschera = res;
+                        callback(null);
+                    }
+                })
+            }
+            callback(null);
+        },
+        function queryGraficoById(callback){
+            if(request.body.maschera_id){
+            var ordine =  maschera[4].split(";");
+            grafici = new Array(ordine.size);
+            ordine.forEach(function(graficoID){
+                admin_services.getResultByGraficoID(graficoID,function(err,res){
+                    if(err) callback(err);
+                    else{
+                        grafici.push(res[0]);
+                        callback(null);
+                    }
+                })
             })
+        }
+        callback(null);
         }
     ],function(err){
         if(err) throw err;
@@ -325,6 +343,7 @@ app.get("/pannelloGrafici",redirectUserLogin,function(request,response){
             last_language: request.session.last_language,
             medicoID: request.session.userId,
             maschera: maschera,
+            grafici: grafici,
             activeDatabases: request.session.databases
         });}
     return response.end();
@@ -332,35 +351,134 @@ app.get("/pannelloGrafici",redirectUserLogin,function(request,response){
 });
 
 
-
 //funzione per recuperare i dati dal database mbFirstStudy
+
+// FUNZIONE DA METTERE A POSTO, MAGARI DIFFERENZIARE I POST DIVERSI O UNO SWITCH ALL'INTERNO, ha anche piu senso perchè non è il valore del campo nel body
+// a dirmi che richiesta è 
 app.post("/getMotorBrainData",function(request,response){
     var result;
-    if(request.body.chartInfo){
-        var json_request = JSON.parse(request.body.chartInfo);
-        data_services.getDataFromAverageHeader(json_request.esercizio,function(err,res){
-            if(err) throw err;
-            else{
-                result = res;
-
-            }
-        })
-    }
-    /*
     async.series([
-        
-    ],function(err){
+        function queryRecuperoDatiChartInfo(callback){
+            if(request.body.chartInfo){
+                console.log("Richiesta recupero dati");
+                var json_request = JSON.parse(request.body.chartInfo);
+                data_services.getDataFromAverageHeader(json_request.esercizio,function(err,res){
+                    if(err) throw err;
+                    else{
+                        response.end(res);
+                        callback(null,res)    
+                    }
+                })
+            }
+        },
+        function queryRecuperoDatiChartAge(callback){
+            if(request.body.chartAge){
+                // PENSO SIA DA TESTARE QUANDO AVRO' I DATI NEL GRAFICO
+                console.log("Sono in richiesta chart age");
+                var json_request = JSON.parse(request.body.chartAge);
+                data_services.getDataFromAverageHeaderAge(json_request.esercizio,json_request.min,json_request.max,function(err,res){
+                    if(err) throw err;
+                    else{
+                        callback(null,res);
+                        response.end(JSON.stringify(res));
+                    }
+                })
+            }else{
+                return;
+            }
+        },
+        function queryCaricamentoGrafico(callback){
+            console.log("RICHIESTA DI CARICAMENTO DEL GRAFICO");
+            if(request.body.graficoID){
+                data_services.getDataFromAverageHeaderAgeByGraficoID(request.body.graficoID,function(err,res){
+                    //DA COMPLETARE --------------------------
+                });
+            }
+        }
+    ],function(err,res){
         if(err) throw err;
-    
-    });
-    */
-   var bo = JSON.stringify(result)
-   response.end('{"success" :'+result+', "status" : 200}');
-   response.end();
-    
+    });    
 });
 
 
+
+
+
+app.post("/salvaMaschera",function(request,response){
+        console.log("Salvataggio maschera");
+        var maschera;
+        var mascheraID;
+
+        if(request.body.salva_maschera){
+            maschera = JSON.parse(request.body.salva_maschera);
+        }
+        async.series([
+            function checkTabellaMaschera(callback){
+                admin_services.checkExistMascheradataTable(function(err,res){
+                    if(err){
+                        callback(err);
+                    }
+                    if(res == false){
+                        admin_services.creaTabella("mascheradata",function(err){
+                            if(err) callback(err);
+                            else callback(null);
+                        })}});
+                    callback(null);
+            },
+            function checkTabellaGrafico(callback){
+                console.log("son qui");
+                admin_services.checkExistGraficodataTable(function(err,res){
+                    if(err){
+                        callback(err,null);
+                        return
+                    }
+                    if(res == false){
+                        admin_services.creaTabella("graficodata",function(err){
+                            if(err) callback(err);
+                            else callback(null);
+                        })
+                    }
+                    });
+                    callback(null);
+            },
+            function insertMaschera(callback){
+                mascheraID = admin_services.generateUUID();
+                
+                admin_services.insertMaschera(
+                    mascheraID,
+                    maschera.medicoID,
+                    maschera.titolo,
+                    maschera.descrizione,
+                    maschera.ordine,
+                    function(err,res){
+                        if(err) callback(err);
+                        else{
+                            callback(null);
+                            console.log("Maschera correttamente salvata");
+                        }
+                    })
+            },
+            function insertGrafico(callback){
+                maschera.jsonChartArray.forEach(function(grafico){
+                    admin_services.insertGrafico(grafico,mascheraID,request.session.userId,function(err,res){
+                        if(err) callback(err);
+                        else{
+                        console.log("Grafico inserito correttamente"); 
+                        callback(null);
+                        }
+                    })
+                })
+            }
+        ]
+        ),function(err){
+            if(err) throw err;
+            else{
+                console.log("Salvataggio avvenuto correttamente");
+            }
+        }
+
+        response.end();
+});
 
 
 // SERVER IN ASCOLTO

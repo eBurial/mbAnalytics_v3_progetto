@@ -60,4 +60,11 @@ chiedere come poter fare per passare una variabile dal server a javascript non n
 con che credenziali accede il medico al db? per ora accede come user: medico password: pwd, se metto admin non funziona
 
 
-ajax success, capire cosa fa come funziona come ritornargli i valori 
+ajax success, capire cosa fa come funziona come ritornargli i valori  -DONE
+ora mi occupo di salvare le maschere eccetera, quindi per ora lascio stare la richiesta post di visualizzare le maschere pre-esistenti in mainpage.EJS
+
+in gestioneGrafici.php nel salvataggio della maschera dice che se non è settato l'id esegue una procedura per cancellare una maschera, per ora non lo implemento dovesse
+servire piu avanti lo gestirò meglio
+
+
+in mainpage controllare perchè non mi mostra le maschere

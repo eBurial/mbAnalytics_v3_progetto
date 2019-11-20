@@ -18,9 +18,7 @@ if (isset($_POST["salva_maschera"]))	// Maschera da salvare
 {
     //Filtro i valori del POST HTTP rimuovendo caratteri non accettati
     $maschera = json_decode($_POST["salva_maschera"], true);
-
     $esito = false;
-
     // Controllo che le tabelle siano state create
     if (checkExistMascheradataTable() == false)
     {
