@@ -103,6 +103,7 @@ if (isset($_POST["visualizza-maschera"])) {
 
         <script type="text/javascript">
             $(document).ready(function() {
+             
                 var medicoID = document.getElementById("medicoID").dataset.test;
 
                 // Definisco un array per tenere in memoria i grafici
@@ -1019,7 +1020,7 @@ if (isset($_POST["visualizza-maschera"])) {
                             };
                             jsonChartArray.push(jsonChart);
                         }
-                        var maschera = document.getElementById("maschera").dataset.test;
+                        //var maschera = document.getElementById("maschera").dataset.test;
 
                         if (jsonMaskID == ""){
                                 if (maschera){
@@ -1150,12 +1151,15 @@ if (isset($_POST["visualizza-maschera"])) {
                 // Funzione utilizzata per il caricamento di una maschera salvata precedentemente
                 // ---------------- richiesta POST  --------------------
                 $(".container-grafico-con-strumenti").each(function() {
+                    alert("sto qui");
+                    console.log("caricamento di maschera salvata precedentemente");
+                    
                     var contenitoreGraficoConStrumenti = $(this);
                     var graficoID = contenitoreGraficoConStrumenti.attr("id").replace("contenitore-", "");
-
+                    
                     $.ajax({
                         type: "POST",
-                        url: "getMotorbrainData",
+                        url: "/getMotorbrainData",
                         dataType: "json",
                         data: { "graficoID": graficoID },
                         success: function(jsonData, status) {
@@ -1290,9 +1294,10 @@ if (isset($_POST["visualizza-maschera"])) {
 
         <div id="contenitore-grafici" class="graphics-grid">
             <% if (grafici){
-                grafici.foreach (function(grafico){ %>
-                    <div id="contenitore-<%=grafico.graficoID%>" class="container-grafico-con-strumenti">
-                    <img id="img-loader-<%= grafico.graficoID%>" class="img-loader-inside-chart-container" src="./images/spinner.gif"/>
+                grafici.forEach (function(grafico){                    
+                    %>
+                    <div id="contenitore-<%=grafico%>" class="container-grafico-con-strumenti">
+                    <img id="img-loader-<%= grafico%>" class="img-loader-inside-chart-container" src="./images/spinner.gif"/>
                     </div>
                 <% })  
             } %>

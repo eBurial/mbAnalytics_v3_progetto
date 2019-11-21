@@ -130,9 +130,7 @@ if (isset($_POST["visualizza-maschera"])) {
 
                 // Quando un grafico viene spostato...
                 $("#contenitore-grafici").on("sortupdate", function(event, ui) {
-
                     updated = true;
-
                     // ... trasformo il nuovo ordine in stringa ...
                     sorted = $(this).sortable("serialize");
                     // ... e la salvo nel sessionStorage
@@ -1216,7 +1214,7 @@ if (isset($_POST["visualizza-maschera"])) {
                 $(".container-grafico-con-strumenti").each(function() {
                     var contenitoreGraficoConStrumenti = $(this);
                     var graficoID = contenitoreGraficoConStrumenti.attr("id").replace("contenitore-", "");
-
+                    
                     $.ajax({
                         type: "POST",
                         url: "getMotorbrainData.php",

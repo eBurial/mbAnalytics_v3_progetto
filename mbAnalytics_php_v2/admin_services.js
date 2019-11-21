@@ -10,7 +10,7 @@ const MEDICO_DATA = "medicodata";
 const MASCHERA_DATA = "mascheradata";
 const GRAFICO_DATA = "graficodata";
 
-
+//Metodo che genera un id random
 module.exports.generateUUID = function(){
     var d = new Date().getTime();
     var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -137,7 +137,7 @@ module.exports.getMascheraByMedicoId = function(medicoID,callback){
         if(err){
             callback(err,null)
         }else{
-            if(result.lenght > 0) callback(null,result);
+            if(result != undefined) callback(null,result);
             else callback(null,-1);
         }
     });
@@ -152,7 +152,6 @@ module.exports.updateLinguaMedico = function(medicoID,language,callback){
     });
 }
 module.exports.getMascheraByMascheraID = function(mascheraID,callback){
-    console.log("sono qui");
     connection.query("SELECT mascheraID, medicoID, titolo, descrizione, ordine FROM " + MASCHERA_DATA + " WHERE mascheraID = '"+ mascheraID+ "';",function(err,res){
         if(err){
             callback(err,null);
@@ -167,7 +166,10 @@ module.exports.getResultByGraficoID = function(graficoID,callback){
         if(err){
             callback(err,null);
         }else{
-            callback(null,res);
+            if(res != undefined){
+                callback(null,res);
+            }
+            
         }
     });
 }

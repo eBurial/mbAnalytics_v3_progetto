@@ -302,11 +302,20 @@ app.get('/logoutMedico',redirectUserLogin,function(request,response){
 return response.redirect("/index");
 });
 
-
-app.get("/pannelloGrafici",redirectUserLogin,function(request,response){
+app.get("/pannelloGrafici",function(request,response){
+    response.render(path.join(__dirname + '/views/pannelloGrafici.ejs'),{
+        last_language: request.session.last_language,
+        medicoID: request.session.userId,
+        activeDatabases: request.session.databases,
+        maschera: null,
+        grafici: null
+    })
+    response.end();
+});
+app.post("/pannelloGrafici",redirectUserLogin,function(request,response){
     // Recupero il valore che identifica la maschera
+    var grafici = new Array();
     var maschera;
-    var grafici;
     async.series([
         function queryMascheraById(callback){ 
             if(request.body.maschera_id){
@@ -318,27 +327,29 @@ app.get("/pannelloGrafici",redirectUserLogin,function(request,response){
                     }
                 })
             }
-            callback(null);
         },
         function queryGraficoById(callback){
             if(request.body.maschera_id){
-            var ordine =  maschera[4].split(";");
-            grafici = new Array(ordine.size);
+            var ordine =  maschera[0].ordine.split(";");
+            var itemProcessed = 0;
             ordine.forEach(function(graficoID){
                 admin_services.getResultByGraficoID(graficoID,function(err,res){
                     if(err) callback(err);
                     else{
-                        grafici.push(res[0]);
-                        callback(null);
+                        itemProcessed++;
+                        grafici.push(res[0].graficoID);
+                        if(itemProcessed == ordine.length){
+                            callback(null);
+                        }
                     }
                 })
             })
-        }
-        callback(null);
+         }
         }
     ],function(err){
         if(err) throw err;
         else{
+    
         response.render(path.join(__dirname + '/views/pannelloGrafici.ejs'),{
             last_language: request.session.last_language,
             medicoID: request.session.userId,
@@ -349,6 +360,10 @@ app.get("/pannelloGrafici",redirectUserLogin,function(request,response){
     return response.end();
     });
 });
+
+
+
+
 
 
 //funzione per recuperare i dati dal database mbFirstStudy
@@ -369,6 +384,8 @@ app.post("/getMotorBrainData",function(request,response){
                         callback(null,res)    
                     }
                 })
+            }else{
+                callback(null);
             }
         },
         function queryRecuperoDatiChartAge(callback){
@@ -383,24 +400,29 @@ app.post("/getMotorBrainData",function(request,response){
                         response.end(JSON.stringify(res));
                     }
                 })
+                
             }else{
-                return;
+                callback(null);
             }
         },
         function queryCaricamentoGrafico(callback){
-            console.log("RICHIESTA DI CARICAMENTO DEL GRAFICO");
+            console.log("richiesta caricamento grafico");
             if(request.body.graficoID){
                 data_services.getDataFromAverageHeaderAgeByGraficoID(request.body.graficoID,function(err,res){
-                    //DA COMPLETARE --------------------------
+                    if(err) callback(err);
+                    else{
+                        callback(res);
+                    }
                 });
             }
         }
     ],function(err,res){
         if(err) throw err;
+        else{
+            response.end(res);
+        }
     });    
 });
-
-
 
 
 
@@ -408,7 +430,6 @@ app.post("/salvaMaschera",function(request,response){
         console.log("Salvataggio maschera");
         var maschera;
         var mascheraID;
-
         if(request.body.salva_maschera){
             maschera = JSON.parse(request.body.salva_maschera);
         }
@@ -437,13 +458,13 @@ app.post("/salvaMaschera",function(request,response){
                             if(err) callback(err);
                             else callback(null);
                         })
+                    }else{
+                        callback(null);
                     }
                     });
-                    callback(null);
             },
             function insertMaschera(callback){
                 mascheraID = admin_services.generateUUID();
-                
                 admin_services.insertMaschera(
                     mascheraID,
                     maschera.medicoID,
@@ -463,11 +484,12 @@ app.post("/salvaMaschera",function(request,response){
                     admin_services.insertGrafico(grafico,mascheraID,request.session.userId,function(err,res){
                         if(err) callback(err);
                         else{
-                        console.log("Grafico inserito correttamente"); 
-                        callback(null);
+                            console.log("Grafico salvato correttamente"); 
                         }
                     })
+                
                 })
+                callback(null);
             }
         ]
         ),function(err){
@@ -476,7 +498,6 @@ app.post("/salvaMaschera",function(request,response){
                 console.log("Salvataggio avvenuto correttamente");
             }
         }
-
         response.end();
 });
 
