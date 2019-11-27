@@ -49,7 +49,7 @@ else if (isset($_POST["graficoID"]))
         $grafico["filtroListaValoriIntervalli"] = json_decode($grafico["filtroListaValoriIntervalli"]);
 
         $resultObj = (object) array('database' => $grafico["databaseID"], 'grafico' => $grafico, 'jsonData' => $result);
-
+        
         // Codifico in formato json
         $jsonData = json_encode($resultObj);
 

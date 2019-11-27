@@ -71,3 +71,6 @@ in mainpage controllare perchè non mi mostra le maschere
 
 nelle funzioni dei grafici eccetera devo tener conto che ogni utente potrebbe avere a disposizione piu database a cui accedere e dunque non posso connetterlo sempre a mbStudy ogni volta che devo fare 
 una query.!!!!!!!!!!
+
+
+ok i grafici li visualizza devo vedere se sono corretti, cioè a volte mi sembra che non siano esattamente uguali rispetto a quando li salvo

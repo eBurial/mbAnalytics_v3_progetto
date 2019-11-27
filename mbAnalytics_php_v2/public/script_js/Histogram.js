@@ -11,7 +11,6 @@ function Histogram(chartEntity)
 {
     // Entità
     this.chartEntity = chartEntity;
-
     // Creo il formato per le etichette
     this.formatCount = d3.format(",.0f");
 

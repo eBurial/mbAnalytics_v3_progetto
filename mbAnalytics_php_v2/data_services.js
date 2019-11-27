@@ -10,7 +10,9 @@ const connection = mysql.createConnection({
     database: CONFIG.database
 });
 const GRAFICO_DATA = "graficodata";
-
+module.exports = {
+    getDataFromAverageHeaderAge: getDataFromAverageHeaderAge
+}
 
 module.exports.getDataFromAverageHeader = function(esercizio,callback){
     //Stringa che si andrà a costruire per le colonne
@@ -31,9 +33,8 @@ module.exports.getDataFromAverageHeader = function(esercizio,callback){
         else callback(null,JSON.stringify(result));
     })
 }
-module.exports = {
-    getDataFromAverageHeaderAge: getDataFromAverageHeaderAge
-}
+
+
 var getDataFromAverageHeaderAge = function(esercizio,min,max,callback){
 
     // Recupero la tabella in base all'esercizio
@@ -58,44 +59,50 @@ var getDataFromAverageHeaderAge = function(esercizio,min,max,callback){
 
 module.exports.getDataFromAverageHeaderAgeByGraficoID = function(graficoID,callback){
     var graficoID_trovato;
+    var jsonData;
     async.series([
         function queryResultGraficoByID(callback){
             admin_services.getResultByGraficoID(graficoID,function(err,res){
-            if(err) callback(err);
-            else {       
+            if(err){
+                console.log("errore prima query");
+                callback(err,null);
+            }else {       
                 if(res.length >0 ){
-                    graficoID_trovato = res[0];
-                    callback(null,res);
+                    graficoID_trovato = res;
+                    callback(null,null);
                 }
             }
         })},
         function queryGetDataFromAverageHeaderAge(callback){ 
-            getDataFromAverageHeaderAge(graficoID_trovato.tipoEsercizio,graficoID_trovato.filtroEtaMin,graficoID_trovato.filtroEtaMax ,function(err,res){
-            if(err) callback(err);
-            else{
+            getDataFromAverageHeaderAge(graficoID_trovato[0].tipoEsercizio,graficoID_trovato[0].filtroEtaMin,graficoID_trovato[0].filtroEtaMax ,function(err,res){
+            if(err){
+                callback(err,null);
+            }else{
                 if(res.length>0){
-                    console.log("sono qui");
-                    console.log(graficoID_trovato.listaVariabili);
-                    //graficoID_trovato.listaVariabili = (JSON.stringify(graficoID_trovato.listaVariabili));
-                    //graficoID_trovato.filtroListaValoriIntervalli = JSON.parse(JSON.stringify(graficoID_trovato.filtroListaValoriIntervalli));
                     
+                    
+                    graficoID_trovato[0].listaVariabili =  graficoID_trovato[0].listaVariabili.split(",");
+                    graficoID_trovato[0].filtroListaValoriIntervalli =  graficoID_trovato[0].filtroListaValoriIntervalli.split(",");
+                   
 
-                    // --------------- son fermo qui ------------
-                    resultObj = {
-                        "database":graficoID_trovato.databaseID,
-                        "grafico":graficoID_trovato.graficoID,
-                        "jsonData":graficoID_trovato};
-                    //jsonData = JSON.stringify(resultObj);
-                    callback(null,JSON.parse(resultObj));
+                    var objResult = {
+                        database:graficoID_trovato[0].databaseID,
+                        grafico:graficoID_trovato[0],
+                        jsonData: res
+                    };
+                    callback(null,JSON.stringify(objResult));
 
                 }
-            }})
+            }
+        })
         },
     ],function(err,res){
-        if(err) callback(err);
-        else{
-            console.log("Sono qui");
-            callback(res)
+        if(err){
+            console.log("errore qui");
+            callback(err,null);
+        }else{
+            console.log(graficoID_trovato[0].listaVariabili);
+            callback(null,res[1]);
         }
     })
 }

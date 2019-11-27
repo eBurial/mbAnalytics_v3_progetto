@@ -181,7 +181,7 @@ module.exports.insertMaschera = function(mascheraID,medicoID,titolo,descrizione,
             console.log(err);
             callback(err,null);
         }else{
-
+            console.log("Maschera inserita correttamente!");
             console.log(res);
             callback(null,res);
         }

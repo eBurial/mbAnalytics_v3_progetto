@@ -371,14 +371,13 @@ app.post("/pannelloGrafici",redirectUserLogin,function(request,response){
 // FUNZIONE DA METTERE A POSTO, MAGARI DIFFERENZIARE I POST DIVERSI O UNO SWITCH ALL'INTERNO, ha anche piu senso perchè non è il valore del campo nel body
 // a dirmi che richiesta è 
 app.post("/getMotorBrainData",function(request,response){
-    var result;
     async.series([
         function queryRecuperoDatiChartInfo(callback){
             if(request.body.chartInfo){
                 console.log("Richiesta recupero dati");
                 var json_request = JSON.parse(request.body.chartInfo);
                 data_services.getDataFromAverageHeader(json_request.esercizio,function(err,res){
-                    if(err) throw err;
+                    if(err) callback(err);
                     else{
                         response.end(res);
                         callback(null,res)    
@@ -394,10 +393,10 @@ app.post("/getMotorBrainData",function(request,response){
                 console.log("Sono in richiesta chart age");
                 var json_request = JSON.parse(request.body.chartAge);
                 data_services.getDataFromAverageHeaderAge(json_request.esercizio,json_request.min,json_request.max,function(err,res){
-                    if(err) throw err;
+                    if(err) callback(err);
                     else{
                         callback(null,res);
-                        response.end(JSON.stringify(res));
+                        response.end(res);
                     }
                 })
                 
@@ -409,17 +408,22 @@ app.post("/getMotorBrainData",function(request,response){
             console.log("richiesta caricamento grafico");
             if(request.body.graficoID){
                 data_services.getDataFromAverageHeaderAgeByGraficoID(request.body.graficoID,function(err,res){
-                    if(err) callback(err);
+                    if(err){
+                        callback(err,null);
+                    } 
                     else{
-                        callback(res);
+                        callback(null,res);
                     }
                 });
             }
         }
     ],function(err,res){
-        if(err) throw err;
+        if(err) {
+            console.log(err)
+        }
         else{
-            response.end(res);
+            response.json(res[2]);
+            response.end();
         }
     });    
 });
@@ -447,7 +451,6 @@ app.post("/salvaMaschera",function(request,response){
                     callback(null);
             },
             function checkTabellaGrafico(callback){
-                console.log("son qui");
                 admin_services.checkExistGraficodataTable(function(err,res){
                     if(err){
                         callback(err,null);
@@ -475,7 +478,6 @@ app.post("/salvaMaschera",function(request,response){
                         if(err) callback(err);
                         else{
                             callback(null);
-                            console.log("Maschera correttamente salvata");
                         }
                     })
             },

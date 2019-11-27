@@ -1151,7 +1151,6 @@ if (isset($_POST["visualizza-maschera"])) {
                 // Funzione utilizzata per il caricamento di una maschera salvata precedentemente
                 // ---------------- richiesta POST  --------------------
                 $(".container-grafico-con-strumenti").each(function() {
-                    alert("sto qui");
                     console.log("caricamento di maschera salvata precedentemente");
                     
                     var contenitoreGraficoConStrumenti = $(this);
@@ -1165,15 +1164,22 @@ if (isset($_POST["visualizza-maschera"])) {
                         success: function(jsonData, status) {
                             // Per Debug
                             // console.log(jsonData);
+                            
 
                             // Creo un oggetto di tipo ChartEntity
+                            var listavariabili = []
+                            console.log("-------");
+                            var jsonData = JSON.parse(jsonData);
+                            console.log(jsonData.database);
                             var newChartEntity = new ChartEntity(jsonData["grafico"]["graficoID"]);
                             newChartEntity.setParameters(
                                 jsonData["database"],
                                 jsonData["grafico"]["tipoGrafico"],
                                 jsonData["grafico"]["tipoEsercizio"],
-                                jsonData["grafico"]["listaVariabili"],
-                                jsonData["jsonData"]);
+                                jsonData.grafico.listaVariabili,
+                                jsonData["jsonData"]
+                                );
+
 
                             newChartEntity.setGenderFilter(jsonData["grafico"]["filtroGenere"]); 
                             newChartEntity.setDominantHandFilter(jsonData["grafico"]["filtroManoDominante"]);
@@ -1183,7 +1189,6 @@ if (isset($_POST["visualizza-maschera"])) {
                             newChartEntity.setRangeAgeFilter(jsonData["grafico"]["filtroAmpiezzaIntervalloEta"]);
 
                             var newVisualChart = factoryChart.createChart(newChartEntity);
-
                             // Lo memorizzo nell'array
                             chartList[newChartEntity.id] = newVisualChart;
 
