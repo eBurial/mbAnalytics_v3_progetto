@@ -74,3 +74,14 @@ una query.!!!!!!!!!!
 
 
 ok i grafici li visualizza devo vedere se sono corretti, cioè a volte mi sembra che non siano esattamente uguali rispetto a quando li salvo
+quando carico una maschera salvata non mi mantiene checked i filtri sesso, mano dominante e mano di sessione e nemmeno gli altri. mi tiene solo quelli nella tabella verde delle età.
+in generale non mi salva lo stato dei filtri.
+
+elimina maschera OK funziona. 
+non funziona quello per aggiungere le variabili
+
+forse è solo una cosa di visualizzazione non può restare salvato - DA VERIFICARE
+
+
+manca il gzcode per codificare la stringa scritta nel file, per ora lascio che scriva tradizionalmente
+

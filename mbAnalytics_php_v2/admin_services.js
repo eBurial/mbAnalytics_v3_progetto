@@ -188,7 +188,8 @@ module.exports.insertMaschera = function(mascheraID,medicoID,titolo,descrizione,
     });
 }
 module.exports.insertGrafico = function(grafico,mascheraID,medicoID,callback){
-    console.log(grafico);
+    console.log(grafico.variableList);
+    console.log(grafico.listaVariabili);
     var query = "INSERT INTO " + GRAFICO_DATA + " (graficoID, mascheraID, medicoID,databaseID, tipoGrafico, tipoEsercizio,listaVariabili,filtroEtaMin, filtroEtaMax,filtroAmpiezzaIntervalloEta, filtroListaValoriIntervalli,filtroGenere, filtroManoDominante, filtroManoSessione) VALUES ('"+grafico.id +"','"+mascheraID +"','"+medicoID+"','"+grafico.database+"','"+grafico.chartType+"','"+grafico.exerciseType+"','"+grafico.variableList+"','"+grafico.minAge+"','"+grafico.maxAge+"','"+grafico.rangeAge+"','"+grafico.valuesRange+"','"+grafico.gender+"','"+grafico.dominantHand+"','"+grafico.sessionHand+"')";
     connection.query(query,function(err,res){
         if(err){
@@ -197,4 +198,16 @@ module.exports.insertGrafico = function(grafico,mascheraID,medicoID,callback){
             callback(null,res);
         }
     });
+}
+module.exports.eliminaMaschera = function(mascheraID,callback){
+    var query = "DELETE FROM " + MASCHERA_DATA + " WHERE mascheraID ='"+mascheraID+"'";
+    connection.query(query,function(err,res){
+        if(err){
+            callback(err,null);
+        }else{
+            console.log(query);
+            console.log(res);
+            callback(null,res);
+        }
+    })
 }

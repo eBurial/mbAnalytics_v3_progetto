@@ -370,23 +370,23 @@ app.post("/pannelloGrafici",redirectUserLogin,function(request,response){
 
 // FUNZIONE DA METTERE A POSTO, MAGARI DIFFERENZIARE I POST DIVERSI O UNO SWITCH ALL'INTERNO, ha anche piu senso perchè non è il valore del campo nel body
 // a dirmi che richiesta è 
+
+app.post("/getChartInfo",function(request,response){
+    if(request.body.chartInfo){
+        console.log("Richiesta recupero dati");
+        var json_request = JSON.parse(request.body.chartInfo);
+        data_services.getDataFromAverageHeader(json_request.esercizio,function(err,res){
+            if(err) callback(err);
+            else{
+                response.end(res);
+            }
+        })
+    }else{
+        response.end();
+    }
+})
 app.post("/getMotorBrainData",function(request,response){
     async.series([
-        function queryRecuperoDatiChartInfo(callback){
-            if(request.body.chartInfo){
-                console.log("Richiesta recupero dati");
-                var json_request = JSON.parse(request.body.chartInfo);
-                data_services.getDataFromAverageHeader(json_request.esercizio,function(err,res){
-                    if(err) callback(err);
-                    else{
-                        response.end(res);
-                        callback(null,res)    
-                    }
-                })
-            }else{
-                callback(null);
-            }
-        },
         function queryRecuperoDatiChartAge(callback){
             if(request.body.chartAge){
                 // PENSO SIA DA TESTARE QUANDO AVRO' I DATI NEL GRAFICO
@@ -422,13 +422,11 @@ app.post("/getMotorBrainData",function(request,response){
             console.log(err)
         }
         else{
-            response.json(res[2]);
+            response.json(res[1]);
             response.end();
         }
     });    
 });
-
-
 
 app.post("/salvaMaschera",function(request,response){
         console.log("Salvataggio maschera");
@@ -483,6 +481,7 @@ app.post("/salvaMaschera",function(request,response){
             },
             function insertGrafico(callback){
                 maschera.jsonChartArray.forEach(function(grafico){
+                    console.log(grafico.listaVariabili);
                     admin_services.insertGrafico(grafico,mascheraID,request.session.userId,function(err,res){
                         if(err) callback(err);
                         else{
@@ -503,6 +502,25 @@ app.post("/salvaMaschera",function(request,response){
         response.end();
 });
 
+app.post("/exportGraphs",function(request,response){
+    console.log("Richiesta di esportazione");
+    if(request.body.esporta_tutto){
+    
+        data_services.exportData(request.body.esporta_tutto,function(err,res){
+            if(err) throw err;
+            else console.log(res);
+        })
+    }
+});
+app.post("/eliminaMaschera",function(request,response){
+    if(request.body.elimina_maschera){
+        console.log(request.body.elimina_maschera);
+        admin_services.eliminaMaschera(request.body._maschera,function(err,res){
+            if(err) throw err;
+            })
+    }
+    response.end();
+});
 
 // SERVER IN ASCOLTO
 app.listen(3001,function(){

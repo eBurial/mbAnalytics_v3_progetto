@@ -55,14 +55,14 @@
 
                 // Evento collegato al bottone per eliminare la maschera
                 $(".bt-elimina-maschera").on("click", function() {
-
+                    alert("elimina maschera");
                     // Memorizzo il bottone
                     var btEliminaMaschera = $(this);
                     // Recupero l'id
                     var idMaschera = $(this).attr("id").replace("bt-elimina-maschera-", "");	
                     // Memorizzo il parent
                     var parentCorrente = $(this).parent();	
-                    $.post("gestioneGrafici.php", {
+                    $.post("/eliminaMaschera", {
                         "elimina_maschera": idMaschera
                     }, function() {
                         $("#tbl-row-" + idMaschera).fadeOut(1000, function() {
@@ -154,7 +154,7 @@
                                 </form>
                                 </div>
                                 <div class="tbl-cell tbl-cell-min-width tbl-cell-right">
-                                <button id="bt-elimina-maschera- <%= maschera.mascheraID %>" type="button" class="bt-elimina-maschera bt-tbl bt-red"></button>
+                                <button id="bt-elimina-maschera-<%=maschera.mascheraID %>" type="button" class="bt-elimina-maschera bt-tbl bt-red"></button>
                                 </div>
                                 </div>
                             <% }) %>
