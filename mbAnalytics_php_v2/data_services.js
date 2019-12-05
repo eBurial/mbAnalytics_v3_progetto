@@ -3,12 +3,21 @@ const CONFIG = require('./config_mbStudy.json');
 const admin_services = require('./admin_services');
 var async = require("async");
 var fs = require("fs");
+var JSZip = require("jszip");
+const zlib = require("zlib");
+var path = require('path');
+
 const connection = mysql.createConnection({
     host: CONFIG.host,
     user: CONFIG.user,
     password: CONFIG.password,
     database: CONFIG.database
 });
+var express = require("express");
+var app = express();
+app.use(express.static("/public"));
+
+
 const GRAFICO_DATA = "graficodata";
 module.exports = {
     getDataFromAverageHeaderAge: getDataFromAverageHeaderAge,
@@ -114,7 +123,9 @@ var getDataFromUserForExport = function(database,exerciseType,ageRanges,dominant
     var tableName = 'headerdata_' + exerciseType; 
     var tableName2 = 'averageheaderdata_' +exerciseType;
     var tableName3 = 'userdata';
-    console.log("GETDATAFROMUSERFOREXPORT");
+
+    console.log("GETDATA FROMUSER FOR EXPORT");
+    console.log("gender HAND QUERY");
     if(sessionHand == "-"){
         sessionHandQuery = "";
     }else{
@@ -130,23 +141,19 @@ var getDataFromUserForExport = function(database,exerciseType,ageRanges,dominant
     }else{
         dominantHandQuery = " dominantHand = '"+dominantHand+"' AND";
     }
-    var ageRangesQuery;
-
+    var ageRangesQuery ="";
     ageRanges.forEach(function(data){
-        console.log(min);
-        //devo vedere come funziona prima di continuarlo
-        ageRangesQuery += " (age BETWEEN "+ dat.min + " AND "+ data.max+") OR";
+        ageRangesQuery += " (age BETWEEN "+ data + " AND "+(data + 9)+") OR";
     })
-    console.log(ageRangesQuery);
-    if(!ageRangesQuery){
-        ageRangesQuery = ageRangesQuery.substring(0,-2);
-        //ageRangesQuery = "("+ ageRangesQuery + ")";
+    if(ageRangesQuery != ""){
+        ageRangesQuery = ageRangesQuery.substring(0,ageRangesQuery.length-2);
+        ageRangesQuery = "("+ ageRangesQuery + ")";
     }
+
     //query finale
-    //LUI NEL PHP USA TABLE 3, 2 e poi 3. Prova con 1,2,3, caso mai cambia
 
     var selectSql = "SELECT userID,gender,dominantHand,age";
-    selectSql += " FROM "+tableName+" WHERE userID IN (SELECT userID FROM "+ tableName2 + " WHERE " + sessionHandQuery + " status = 0 AND userID IN (SELECT userID FROM " + tableName3 + " WHERE " + genderQuery + dominantHandQuery + ageRangesQuery +"))";
+    selectSql += " FROM "+tableName3+" WHERE userID IN (SELECT userID FROM "+ tableName2 + " WHERE " + sessionHandQuery + " status = 0 AND userID IN (SELECT userID FROM " + tableName3 + " WHERE " + genderQuery + dominantHandQuery + ageRangesQuery +"))";
     connection.query(selectSql,function(err,res){
         if(err) callback(err,null);
         else callback(null,res);
@@ -181,12 +188,12 @@ var getDataFromHeaderForExport = function(database,exerciseType,ageRanges,domina
     }else{
         var dominantHandQuery = " dominantHand = '"+dominantHand+"' AND";
     }
-    ageRanges.forEach(function(item){
-        //Stessa roba di sopra verificare
-        //$ageRangesQuery .= " (age BETWEEN ". $min . " AND " . $max . ") OR";
+    var ageRangesQuery = ""
+    ageRanges.forEach(function(data){
+        ageRangesQuery += " (age BETWEEN "+ data + " AND "+(data + 9)+") OR";
     })
-    if(!empty(ageRangesQuery)){
-        var ageRangesQuery = ageRangesQuery.substring(0,-2);
+    if(ageRangesQuery!=""){
+        var ageRangesQuery = ageRangesQuery.substring(0,ageRangesQuery.length-2);
         ageRangesQuery = "("+ageRangesQuery+")";
     }
     var selectSql = "SELECT userID, sessionID, repetitionID";
@@ -195,9 +202,13 @@ var getDataFromHeaderForExport = function(database,exerciseType,ageRanges,domina
     })
     selectSql += " FROM " + tableName + " WHERE sessionID IN (SELECT sessionID FROM " + tableName2 + " WHERE" + sessionHandQuery + " status = 0 AND userID IN (SELECT userID FROM " + tableName3 + " WHERE" +genderQuery +dominantHandQuery + ageRangesQuery+"))"+" GROUP BY userID, sessionID, repetitionID"+" ORDER BY sessionID, repetitionID";
     connection.query(selectSql,function(err,res){
-        if(err) callback(err,null);
-        else callback(null,res);
-    })
+        if(err){
+            callback(err,null);
+        }
+        else{    
+            callback(null,res);
+        }
+    });
 }
 var getDataFromRowForExport = function(database,exerciseType,ageRanges,dominantHand,sessionHand,gender,callback){
     var tableName = 'rowdata_' +exerciseType;
@@ -240,14 +251,12 @@ var getDataFromRowForExport = function(database,exerciseType,ageRanges,dominantH
     } else {
         var dominantHandQuery = " dominantHand = '" + dominantHand + "' AND";
     }	
-
-    ageRanges.forEach(function(item){
-        //- --------------------------
-        //$ageRangesQuery .= " (age BETWEEN ". $min . " AND " . $max . ") OR";
-        var ageRangesQuery = "";
+    var ageRangesQuery ="";
+    ageRanges.forEach(function(data){
+        ageRangesQuery += " (age BETWEEN "+ data + " AND "+(data + 9)+") OR";
     })
-    if(!empty(ageRangesQuery)){
-        ageRangesQuery = ageRangesQuery.substring(0,-2);
+    if(ageRangesQuery != ""){
+        ageRangesQuery = ageRangesQuery.substring(0,ageRangesQuery.length-2);
         ageRangesQuery = "("+ageRangesQuery+")";
     }
     var selectSql = " SELECT " + columns + " FROM " + tableName +" WHERE sessionID IN (SELECT sessionID  FROM " +tableName2 + " WHERE" + sessionHandQuery +" status = 0 AND userID IN (SELECT userID FROM " + tableName3 + " WHERE" + genderQuery + dominantHandQuery + ageRangesQuery +")) ORDER BY " + order;
@@ -266,63 +275,64 @@ module.exports.exportData = function(datagrafico,callback){
 
     //ste operazioni vanno fatte prima dell'async 
 
-    var url = "files/"+datagrafico.id+".txt.gz";
+    var url = "./public/files/"+datagrafico.id+".txt";
     fs.open(url,'w',function(err,file){
         if(err) callback(err,null);
         else console.log("file correttamente aperto");
     })
     
     var string = "Database: "+datagrafico.database+"\n"+"Exercise: "+datagrafico.exerciseType+"\n";
-    
     var min = datagrafico.minAge;
-    var ranges = {};
+    var ranges = Array();
     console.log(datagrafico.valuesRange);
+    var inizioRangeEta = min;
     datagrafico.valuesRange.forEach(function(range){
         if(range == 1){
-            ranges.min = min + datagrafico.rangeAge - 1;
-            min += datagrafico.rangeAge;
-        }else{
-            min += datagrafico.rangeAge;
+            ranges.push(inizioRangeEta);
         }
+        inizioRangeEta += 10;
     })
-    console.log("RANGES "+ranges.min);
     string += "Age classes: ";
-    console.log(ranges);
     ranges.forEach(function(data){
-        string += "["+data+","+data.min+"], ";
+        string += "["+data+","+(data+9)+"], ";
     })
-    console.log(string);
-    // ------------------ SONO FERMO QUI ------------------
     string += "\n";
     string += "Gender: "+datagrafico.gender+"\n"+"Dominant hand: "+datagrafico.dominantHand+"\n"+"Session hand: "+datagrafico.sessionHand+"\n";
     string += "\n";
     //Recupero i dati della sessione
     var resultUser,resultHeader,resultRow;
-    async.waterfall([
+    async.series([
         function queryDataFromUserForExport(callback){
-            resultUser = getDataFromUserForExport(datagrafico["database"],datagrafico["exerciseType"],ranges,datagrafico["dominantHand"],datagrafico["sessionHand"],datagrafico["gender"],function(err,res){
+            getDataFromUserForExport(datagrafico["database"],datagrafico["exerciseType"],ranges,datagrafico["dominantHand"],datagrafico["sessionHand"],datagrafico["gender"],function(err,res){
                 if(err) callback(err,null);
-                else callback(null,res);
+                else{
+                    resultUser = res;
+                    callback(null,res);
+                }
             });
         },
         function queryDataFromHeaderForExport(callback){
-            resultHeader = getDataFromHeaderForExport(datagrafico["database"],datagrafico["exerciseType"],ranges,datagrafico["dominantHand"],datagrafico["sessionHand"],datagrafico["gender"],function(err,res){
+            getDataFromHeaderForExport(datagrafico["database"],datagrafico["exerciseType"],ranges,datagrafico["dominantHand"],datagrafico["sessionHand"],datagrafico["gender"],function(err,res){
                 if(err) callback(err,null);
-                else callback(null,res);
+                else{
+                    resultHeader = res;                  
+                    callback(null,res);
+                }
             });
         },
         function queryDataFromRowForExport(callback){
-            resultRow = getDataFromRowForExport(datagrafico["database"],datagrafico["exerciseType"],ranges,datagrafico["dominantHand"],datagrafico["sessionHand"],datagrafico["gender"],function(err,res){
+            getDataFromRowForExport(datagrafico["database"],datagrafico["exerciseType"],ranges,datagrafico["dominantHand"],datagrafico["sessionHand"],datagrafico["gender"],function(err,res){
                 if(err) callback(err,null);
-                else callback(null,res);
+                else{
+                    resultRow = res; 
+                    callback(null,res);
+                }
             })
         }
     ],function(err,res){
         if(err) throw err;
         else{
-            console.log(res);
             string += "userID" + ";" + "gender" + ";" + "dominantHand" + ";" + "age" + "\n";
-
             resultUser.forEach(function(data){
                 string += data['userID'] + ";";
                 string += data['gender'] + ";";
@@ -334,7 +344,6 @@ module.exports.exportData = function(datagrafico,callback){
             if(datagrafico.exerciseType == "1"){
                 string +=  "userID" + ";" + "sessionID" + ";" + "repetitionID" + ";" + "screenWidth" + ";" + "screenHeight" + ";" + "circleCenterX" + ";" + "circleCenterY" + ";" + "radiusCenter" + ";" + "margin" + ";" + "accuracy" + ";" + "distanceTot" + ";" + "time" + ";" + "centerCircle" + "\n";
                 resultHeader.forEach(function(data){
-
                     string += data['userID'] + ";";
                     string += data['sessionID'] + ";";
                     string += data['repetitionID'] + ";";
@@ -350,23 +359,21 @@ module.exports.exportData = function(datagrafico,callback){
                     string += data['centerCircle'];
                     string += "\n";
                 })
-
-            string += "\n";
-            string += "sessionID" + ";" + "repetitionID" + ";" + "xR" + ";" + "yR" + ";" + "xN" + ";" + "yN" + ";" + "timeStampR" + ";" + "timeStampN" + "\n";
-            
-            resultRow.forEach(function(data){
-                string += data['sessionID'] + ";";
-				string += data['repetitionID'] + ";";				
-				string += data['xR'] + ";";
-				string += data['yR'] + ";";
-				string += data['xN'] + ";";
-				string += data['yN'] + ";";
-				string += data['timeStampR'] + ";";
-				string += data['timeStampN'];
-				string += "\n";
-            })}else if(datagrafico.exerciseType == "2"){
+                string += "\n";
+                string += "sessionID" + ";" + "repetitionID" + ";" + "xR" + ";" + "yR" + ";" + "xN" + ";" + "yN" + ";" + "timeStampR" + ";" + "timeStampN" + "\n";
+                resultRow.forEach(function(data){
+                    string += data['sessionID'] + ";";
+                    string += data['repetitionID'] + ";";				
+                    string += data['xR'] + ";";
+                    string += data['yR'] + ";";
+                    string += data['xN'] + ";";
+                    string += data['yN'] + ";";
+                    string += data['timeStampR'] + ";";
+                    string += data['timeStampN'];
+                    string += "\n";
+                })
+            }else if(datagrafico.exerciseType == "2"){
                 string += "userID" + ";" + "sessionID" + ";" + "repetitionID" + ";" + "screenWidth" + ";" + "screenHeight" + ";" + "circleCenterX" + ";" + "circleCenterY" + ";" + "radiusCenter" + ";" + "margin" + ";" + "accuracy" + ";" + "distanceCorrect" + ";" + "totalSpeed" + ";" + "turnsInside" + ";" + "centerCircle" + "\n";
-
                 resultHeader.forEach(function(data){
                     string += data['userID'] + ";";
                     string += data['sessionID'] + ";";
@@ -549,9 +556,20 @@ module.exports.exportData = function(datagrafico,callback){
             fs.writeFile(url,string,function(err){
                 if(err) throw err;
                 else{
-                    console.log("Scrittura nel file avvenuta correttamente");
-                }
-            })
-        }
-    })
+                    console.log("File creato correttamente");
+                    const gzip = zlib.createGzip();
+                    const inp = fs.createReadStream(url);
+                    const out = fs.createWriteStream(url+".gz");
+                    inp.pipe(gzip)
+                    .on('error', () => {
+                        // handle error
+                    })
+                    .pipe(out)
+                    .on('error', () => {
+                        // handle error
+                    });
+                                    }
+                                })
+                            }
+                })
 }

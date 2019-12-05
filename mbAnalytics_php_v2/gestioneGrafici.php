@@ -706,7 +706,7 @@ else if (isset($_POST["esporta_tutto"]))	// Esporta dati sessione
 	array_map('unlink', glob("files/*"));
 	
 	// Definisco il nome del nuovo file da scaricare
-    $url = 'files/' . $datagrafico["id"] . '.txt.gz';
+    $url = 'files/' . $datagrafico["id"] . '.txt.zip';
 
     // Creo il file
     $file = fopen($url, 'w') or die("Could not open file");

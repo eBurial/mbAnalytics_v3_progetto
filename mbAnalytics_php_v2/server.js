@@ -505,12 +505,15 @@ app.post("/salvaMaschera",function(request,response){
 app.post("/exportGraphs",function(request,response){
     console.log("Richiesta di esportazione");
     if(request.body.esporta_tutto){
-    
         data_services.exportData(request.body.esporta_tutto,function(err,res){
             if(err) throw err;
-            else console.log(res);
+            else{
+                done();
+                console.log(res);
+            }
         })
     }
+    response.end();
 });
 app.post("/eliminaMaschera",function(request,response){
     if(request.body.elimina_maschera){

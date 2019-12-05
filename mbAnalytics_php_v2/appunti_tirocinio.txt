@@ -85,3 +85,8 @@ forse è solo una cosa di visualizzazione non può restare salvato - DA VERIFICA
 
 manca il gzcode per codificare la stringa scritta nel file, per ora lascio che scriva tradizionalmente
 
+nell'esportazione per i range dell'età li ho costruiti con un array contentene l'inizio di ogni range sapendo che il secondo estremo vale range + 9.
+devo capire per il range 100 cosa si intende per ora lascio 100 e 109 
+
+il range dell'intervallo lo si decide dal pannello, quindi non posso sommare + 9 nel server, devo sommare la larghezza dell'intervallo passata
+
