@@ -349,7 +349,6 @@ app.post("/pannelloGrafici",redirectUserLogin,function(request,response){
     ],function(err){
         if(err) throw err;
         else{
-    
         response.render(path.join(__dirname + '/views/pannelloGrafici.ejs'),{
             last_language: request.session.last_language,
             medicoID: request.session.userId,
@@ -362,14 +361,6 @@ app.post("/pannelloGrafici",redirectUserLogin,function(request,response){
 });
 
 
-
-
-
-
-//funzione per recuperare i dati dal database mbFirstStudy
-
-// FUNZIONE DA METTERE A POSTO, MAGARI DIFFERENZIARE I POST DIVERSI O UNO SWITCH ALL'INTERNO, ha anche piu senso perchè non è il valore del campo nel body
-// a dirmi che richiesta è 
 
 app.post("/getChartInfo",function(request,response){
     if(request.body.chartInfo){
@@ -508,12 +499,11 @@ app.post("/exportGraphs",function(request,response){
         data_services.exportData(request.body.esporta_tutto,function(err,res){
             if(err) throw err;
             else{
-                done();
-                console.log(res);
+                console.log("esportazione conclusa");
+                response.end();
             }
         })
     }
-    response.end();
 });
 app.post("/eliminaMaschera",function(request,response){
     if(request.body.elimina_maschera){

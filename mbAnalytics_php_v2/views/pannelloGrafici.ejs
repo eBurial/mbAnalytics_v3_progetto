@@ -898,12 +898,9 @@ if (isset($_POST["visualizza-maschera"])) {
                         }).done(function() {
 							// Nascondo l'immagine per il caricamento
                             $("#update-img-loader-" + newChart.chartEntity.id).hide();
-
-
-                            console.log(jsonChart["id"]);
+                            console.log("SONO QUI");
 							var fileName = jsonChart["id"] + ".txt.gz";
                             var url = "/files/"+fileName;
-                            console.log(url)
                             var link = document.getElementById('a-esporta-grafico');
                             if (typeof link.download === 'string') {
                                 link.href = url;
@@ -911,6 +908,7 @@ if (isset($_POST["visualizza-maschera"])) {
                                 link.setAttribute('style', 'text-decoration: none;')
                                 //simulate click
                                 link.click();
+                
                                 //remove the link when done
                                 link.setAttribute("href", "#");
                             }
@@ -1259,29 +1257,25 @@ if (isset($_POST["visualizza-maschera"])) {
                 <label id="title-maschera" for="txt-titolo-maschera" class="lb-dati-maschera" ></label>
                 <input id="txt-titolo-maschera" class="input-text-maschera" type="text"
                        name="txt-titolo-maschera"
-                       placeholder="<%
-                                    switch (last_language){
-                                        case 'IT':
-                                            %> Titolo <%;
-                                            break;
-                                        case 'EN':
-                                            %>Title <%;
-                                            break;
-                                        default:
-                                            %>Title<%
-                                            break;
-                                    }%>"    
+                        placeholder = "<% if(maschera != null){%><%= maschera[0].titolo %><% }else{ 
+                            switch (last_language){
+                                case 'IT': %>Descrizione <%; break;
+                                case 'EN': %>Description <%; break;
+                                default:   %>Description <%; break;
+                                }
+                            } %>"    
                 >
             </div>
             <div>
                 <label id="description-maschera"  for="txt-descrizione-maschera"  class="lb-dati-maschera"></label>					
-                <textarea id="txt-descrizione-maschera" class="input-textarea-maschera" name="txt-descrizione-maschera" maxlength="255"
-                          placeholder="<%
-                                switch (last_language){
-                                case 'IT': %>Descrizione <%; break;
-                                case 'EN': %>Description <%; break;
-                                default:   %>Description <%; break;
-                                }%>"></textarea>
+                <textarea id="txt-descrizione-maschera" class="input-textarea-maschera" name="txt-descrizione-maschera" maxlength="255"><% if(maschera != null){%><%= maschera[0].descrizione %><% }else{ 
+                        switch (last_language){
+                            case 'IT': %>Descrizione <%; break;
+                            case 'EN': %>Description <%; break;
+                            default:   %>Description <%; break;
+                            }
+                        } %> 
+                </textarea>
             </div>
         </div>
         <div>
@@ -1312,6 +1306,7 @@ if (isset($_POST["visualizza-maschera"])) {
         <div id="maschera" data-test=<%= maschera %>></div>
         <div id="grafici" data-test=<%= grafici %>></div>
         <div id="medicoID" data-test=<%= medicoID %>></div>
+
 
     </body>
 </html>

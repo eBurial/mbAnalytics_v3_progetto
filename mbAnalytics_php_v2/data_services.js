@@ -272,7 +272,6 @@ module.exports.exportData = function(datagrafico,callback){
     //array_map('unlink', glob("files/*"));
 
     datagrafico = JSON.parse(datagrafico);
-
     //ste operazioni vanno fatte prima dell'async 
 
     var url = "./public/files/"+datagrafico.id+".txt";
@@ -284,17 +283,16 @@ module.exports.exportData = function(datagrafico,callback){
     var string = "Database: "+datagrafico.database+"\n"+"Exercise: "+datagrafico.exerciseType+"\n";
     var min = datagrafico.minAge;
     var ranges = Array();
-    console.log(datagrafico.valuesRange);
     var inizioRangeEta = min;
     datagrafico.valuesRange.forEach(function(range){
         if(range == 1){
             ranges.push(inizioRangeEta);
         }
-        inizioRangeEta += 10;
+        inizioRangeEta += datagrafico.rangeAge;
     })
     string += "Age classes: ";
     ranges.forEach(function(data){
-        string += "["+data+","+(data+9)+"], ";
+        string += "["+data+","+(data+datagrafico.rangeAge-1)+"], ";
     })
     string += "\n";
     string += "Gender: "+datagrafico.gender+"\n"+"Dominant hand: "+datagrafico.dominantHand+"\n"+"Session hand: "+datagrafico.sessionHand+"\n";
@@ -563,13 +561,16 @@ module.exports.exportData = function(datagrafico,callback){
                     inp.pipe(gzip)
                     .on('error', () => {
                         // handle error
-                    })
-                    .pipe(out)
-                    .on('error', () => {
+                        console.log("error");
+                    }).pipe(out).on('error', () => {
                         // handle error
+                        console.log("error");
+
                     });
-                                    }
-                                })
-                            }
-                })
+                    callback(null,res);
+                }
+            })
+        
+        }
+    })
 }
