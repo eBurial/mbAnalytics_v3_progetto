@@ -153,14 +153,20 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                         "disabilita_medico": idMedico
                         }, 
                     function(){
+                        console.log("dovrei riattivare il pulsante attiva");
                         // Rimuovo il bottone
                         var parentCorrente = $(this).parent();	
                         btDisabilita.remove();
                         var paragrafo = "<p id='etichetta-non-attivo'> Non attivo </p>";
                         // Aggiungo il sostituto
                         console.log("Sono qui");
-                        var htmlButton = '<button id="bt-abilita-'+ idMedico +'"'+' type="button" class="bt-abilita-medico bt-tbl bt-green">' +'Abilita</button>';
+                        var htmlButton = '<button id="bt-disabilita-' + idMedico + '"'+
+                            ' type="button" class="bt-disabilita-medico bt-tbl bt-yellow">' +
+                            'Disabilita</button>';  
+                        var p = "<p> ooo </p>"                      
                         parentCorrente.append(htmlButton);
+                        parentCorrente.append(p);
+                      
                     }).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
                         alert(thrownError); //Messaggio di avviso con l'errore HTTP
                     });

@@ -866,7 +866,6 @@ if (isset($_POST["visualizza-maschera"])) {
                     // Collego l'evento click al pulsante esporta
                     $("#bt-esporta-grafico-" + newChart.chartEntity.id).on("click", function() {
                         var chartId = $(this).attr("id").replace("bt-esporta-grafico-", "");
-
                         var jsonChart;
                         for (var chart in chartList) {
                             if (chartList[chart].chartEntity.id == chartId) {
@@ -888,33 +887,30 @@ if (isset($_POST["visualizza-maschera"])) {
                                 };
                             }
                         }
-
                         // Per debug
                         // console.log(jsonChart.database);
 						// Mostro l'immagine per il caricamento
                         $("#update-img-loader-" + newChart.chartEntity.id).show();
+
                         $.post("exportGraphs", {
                             esporta_tutto: JSON.stringify(jsonChart) 
                         }).done(function() {
 							// Nascondo l'immagine per il caricamento
                             $("#update-img-loader-" + newChart.chartEntity.id).hide();
-                            console.log("SONO QUI");
-							var fileName = jsonChart["id"] + ".txt.gz";
+							var fileName = jsonChart["id"] + ".txt.zip";
                             var url = "/files/"+fileName;
                             var link = document.getElementById('a-esporta-grafico');
-                            if (typeof link.download === 'string') {
-                                link.href = url;
-                                link.setAttribute('download', fileName);
-                                link.setAttribute('style', 'text-decoration: none;')
-                                //simulate click
-                                link.click();
-                
-                                //remove the link when done
-                                link.setAttribute("href", "#");
-                            }
+                            link.download = fileName;
+                            link.href = url;
+                            link.setAttribute('style', 'text-decoration: none;')
+                            //Auto click
+                            link.click();
+                            link.removeAttribute("download");
+                            link.removeAttribute("href");                                        
+                        
                         }).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
                             alert(thrownError); //Messaggio di avviso con l'errore HTTP
-                        });
+                        })
                     });
 
                 }
@@ -1124,12 +1120,12 @@ if (isset($_POST["visualizza-maschera"])) {
 
                                     $.ajax({
                                         type: "POST",
-                                        url: "gestioneGrafici.php", 
+                                        url: "/salvaMaschera", 
                                         data: { "salva_maschera": JSON.stringify(jsonMask) }, 
                                         success: function(jsonData, status){ 
                                             updated = false;
 
-                                            window.location.href = './mainpage.php';
+                                            window.location.href = './mainpage';
                                         },
                                         error: function(xhr, desc, err) {
                                             console.log(xhr);
@@ -1138,7 +1134,7 @@ if (isset($_POST["visualizza-maschera"])) {
                                     });
                                 },
                                 [graphPanelArray.exit]: function() {
-                                    window.location.href = './mainpage.php';
+                                    window.location.href = './mainpage';
                                 }
                             }
                         });
@@ -1147,7 +1143,7 @@ if (isset($_POST["visualizza-maschera"])) {
                         $(".ui-dialog button").removeClass("ui-corner-all");
                     }
                     else {
-                        window.location.href = './mainpage';
+                        window.location.href = '/mainpage';
                     }
                 });
 

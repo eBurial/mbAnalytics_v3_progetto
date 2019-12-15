@@ -6,6 +6,12 @@ var fs = require("fs");
 var JSZip = require("jszip");
 const zlib = require("zlib");
 var path = require('path');
+var AdmZip = require('adm-zip');
+
+var express = require("express");
+var compression = require("compression");
+var app = express();
+app.use(compression())
 
 const connection = mysql.createConnection({
     host: CONFIG.host,
@@ -273,12 +279,13 @@ module.exports.exportData = function(datagrafico,callback){
 
     datagrafico = JSON.parse(datagrafico);
     //ste operazioni vanno fatte prima dell'async 
-
+    
     var url = "./public/files/"+datagrafico.id+".txt";
+    /*
     fs.open(url,'w',function(err,file){
         if(err) callback(err,null);
         else console.log("file correttamente aperto");
-    })
+    }) */
     
     var string = "Database: "+datagrafico.database+"\n"+"Exercise: "+datagrafico.exerciseType+"\n";
     var min = datagrafico.minAge;
@@ -551,26 +558,19 @@ module.exports.exportData = function(datagrafico,callback){
                 })
             }
             //$gzdata = gzencode($string);
-            fs.writeFile(url,string,function(err){
-                if(err) throw err;
-                else{
-                    console.log("File creato correttamente");
-                    const gzip = zlib.createGzip();
-                    const inp = fs.createReadStream(url);
-                    const out = fs.createWriteStream(url+".gz");
-                    inp.pipe(gzip)
-                    .on('error', () => {
-                        // handle error
-                        console.log("error");
-                    }).pipe(out).on('error', () => {
-                        // handle error
-                        console.log("error");
-
-                    });
-                    callback(null,res);
+            
+            var zip = new AdmZip();
+            zip.addFile(""+datagrafico.id+".txt", Buffer.alloc(string.length, string));
+            zip.writeZip(url+".zip",function(err){
+                if(err){
+                    callback(err,null);
+                }else{
+                    console.log("zip creato");
+                    callback(null,null);
                 }
-            })
-        
+            });                                                             
+            }
+            
         }
-    })
+    )
 }

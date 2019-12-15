@@ -10,7 +10,9 @@ const CONFIG = require('../node/config.json');
 const admin_services = require('./admin_services');
 const data_services = require('./data_services');
 const ejsLint = require('ejs-lint');
+var compression = require('compression')
 var app = express();
+app.use(compression())
 //DEBUGGER EJS
 console.log(ejsLint.lint("./views/pannelloAdmin.ejs",null));
 
@@ -367,7 +369,7 @@ app.post("/getChartInfo",function(request,response){
         console.log("Richiesta recupero dati");
         var json_request = JSON.parse(request.body.chartInfo);
         data_services.getDataFromAverageHeader(json_request.esercizio,function(err,res){
-            if(err) callback(err);
+            if(err) throw(err);
             else{
                 response.end(res);
             }
@@ -500,10 +502,11 @@ app.post("/exportGraphs",function(request,response){
             if(err) throw err;
             else{
                 console.log("esportazione conclusa");
-                response.end();
+                return response.end();
             }
         })
     }
+
 });
 app.post("/eliminaMaschera",function(request,response){
     if(request.body.elimina_maschera){
