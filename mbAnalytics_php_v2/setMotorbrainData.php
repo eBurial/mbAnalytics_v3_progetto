@@ -1,4 +1,4 @@
-<?php
+/<?php
 require_once("dbMotorbrainAverageHeader.php");
 
 // Se è definita la variabile chartInfo

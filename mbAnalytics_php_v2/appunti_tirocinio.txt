@@ -90,3 +90,5 @@ devo capire per il range 100 cosa si intende per ora lascio 100 e 109
 
 il range dell'intervallo lo si decide dal pannello, quindi non posso sommare + 9 nel server, devo sommare la larghezza dell'intervallo passata
 
+vedere perchè non mi salva lo scatterplot
+fare l'esporta del pannello con le sessioni

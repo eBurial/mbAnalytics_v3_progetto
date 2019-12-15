@@ -420,7 +420,58 @@ app.post("/getMotorBrainData",function(request,response){
         }
     });    
 });
+app.post("/jsonDetailInfo",function(request,response){
+    var resultHeader;
+    var resultRow;
+    var data = JSON.parse(request.body.jsonDetailInfo);
+    async.series([
+        function queryDataFromHeader(callback){
+                data_services.getDataFromHeader(
+                data.database,
+                data.exerciseType, 
+                data.sessionID,
+                data.userID,
+                function(err,res){
+                    if(err) callback(err);
+                    else{
+                        resultHeader = res;
+                        callback(null);
+                    }
+                });
+            
+        },
+        function queryDataFromRow(callback){  
+                data_services.getDataFromRow(data.database,
+                data.exerciseType,
+                data.sessionID,
+                function(err,res){
+                    if(err) callback(err);
+                    else{
+                        resultRow = res;
+                        callback(null);
+                    }
+                })  
+        }
+    ],function(err){
+        if(err) throw err;
+        else{
+            var resultObj = {'headerData':resultHeader,'rowData':resultRow};
+            response.json(resultObj);
+            response.end();
+        }
+        
+    })
+})
 
+app.post("/setMotorBrainData",function(request,response){
+    var data = JSON.parse(request.body.updateSessionStatus);
+    data_services.setStatusInAverageHeader(data.database,data.esercizio,data.sessioneID,data.nuovoStatus,function(err){
+        if(err) throw err;
+        else{
+            console.log("Stato aggiornato");
+        }
+    })
+})
 app.post("/salvaMaschera",function(request,response){
         console.log("Salvataggio maschera");
         var maschera;

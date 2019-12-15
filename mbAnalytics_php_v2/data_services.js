@@ -216,6 +216,76 @@ var getDataFromHeaderForExport = function(database,exerciseType,ageRanges,domina
         }
     });
 }
+module.exports.getDataFromHeader = function(database,exerciseType,sessionID,userID,callback){
+    var tableName = "headerdata_"+exerciseType;
+    var keyValues = [];
+    switch(exerciseType){
+        case '1': keyValues = ["screenWidth", "screenHeight", "circleCenterX", "circleCenterY",	"radiusCenter", "margin","accuracy", "distanceTot", "time", "centerCircle"];break;
+        case '2': keyValues = ["screenWidth", "screenHeight", "circleCenterX", "circleCenterY", "radiusCenter", "margin","accuracy", "distanceCorrect", "totalSpeed", "turnsInside", "centerCircle"];break;
+        case '3': keyValues = ["screenWidth", "screenHeight","x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4",	"edge", "margin","accuracy", "distanceTot", "time", "centralPerimeter "];break;
+        case '4': keyValues = ["screenWidth", "screenHeight", "width", "height","x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4", "x5", "y5",	"margin","adjustedAccuracy", "time", "totalLength", "adjustedSpeed", "distanceTot"];break;
+        case '5': keyValues = ["screenWidth", "screenHeight", "x1", "y1", "x2", "y2", "margin","meanReactionTime", "accuracy", "totTaps"];break;
+        case '6': keyValues = ["screenWidth", "screenHeight", "x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4", "margin","meanReactionTime", "accuracy", "totTaps"];break;
+        default:break;
+    }
+    var selectSql = "SELECT userID, sessionID, repetitionID ";
+    keyValues.forEach(function(keyValue){
+        selectSql = selectSql +  ", " +"MAX(IF(KeyValue = '" + keyValue +"', Value, NULL)) AS " +keyValue;	
+    })
+    selectSql = selectSql + " FROM " + tableName +" WHERE userID = '"+userID+"' AND sessionID ='" +sessionID+"' GROUP BY userID, sessionID, repetitionID ORDER BY sessionID, repetitionID";
+    connection.query(selectSql,function(err,res){
+        if(err){
+            callback(err,null);
+        }
+        else{   
+            callback(null,res);
+        }
+    });
+}
+module.exports.getDataFromRow = function(database,exerciseType,sessionID,callback){
+    var tableName = "rowData_"+exerciseType;
+    var columns = "sessionID, repetitionID, xR, yR, xN, yN";
+    if((exerciseType == "1")||(exerciseType =="2")||(exerciseType == "3")||(exerciseType == 4)){
+        /* Colonne tabelle rowdata_1, rowdata_2, 
+			 * rowdata_3 e rowdata_4:
+			 * ID, sessionID
+			 * xR, yR, timeStampR, 
+			 * xN, yN, timeStampN,
+			 * inside, checkMovement
+			 */
+		    columns = columns + ',timeStampN, timeStampR';
+    }else if((exerciseType == "5")||(exerciseType == "6")){
+        /* Colonne tabelle rowdata_5 e rowdata_6:
+		 * ID, sessionID,
+		 * xR, yR, circle_appearing_timeR, touched_timeStampR,
+		 * xN, yN, circle_appearing_timeN, touched_timeStampN
+		 * circle_active, reaction_time, 
+		 */
+		 columns = columns + ',circle_active, circle_appearing_timeR, touched_timeStampR';	
+    }
+    var query = "SELECT " + columns + " FROM " +tableName + " WHERE sessionID = '"+sessionID+"';";
+    connection.query(query,function(err,res){
+        if(err){
+            callback(err,null);
+        }
+        else{    
+            callback(null,res);
+        }
+    });
+}
+
+module.exports.setStatusInAverageHeader = function(database,exerciseType,sessionId,newStatus,callback){
+    var tableName = "averageheaderdata_"+exerciseType;
+    var query = "UPDATE " + tableName +" SET status = '"+newStatus+"' WHERE sessionID = '"+ sessionId+"';";
+    connection.query(query,function(err,res){
+        if(err){
+            callback(err,null);
+        }
+        else{ 
+            callback(null,res);
+        }
+    });
+}
 var getDataFromRowForExport = function(database,exerciseType,ageRanges,dominantHand,sessionHand,gender,callback){
     var tableName = 'rowdata_' +exerciseType;
 	var tableName2 = 'averageheaderdata_' +exerciseType;

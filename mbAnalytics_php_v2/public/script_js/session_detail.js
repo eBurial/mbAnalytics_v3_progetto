@@ -145,7 +145,7 @@ function showExerciseDetail(database, exerciseType, userID, sessionID,
         // Richiesta ajax per recuperare i dati
         $.ajax({
             type: "POST",
-            url: "setMotorbrainData.php",
+            url: "/setMotorbrainData",
             dataType: "json",
             data: { updateSessionStatus : JSON.stringify(jsonStatusUpdate) },
             success: function(response, status) {
@@ -256,7 +256,7 @@ function createExerciseDetailChart(database, exerciseType, userID, sessionID) {
     // Eseguo una chiamata per recuperare le informazioni richieste
     $.ajax({
         type: "POST",
-        url: "getMotorbrainData.php",
+        url: "/jsonDetailInfo",
         dataType: "json",
         data: { jsonDetailInfo : JSON.stringify(jsonDetailInfo) },
         success: function(jsonData, status) {
@@ -292,7 +292,7 @@ function createExerciseDetailChart(database, exerciseType, userID, sessionID) {
                     break;
                 default: 
                     break;
-                                }
+                    }
 
         },
         error: function(xhr, desc, err) {
