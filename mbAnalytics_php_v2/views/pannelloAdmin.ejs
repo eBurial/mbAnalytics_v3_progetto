@@ -120,6 +120,9 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     var idMedico = $(this).attr("id").replace("bt-abilita-", "");	
                     // Memorizzo il parent
                     var parentCorrente = $(this).parent();	
+                    console.log("abilita");
+                    console.log(parentCorrente);
+                    
                     $.post("/gestioneMedici",
                            {
                         "abilita_medico": idMedico
@@ -128,10 +131,7 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                         btAbilita.remove();
                         var paragrafo ="<p id='etichetta-attivo'>Attivo</p>";
                         // Aggiungo il sostituto
-                        var htmlButton = '<button id="bt-disabilita-' + idMedico + '"'+
-                            ' type="button" class="bt-disabilita-medico bt-tbl bt-yellow">' +
-                            'Disabilita</button>';
-                        console.log("Sono qui in abilita");
+                        var htmlButton = '<button id="bt-disabilita-' +idMedico +'"'+' type="button" class="bt-disabilita-medico bt-tbl bt-yellow">'+'Disabilita</button>';
                         parentCorrente.append(htmlButton);
                         // svuoto l'array dei database per il prossimo medico;
                         databases.splice(0, databases.length);
@@ -148,25 +148,18 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     var idMedico = $(this).attr("id").replace("bt-disabilita-", "");	
                     // Memorizzo il parent
                     var parentCorrente = $(this).parent();	
+                    console.log(parentCorrente);
                     $.post("/gestioneMedici",
                         {
                         "disabilita_medico": idMedico
-                        }, 
-                    function(){
-                        console.log("dovrei riattivare il pulsante attiva");
-                        // Rimuovo il bottone
-                        var parentCorrente = $(this).parent();	
-                        btDisabilita.remove();
-                        var paragrafo = "<p id='etichetta-non-attivo'> Non attivo </p>";
+                        }).done( function(){
                         // Aggiungo il sostituto
-                        console.log("Sono qui");
-                        var htmlButton = '<button id="bt-disabilita-' + idMedico + '"'+
-                            ' type="button" class="bt-disabilita-medico bt-tbl bt-yellow">' +
-                            'Disabilita</button>';  
-                        var p = "<p> ooo </p>"                      
+                        var htmlButton = '<button id="bt-abilita-' + idMedico + '"'+' type="button" class="bt-abilita-medico bt-tbl bt-green">' +'Abilita</button>';  
                         parentCorrente.append(htmlButton);
-                        parentCorrente.append(p);
-                      
+                        btDisabilita.remove();
+                        console.log(parentCorrente);
+
+                        databases.splice(0, databases.length);
                     }).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
                         alert(thrownError); //Messaggio di avviso con l'errore HTTP
                     });

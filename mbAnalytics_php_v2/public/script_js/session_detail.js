@@ -206,13 +206,12 @@ function showExerciseDetail(database, exerciseType, userID, sessionID,
         // Per debug
         //    console.log(jsonSession);
 
-        $.post("gestioneGrafici.php", {
+        $.post("/exportSession", {
             esporta_sessione: JSON.stringify(jsonSession)
         }).done(function() {
 
-            var fileName = sessionID + ".txt.gz";
+            var fileName = sessionID + ".txt.zip";
             var url = "files/" + fileName;
-
             var link = document.getElementById('a-esporta-sessione');
             if (typeof link.download === 'string') {
                 link.href = url;
@@ -223,7 +222,9 @@ function showExerciseDetail(database, exerciseType, userID, sessionID,
                 link.click();
 
                 //remove the link when done
-                link.setAttribute("href", "#");
+                link.removeAttribute("download");
+                link.removeAttribute("style");
+
             }
         }).fail(function(xhr, ajaxOptions, thrownError) { //Se ci sono errori
             alert(thrownError); //Messaggio di avviso con l'errore HTTP
@@ -232,7 +233,6 @@ function showExerciseDetail(database, exerciseType, userID, sessionID,
 	
     //Collego l'evento click al pulsante di chiusura
     $("#bt-chiudi-dettaglio").on("click", function() { 									
-
         $("#fade-dettaglio-grafico").fadeOut(500, function() {
             $(this).remove();
         });						 

@@ -382,8 +382,6 @@ app.post("/getMotorBrainData",function(request,response){
     async.series([
         function queryRecuperoDatiChartAge(callback){
             if(request.body.chartAge){
-                // PENSO SIA DA TESTARE QUANDO AVRO' I DATI NEL GRAFICO
-                console.log("Sono in richiesta chart age");
                 var json_request = JSON.parse(request.body.chartAge);
                 data_services.getDataFromAverageHeaderAge(json_request.esercizio,json_request.min,json_request.max,function(err,res){
                     if(err) callback(err);
@@ -421,48 +419,16 @@ app.post("/getMotorBrainData",function(request,response){
     });    
 });
 app.post("/jsonDetailInfo",function(request,response){
-    var resultHeader;
-    var resultRow;
+   
     var data = JSON.parse(request.body.jsonDetailInfo);
-    async.series([
-        function queryDataFromHeader(callback){
-                data_services.getDataFromHeader(
-                data.database,
-                data.exerciseType, 
-                data.sessionID,
-                data.userID,
-                function(err,res){
-                    if(err) callback(err);
-                    else{
-                        resultHeader = res;
-                        callback(null);
-                    }
-                });
-            
-        },
-        function queryDataFromRow(callback){  
-                data_services.getDataFromRow(data.database,
-                data.exerciseType,
-                data.sessionID,
-                function(err,res){
-                    if(err) callback(err);
-                    else{
-                        resultRow = res;
-                        callback(null);
-                    }
-                })  
-        }
-    ],function(err){
+    data_services.sessionDetailsInfo(data,function(err,res){
         if(err) throw err;
         else{
-            var resultObj = {'headerData':resultHeader,'rowData':resultRow};
-            response.json(resultObj);
+            response.json(res);
             response.end();
         }
-        
     })
 })
-
 app.post("/setMotorBrainData",function(request,response){
     var data = JSON.parse(request.body.updateSessionStatus);
     data_services.setStatusInAverageHeader(data.database,data.esercizio,data.sessioneID,data.nuovoStatus,function(err){
@@ -526,18 +492,15 @@ app.post("/salvaMaschera",function(request,response){
             function insertGrafico(callback){
                 maschera.jsonChartArray.forEach(function(grafico){
                     console.log(grafico.listaVariabili);
-                    admin_services.insertGrafico(grafico,mascheraID,request.session.userId,function(err,res){
+                    admin_services.insertGrafico(grafico,mascheraID,request.session.userId,function(err){
                         if(err) callback(err);
                         else{
                             console.log("Grafico salvato correttamente"); 
                         }
                     })
-                
                 })
                 callback(null);
-            }
-        ]
-        ),function(err){
+            }]),function(err){
             if(err) throw err;
             else{
                 console.log("Salvataggio avvenuto correttamente");
@@ -559,6 +522,23 @@ app.post("/exportGraphs",function(request,response){
     }
 
 });
+
+
+app.post("/exportSession",function(request,response){
+    console.log("Richiesta di esportazione sessione");
+    if(request.body.esporta_sessione){
+        data_services.exportSession(request.body.esporta_sessione,function(err){
+            if(err) throw err;
+            else{
+                console.log("esportazione sessione conclusa");
+                return response.end();
+            }
+        })
+    }
+
+
+
+})
 app.post("/eliminaMaschera",function(request,response){
     if(request.body.elimina_maschera){
         console.log(request.body.elimina_maschera);

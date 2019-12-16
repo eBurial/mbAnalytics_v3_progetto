@@ -8,6 +8,7 @@ const zlib = require("zlib");
 var path = require('path');
 var AdmZip = require('adm-zip');
 
+
 var express = require("express");
 var compression = require("compression");
 var app = express();
@@ -29,7 +30,11 @@ module.exports = {
     getDataFromAverageHeaderAge: getDataFromAverageHeaderAge,
     getDataFromUserForExport: getDataFromUserForExport,
     getDataFromHeaderForExport: getDataFromHeaderForExport,
-    getDataFromRowForExport: getDataFromRowForExport
+    getDataFromRowForExport: getDataFromRowForExport,
+    getDataFromUser: this.getDataFromUser,
+    getDataFromRow: this.getDataFromRow,
+    getDataFromHeader: this.getDataFromHeader
+
 }
 
 module.exports.getDataFromAverageHeader = function(esercizio,callback){
@@ -216,7 +221,7 @@ var getDataFromHeaderForExport = function(database,exerciseType,ageRanges,domina
         }
     });
 }
-module.exports.getDataFromHeader = function(database,exerciseType,sessionID,userID,callback){
+var getDataFromHeader = function(database,exerciseType,sessionID,userID,callback){
     var tableName = "headerdata_"+exerciseType;
     var keyValues = [];
     switch(exerciseType){
@@ -242,7 +247,7 @@ module.exports.getDataFromHeader = function(database,exerciseType,sessionID,user
         }
     });
 }
-module.exports.getDataFromRow = function(database,exerciseType,sessionID,callback){
+var getDataFromRow = function(database,exerciseType,sessionID,callback){
     var tableName = "rowData_"+exerciseType;
     var columns = "sessionID, repetitionID, xR, yR, xN, yN";
     if((exerciseType == "1")||(exerciseType =="2")||(exerciseType == "3")||(exerciseType == 4)){
@@ -342,6 +347,15 @@ var getDataFromRowForExport = function(database,exerciseType,ageRanges,dominantH
     })
 }
 
+var getDataFromUser = function(database,userID,callback){
+    var tableName = "userdata";
+    var selectSql = "SELECT userID, gender, dominantHand, age";
+    var query = selectSql + " FROM "+tableName+" WHERE userID = '"+userID+"';";
+    connection.query(query,function(err,res){
+        if(err) callback(err,null);
+        else callback(null,res);
+    })
+}
 module.exports.exportData = function(datagrafico,callback){
 
     //decode di datagrafico
@@ -643,4 +657,392 @@ module.exports.exportData = function(datagrafico,callback){
             
         }
     )
+}
+
+module.exports.exportSession = function(sessionData,callback){
+
+    //decodifco il json della sessione
+    var sessioneInfo = JSON.parse(sessionData);
+    var url = "./public/files/"+sessioneInfo.sessionID+".txt";
+    var resultUser;
+    var resultHeader;
+    var resultRow;
+    var string = "";
+    var esercizi = {
+        "1" : "Circle-A",
+        "2" : "Circle-S",
+        "3" : "Square",
+        "4" : "Path",
+        "5" : "Tapping2",
+        "6" : "Tapping4"
+    }
+    async.series([
+        function queryDataFromUser(callback){
+            getDataFromUser(sessioneInfo.database,sessioneInfo.userID,function(err,res){
+                if(err) callback(err);
+                else{
+                    resultUser = res;
+                    callback(null);
+                }
+            })
+        },
+        function queryDataFromHeader(callback){
+            getDataFromHeader(sessioneInfo.database,sessioneInfo.exerciseType,sessioneInfo.sessionID,sessioneInfo.userID,function(err,res){
+                if(err) callback(err);
+                else{
+                    resultHeader = res;
+                    callback(null);
+                }
+            })
+        },
+        function queryDataFromRow(callback){
+            getDataFromRow(sessioneInfo.database,sessioneInfo.exerciseType,sessioneInfo.sessionID,function(err,res){
+                if(err) callback(err);
+                else{
+                    resultRow = res;
+                    callback(null);
+                }
+            })
+        }
+    ],function(err){
+        if(err) callback(err);
+        else{
+            console.log(resultRow);
+            string += "Database: " + sessioneInfo.database + "\n" + "Exercise: " + esercizi[sessioneInfo.exerciseType] + "\n";
+            // Creo contenuto file con i dati recuperati dal db (prima riga intestazione user, poi dati user, poi intestazione header, poi dati header, poi intestazione row data, poi dati row data, SEPARATORE ;)
+            string += "userID" + ";" + "gender" + ";" + "dominantHand" + ";" + "age" + "\n";
+            resultUser.forEach(function(data){
+                string += data['userID'] + ";";
+		        string += data['gender'] + ";";
+		        string += data['dominantHand'] + ";";
+		        string += data['age'];
+		        string += "\n";
+            });
+
+            string += "\n";
+
+        if (sessioneInfo["exerciseType"] == "1")
+		{
+			string += "userID" + ";" + "sessionID" + ";" + "repetitionID" + ";" + "screenWidth" + ";" + "screenHeight" + ";" + "circleCenterX" + ";" + "circleCenterY" + ";" + "radiusCenter" + ";" + "margin" + ";" + "accuracy" + ";" + "distanceTot" + ";" + "time" + ";" + "centerCircle" + "\n";
+	
+			resultHeader.forEach(function(data) {
+				
+				string += data['userID'] + ";";
+				string += data['sessionID'] + ";";
+				string += data['repetitionID'] + ";";
+				string += data['screenWidth'] + ";";
+				string += data['screenHeight'] + ";";
+				string += data['circleCenterX'] + ";";
+				string += data['circleCenterY'] + ";";
+				string += data['radiusCenter'] + ";";
+				string += data['margin'] + ";";
+				string += data['accuracy'] + ";";
+				string += data['distanceTot'] + ";";
+				string += data['time'] + ";";
+				string += data['centerCircle'];
+				string += "\n";
+		
+			})
+			
+			string += "\n";
+			
+			string += "sessionID" + ";" + "repetitionID" + ";" + "xR" + ";" + "yR" + ";" + "xN" + ";" + "yN" + ";" + "timeStampN" + ";" + "timeStampR" + "\n";
+
+			resultRow.forEach(function(data){
+				
+				string += data['sessionID'] + ";";
+				string += data['repetitionID'] + ";";				
+				string += data['xR'] + ";";
+				string += data['yR'] + ";";
+				string += data['xN'] + ";";
+				string += data['yN'] + ";";
+				string += data['timeStampN'] + ";";
+				string += data['timeStampR'];
+				string += "\n";
+		
+			})					
+		}
+		else if (sessioneInfo["exerciseType"] == "2")
+		{
+			string += "userID" + ";" + "sessionID" + ";" + "repetitionID" + ";" + "screenWidth" + ";" + "screenHeight" + ";" + "circleCenterX" + ";" + "circleCenterY" + ";" + "radiusCenter" + ";" + "margin" + ";" + "accuracy" + ";" + "distanceCorrect" + ";" + "totalSpeed" + ";" + "turnsInside" + ";" + "centerCircle" + "\n";
+			
+			resultHeader.forEach(function(data){
+				
+				string += data['userID'] + ";";
+				string += data['sessionID'] + ";";
+				string += data['repetitionID'] + ";";				
+				string += data['screenWidth'] + ";";
+				string += data['screenHeight'] + ";";
+				string += data['circleCenterX'] + ";";
+				string += data['circleCenterY'] + ";";
+				string += data['radiusCenter'] + ";";
+				string += data['margin'] + ";";
+				string += data['accuracy'] + ";";
+				string += data['distanceCorrect'] + ";";
+				string += data['totalSpeed'] + ";";
+				string += data['turnsInside'] + ";";
+				string += data['centerCircle'];
+				string += "\n";
+		
+			})
+			
+			string += "\n";
+			
+			string += "sessionID" + ";" + "repetitionID" + ";" + "xR" + ";" + "yR" + ";" + "xN" + ";" + "yN" + ";" + "timeStampN" + ";" + "timeStampR" + "\n";
+
+			resultRow.forEach(function(data){
+				
+				string += data['sessionID'] + ";";
+				string += data['repetitionID'] + ";";				
+				string += data['xR'] + ";";
+				string += data['yR'] + ";";
+				string += data['xN'] + ";";
+				string += data['yN'] + ";";
+				string += data['timeStampN'] + ";";
+				string += data['timeStampR'];
+				string += "\n";
+		
+			})
+
+		}
+		else if (sessioneInfo["exerciseType"] == "3")
+		{ 
+			string += "userID" + ";" + "sessionID" + ";" + "repetitionID" + ";" + "screenWidth" + ";" + "screenHeight" + ";" + "x1" + ";" + "y1" + ";" + "x2" + ";" + "y2" + ";" + "x3" + ";" + "y3" + ";" + "x4" + ";" + "y4" + ";" + "edge" + ";" + "margin" + ";" +	"accuracy" + ";" + "distanceTot" + ";" + "time" + ";" + "centralPerimeter" + "\n";
+			
+			resultHeader.forEach(function(data) {
+				
+				string += data['userID'] + ";";
+				string += data['sessionID'] + ";";
+				string += data['repetitionID'] + ";";				
+				string += data['screenWidth'] + ";";
+				string += data['screenHeight'] + ";";
+				string += data['x1'] + ";";
+				string += data['y1'] + ";";
+				string += data['x2'] + ";";
+				string += data['y2'] + ";";
+				string += data['x3'] + ";";
+				string += data['y3'] + ";";
+				string += data['x4'] + ";";
+				string += data['y4'] + ";";				
+				string += data['edge'] + ";";
+				string += data['margin'] + ";";
+				string += data['accuracy'] + ";";
+				string += data['distanceTot'] + ";";
+				string += data['time'] + ";";
+				string += data['centralPerimeter'];
+				string += "\n";
+		
+			})
+			
+			string += "\n";
+			
+			string += "sessionID" + ";" + "repetitionID" + ";" + "xR" + ";" + "yR" + ";" + "xN" + ";" + "yN" + ";" + "timeStampN" + ";" + "timeStampR" + "\n";
+
+			resultRow.forEach(function(data) {
+				
+				string += data['sessionID'] + ";";
+				string += data['repetitionID'] + ";";				
+				string += data['xR'] + ";";
+				string += data['yR'] + ";";
+				string += data['xN'] + ";";
+				string += data['yN'] + ";";
+				string += data['timeStampN'] + ";";
+				string += data['timeStampR'];
+				string += "\n";
+		
+			})
+		}
+		else if (sessioneInfo["exerciseType"] == "4")
+		{
+
+			string += "userID" + ";" + "sessionID" + ";" + "repetitionID" + ";" + "screenWidth" + ";" + "screenHeight" + ";" + "width" + ";" + "height" + ";" +
+					"x1" + ";" + "y1" + ";" + "x2" + ";" + "y2" + ";" + "x3" + ";" + "y3" + ";" + "x4" + ";" + "y4" + ";" + "x5" + ";" + "y5" + ";" + "margin" + ";" + "adjustedAccuracy" + ";" + "time" + ";" + "totalLength" + ";" + "adjustedSpeed" + ";" + "distanceTot" + "\n";
+
+			resultHeader.forEach(function(data) {
+				
+				string += data['userID'] + ";";
+				string += data['sessionID'] + ";";
+				string += data['repetitionID'] + ";";				
+				string += data['screenWidth'] + ";";
+				string += data['screenHeight'] + ";";
+				string += data['width'] + ";";
+				string += data['height'] + ";";				
+				string += data['x1'] + ";";
+				string += data['y1'] + ";";
+				string += data['x2'] + ";";
+				string += data['y2'] + ";";
+				string += data['x3'] + ";";
+				string += data['y3'] + ";";
+				string += data['x4'] + ";";
+				string += data['y4'] + ";";				
+				string += data['x5'] + ";";
+				string += data['y5'] + ";";	
+				string += data['margin'] + ";";
+				string += data['adjustedAccuracy'] + ";";
+				string += data['time'] + ";";
+				string += data['totalLength'] + ";";
+				string += data['adjustedSpeed'] + ";";
+				string += data['distanceTot'];
+				string += "\n";
+		
+			})
+			
+			string += "\n";
+			
+			string += "sessionID" + ";" + "repetitionID" + ";" + "xR" + ";" + "yR" + ";" + "xN" + ";" + "yN" + ";" + "timeStampN" + ";" + "timeStampR" + "\n";
+
+			resultRow.forEach(function(data) {
+				
+				string += data['sessionID'] + ";";
+				string += data['repetitionID'] + ";";				
+				string += data['xR'] + ";";
+				string += data['yR'] + ";";
+				string += data['xN'] + ";";
+				string += data['yN'] + ";";
+				string += data['timeStampN'] + ";";
+				string += data['timeStampR'];
+				string += "\n";
+		
+			})				
+		}
+		else if (sessioneInfo["exerciseType"] == "5")
+		{			  
+			string += "userID" + ";" + "sessionID" + ";" + "repetitionID" + ";" + "screenWidth" + ";" + "screenHeight" + ";" + "x1" + ";" + "y1" + ";" + "x2" + ";" + "y2" + ";" + "margin" + ";" + "meanReactionTime" + ";" + "accuracy" + ";" + "totTaps" + "\n";
+			
+			resultHeader.forEach(function(data) {
+				
+				string += data['userID'] + ";";
+				string += data['sessionID'] + ";";
+				string += data['repetitionID'] + ";";				
+				string += data['screenWidth'] + ";";
+				string += data['screenHeight'] + ";";			
+				string += data['x1'] + ";";
+				string += data['y1'] + ";";
+				string += data['x2'] + ";";
+				string += data['y2'] + ";";
+				string += data['margin'] + ";";
+				string += data['meanReactionTime'] + ";";
+				string += data['accuracy'] + ";";
+				string += data['totTaps'];
+				string += "\n";
+		
+			})
+			
+			string += "\n";
+			
+			string += "sessionID" + ";" + "repetitionID" + ";" + "xR" + ";" + "yR" + ";" + "xN" + ";" + "yN" + ";" + "circle_active" + ";" + "circle_appearing_timeR" + ";" + "touched_timeStampR" + "\n";
+
+			resultRow.forEach(function(data) {
+				
+				string += data['sessionID'] + ";";
+				string += data['repetitionID'] + ";";				
+				string += data['xR'] + ";";
+				string += data['yR'] + ";";
+				string += data['xN'] + ";";
+				string += data['yN'] + ";";
+				string += data['circle_active'] + ";";
+				string += data['circle_appearing_timeR'] + ";";
+				string += data['touched_timeStampR'];				
+				string += "\n";
+			})				
+		}
+		else if	(sessioneInfo["exerciseType"] == "6")
+		{
+			string += "userID" + ";" + "sessionID" + ";" + "repetitionID" + ";" + "screenWidth" + ";" + "screenHeight" + ";" +	"x1" + ";" + "y1" + ";" + "x2" + ";" + "y2" + ";" + "x3" + ";" + "y3" + ";" + "x4" + ";" + "y4" + ";" + "margin" + ";" + "meanReactionTime" + ";" + "accuracy" + ";" + "totTaps" + "\n";
+			
+			resultHeader.forEach(function(data) {
+				
+				string += data['userID'] + ";";
+				string += data['sessionID'] + ";";
+				string += data['repetitionID'] + ";";				
+				string += data['screenWidth'] + ";";
+				string += data['screenHeight'] + ";";			
+				string += data['x1'] + ";";
+				string += data['y1'] + ";";
+				string += data['x2'] + ";";
+				string += data['y2'] + ";";
+				string += data['x3'] + ";";
+				string += data['y3'] + ";";
+				string += data['x4'] + ";";
+				string += data['y4'] + ";";	
+				string += data['margin'] + ";";
+				string += data['meanReactionTime'] + ";";
+				string += data['accuracy'] + ";";
+				string += data['totTaps'];
+				string += "\n";
+		
+			})
+			
+			string += "\n";
+			
+			string += "sessionID" + ";" + "repetitionID" + ";" + "xR" + ";" + "yR" + ";" + "xN" + ";" + "yN" + ";" + "circle_active" + ";" + "circle_appearing_timeR" + ";" + "touched_timeStampR" + "\n";
+
+			resultRow.forEach(function(data) {
+				
+				string += data['sessionID'] + ";";
+				string += data['repetitionID'] + ";";				
+				string += data['xR'] + ";";
+				string += data['yR'] + ";";
+				string += data['xN'] + ";";
+				string += data['yN'] + ";";
+				string += data['circle_active'] + ";";
+				string += data['circle_appearing_timeR'] + ";";
+				string += data['touched_timeStampR'];				
+				string += "\n";
+			})		
+        }
+        var zip = new AdmZip();
+        console.log(string);
+        zip.addFile(""+sessioneInfo.sessionID+".txt", Buffer.alloc(string.length, string));
+        zip.writeZip(url+".zip",function(err){
+        if(err){
+            callback(err,null);
+        }else{
+        console.log("zip creato");
+        callback(null,null);
+        }
+        }); 
+        }
+    })
+
+}
+
+module.exports.sessionDetailsInfo = function(data,callback){
+
+    var resultHeader;
+    var resultRow;
+    async.series([
+        function queryDataFromHeader(callback){
+                getDataFromHeader(
+                data.database,
+                data.exerciseType, 
+                data.sessionID,
+                data.userID,
+                function(err,res){
+                    if(err) callback(err);
+                    else{
+                        resultHeader = res;
+                        callback(null);
+                    }
+                });  
+        },
+        function queryDataFromRow(callback){  
+                getDataFromRow(data.database,
+                data.exerciseType,
+                data.sessionID,
+                function(err,res){
+                    if(err) callback(err);
+                    else{
+                        resultRow = res;
+                        callback(null);
+                    }
+                })  
+        }
+    ],function(err){
+        if(err) callback(err);
+        else{
+            var resultObj = {'headerData':resultHeader,'rowData':resultRow};
+            callback(null,resultObj)
+        }      
+    })
 }
