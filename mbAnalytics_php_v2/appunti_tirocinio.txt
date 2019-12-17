@@ -92,3 +92,5 @@ il range dell'intervallo lo si decide dal pannello, quindi non posso sommare + 9
 
 vedere perchè non mi salva lo scatterplot
 fare l'esporta del pannello con le sessioni
+
+capire chi gli da l'ID al grafico

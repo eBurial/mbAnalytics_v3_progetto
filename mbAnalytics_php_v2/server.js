@@ -10,6 +10,7 @@ const CONFIG = require('../node/config.json');
 const admin_services = require('./admin_services');
 const data_services = require('./data_services');
 const ejsLint = require('ejs-lint');
+
 var compression = require('compression')
 var app = express();
 app.use(compression())
@@ -93,12 +94,11 @@ app.post('/authAdmin',redirectAdminPanel, function(request, response) {
                     response.redirect('/pannelloAdmin');
                 })
             } else {
-                response.send('Incorrect Username and/or Password!');
+                response.json({error:true});
             }			
              return response.end();
         });
     } else {
-        response.send('Please enter Username and Password!');
         response.end();
     }
 });
@@ -106,21 +106,24 @@ app.post('/authUser',function(request,response){
     var username = request.body.email_login_user;
     var password = request.body.pwd_login_user;
     if(username && password){
-        connection.query('SELECT * FROM medicodata WHERE ? = email AND ? = password;', [username, password], function(error, results, fields) {
-            if (results.length != 0) {
-                request.session.loggedin = true;
-                request.session.userId = results[0].medicoID;
-                request.session.nome = results[0].nome;
-                request.session.cognome = results[0].cognome;
-                request.session.last_language = results[0].lastLanguage;
-                request.session.databases = results[0].activeDatabases;
-                request.session.save(function(){
-                    response.redirect("/mainpage");
-                })
-            } else {
-                response.send('Incorrect Username and/or Password!');
-            }			
-             return response.end();
+        connection.query('SELECT * FROM medicodata WHERE ? = email AND ? = password;', [username, password], function(err,results) {
+            if(err) throw err;
+            else{
+                if (results[0] != null) {
+                    request.session.loggedin = true;
+                    request.session.userId = results[0].medicoID;
+                    request.session.nome = results[0].nome;
+                    request.session.cognome = results[0].cognome;
+                    request.session.last_language = results[0].lastLanguage;
+                    request.session.databases = results[0].activeDatabases;
+                    request.session.save(function(){
+                        response.redirect("/mainpage");
+                    })
+                } else {
+                    response.status(409).json({error: "Username already exists"});       
+                }			
+                 return response.end();
+            }
         });
     }
 });
@@ -398,6 +401,7 @@ app.post("/getMotorBrainData",function(request,response){
         function queryCaricamentoGrafico(callback){
             console.log("richiesta caricamento grafico");
             if(request.body.graficoID){
+                console.log(request.body.graficoID);
                 data_services.getDataFromAverageHeaderAgeByGraficoID(request.body.graficoID,function(err,res){
                     if(err){
                         callback(err,null);
@@ -440,6 +444,7 @@ app.post("/setMotorBrainData",function(request,response){
 })
 app.post("/salvaMaschera",function(request,response){
         console.log("Salvataggio maschera");
+        console.log(request.body.salva_maschera);
         var maschera;
         var mascheraID;
         if(request.body.salva_maschera){

@@ -1000,9 +1000,10 @@ if (isset($_POST["visualizza-maschera"])) {
                         });
                         $(".ui-dialog").removeClass("ui-corner-all ui-draggable ui-resizable");
                         $(".ui-button").hide();
-
+                       
                         var jsonChartArray = [];
                         for (var chartId in chartList) {
+                            console.log("sono nel salvataggio nell maschera e chartype è: "+chartList[chartId].chartEntity.chartType);
                             // Creo un json 
                             var jsonChart = {
                                 id: chartList[chartId].chartEntity.id,
@@ -1153,7 +1154,7 @@ if (isset($_POST["visualizza-maschera"])) {
                     
                     var contenitoreGraficoConStrumenti = $(this);
                     var graficoID = contenitoreGraficoConStrumenti.attr("id").replace("contenitore-", "");
-                    
+                    console.log("grafico ID: "+graficoID);
                     $.ajax({
                         type: "POST",
                         url: "/getMotorbrainData",
@@ -1164,6 +1165,8 @@ if (isset($_POST["visualizza-maschera"])) {
                             // Creo un oggetto di tipo ChartEntity
                             var listavariabili = []
                             var jsonData = JSON.parse(jsonData);
+                            console.log("sono qui");
+                            console.log(jsonData["grafico"]["tipoGrafico"]);
                             var newChartEntity = new ChartEntity(jsonData["grafico"]["graficoID"]);
                             newChartEntity.setParameters(
                                 jsonData["database"],

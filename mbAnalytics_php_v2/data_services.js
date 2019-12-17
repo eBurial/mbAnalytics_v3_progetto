@@ -2,18 +2,11 @@ const mysql = require('mysql');
 const CONFIG = require('./config_mbStudy.json');
 const admin_services = require('./admin_services');
 var async = require("async");
-var fs = require("fs");
-var JSZip = require("jszip");
-const zlib = require("zlib");
-var path = require('path');
 var AdmZip = require('adm-zip');
-
-
 var express = require("express");
 var compression = require("compression");
 var app = express();
 app.use(compression())
-
 const connection = mysql.createConnection({
     host: CONFIG.host,
     user: CONFIG.user,
@@ -56,8 +49,6 @@ module.exports.getDataFromAverageHeader = function(esercizio,callback){
         else callback(null,JSON.stringify(result));
     })
 }
-
-
 var getDataFromAverageHeaderAge = function(esercizio,min,max,callback){
 
     // Recupero la tabella in base all'esercizio
@@ -71,7 +62,7 @@ var getDataFromAverageHeaderAge = function(esercizio,min,max,callback){
         case "4": columns += ', adjustedAccuracy, time, adjustedSpeed, distanceTot, deviationIndex';break;
         case "5": columns += ', meanReactionTime, accuracy, totTaps';break;
         case "6": columns += ', meanReactionTime, accuracy, totTaps';break;
-        default: console.log("Errore");break;
+        default: break;
     }
     var query = "SELECT TBL_USER.age, TBL_USER.gender, TBL_USER.dominantHand, TBL_AVERAGE.* FROM (SELECT DISTINCT userID, age, gender, dominantHand FROM userdata WHERE age >= "+min+" AND age <= "+max+") AS TBL_USER, (SELECT "+ columns +" FROM "+ tableName +") AS TBL_AVERAGE WHERE TBL_USER.userID = TBL_AVERAGE.userID"
     connection.query(query,function(err,result){
@@ -82,7 +73,6 @@ var getDataFromAverageHeaderAge = function(esercizio,min,max,callback){
 
 module.exports.getDataFromAverageHeaderAgeByGraficoID = function(graficoID,callback){
     var graficoID_trovato;
-    var jsonData;
     async.series([
         function queryResultGraficoByID(callback){
             admin_services.getResultByGraficoID(graficoID,function(err,res){
@@ -91,6 +81,7 @@ module.exports.getDataFromAverageHeaderAgeByGraficoID = function(graficoID,callb
                 callback(err,null);
             }else {       
                 if(res.length >0 ){
+                    console.log(res);
                     graficoID_trovato = res;
                     callback(null,null);
                 }
@@ -102,19 +93,14 @@ module.exports.getDataFromAverageHeaderAgeByGraficoID = function(graficoID,callb
                 callback(err,null);
             }else{
                 if(res.length>0){
-                    
-                    
                     graficoID_trovato[0].listaVariabili =  graficoID_trovato[0].listaVariabili.split(",");
                     graficoID_trovato[0].filtroListaValoriIntervalli =  graficoID_trovato[0].filtroListaValoriIntervalli.split(",");
-                   
-
                     var objResult = {
                         database:graficoID_trovato[0].databaseID,
                         grafico:graficoID_trovato[0],
                         jsonData: res
                     };
                     callback(null,JSON.stringify(objResult));
-
                 }
             }
         })
@@ -124,7 +110,7 @@ module.exports.getDataFromAverageHeaderAgeByGraficoID = function(graficoID,callb
             console.log("errore qui");
             callback(err,null);
         }else{
-            console.log(graficoID_trovato[0].listaVariabili);
+            //console.log(graficoID_trovato);
             callback(null,res[1]);
         }
     })
@@ -135,8 +121,6 @@ var getDataFromUserForExport = function(database,exerciseType,ageRanges,dominant
     var tableName2 = 'averageheaderdata_' +exerciseType;
     var tableName3 = 'userdata';
 
-    console.log("GETDATA FROMUSER FOR EXPORT");
-    console.log("gender HAND QUERY");
     if(sessionHand == "-"){
         sessionHandQuery = "";
     }else{

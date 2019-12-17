@@ -161,6 +161,7 @@ module.exports.getMascheraByMascheraID = function(mascheraID,callback){
     })
 }
 module.exports.getResultByGraficoID = function(graficoID,callback){
+    console.log(graficoID);
     var query = "SELECT graficoID, mascheraID, medicoID,databaseID, tipoGrafico, tipoEsercizio,listaVariabili,	filtroEtaMin, filtroEtaMax,filtroAmpiezzaIntervalloEta, filtroListaValoriIntervalli,filtroGenere, filtroManoDominante, filtroManoSessione FROM " + GRAFICO_DATA +" WHERE graficoID = '"+graficoID+"';";
     connection.query(query,function(err,res){
         if(err){
@@ -188,16 +189,23 @@ module.exports.insertMaschera = function(mascheraID,medicoID,titolo,descrizione,
     });
 }
 module.exports.insertGrafico = function(grafico,mascheraID,medicoID,callback){
-    console.log(grafico.variableList);
-    console.log(grafico.listaVariabili);
+    
+   
     var query = "INSERT INTO " + GRAFICO_DATA + " (graficoID, mascheraID, medicoID,databaseID, tipoGrafico, tipoEsercizio,listaVariabili,filtroEtaMin, filtroEtaMax,filtroAmpiezzaIntervalloEta, filtroListaValoriIntervalli,filtroGenere, filtroManoDominante, filtroManoSessione) VALUES ('"+grafico.id +"','"+mascheraID +"','"+medicoID+"','"+grafico.database+"','"+grafico.chartType+"','"+grafico.exerciseType+"','"+grafico.variableList+"','"+grafico.minAge+"','"+grafico.maxAge+"','"+grafico.rangeAge+"','"+grafico.valuesRange+"','"+grafico.gender+"','"+grafico.dominantHand+"','"+grafico.sessionHand+"')";
-    connection.query(query,function(err,res){
+    var query_elimina = "DELETE FROM "+GRAFICO_DATA+" WHERE graficoID ='"+grafico.id+"';";
+    connection.query(query_elimina,function(err,res){
         if(err){
-            callback(err,null);
+            throw err;
         }else{
-            callback(null,res);
+            connection.query(query,function(err,res){
+                if(err){
+                    callback(err,null);
+                }else{
+                    callback(null,res);
+                }
+            });
         }
-    });
+    })
 }
 module.exports.eliminaMaschera = function(mascheraID,callback){
     var query = "DELETE FROM " + MASCHERA_DATA + " WHERE mascheraID ='"+mascheraID+"'";
