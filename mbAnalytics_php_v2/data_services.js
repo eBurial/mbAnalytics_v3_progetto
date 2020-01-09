@@ -369,6 +369,7 @@ module.exports.exportData = function(datagrafico,callback){
     ranges.forEach(function(data){
         string += "["+data+","+(data+datagrafico.rangeAge-1)+"], ";
     })
+    
     string += "\n";
     string += "Gender: "+datagrafico.gender+"\n"+"Dominant hand: "+datagrafico.dominantHand+"\n"+"Session hand: "+datagrafico.sessionHand+"\n";
     string += "\n";

@@ -94,3 +94,16 @@ vedere perchè non mi salva lo scatterplot
 fare l'esporta del pannello con le sessioni
 
 capire chi gli da l'ID al grafico
+
+
+descrizione
+descrizione del linguaggio del porting 
+vantaggi ipotetici
+schemi della struttura (prima e dopo)
+cosa ho modificato e cosa non ho dovuto modificare 
+
+
+TODO:
+bug della maschera faccio un edit del nome sul titolo della maschera cosi non si cambia l'id se risalvo 
+bug del checked dei database attivati
+bug delle variabili aggiuntive che non vengono visualizzate 
