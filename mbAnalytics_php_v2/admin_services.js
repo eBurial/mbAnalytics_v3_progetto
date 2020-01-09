@@ -78,7 +78,6 @@ module.exports.updateStatoMedico = function(stato,id,callback){
     });
 }
 module.exports.eliminaMedico = function(medicoID,callback){
-    console.log(medicoID);
     connection.query("DELETE FROM " + MEDICO_DATA + " WHERE medicoID = '"+ medicoID +"';",function(err){
         if(err){
             callback(err);
@@ -103,6 +102,7 @@ module.exports.creaTabella = function(nome_tabella,callback){
     });
 }
 module.exports.updateDatabaseMedico = function(medicoID,databases,callback){
+    console.log(databases);
     connection.query("UPDATE " + MEDICO_DATA + " SET activeDatabases = '"+databases +"' WHERE medicoID ='"+ medicoID+"';",function(err){
         if(err){
             callback(err);
@@ -161,7 +161,6 @@ module.exports.getMascheraByMascheraID = function(mascheraID,callback){
     })
 }
 module.exports.getResultByGraficoID = function(graficoID,callback){
-    console.log(graficoID);
     var query = "SELECT graficoID, mascheraID, medicoID,databaseID, tipoGrafico, tipoEsercizio,listaVariabili,	filtroEtaMin, filtroEtaMax,filtroAmpiezzaIntervalloEta, filtroListaValoriIntervalli,filtroGenere, filtroManoDominante, filtroManoSessione FROM " + GRAFICO_DATA +" WHERE graficoID = '"+graficoID+"';";
     connection.query(query,function(err,res){
         if(err){
@@ -175,7 +174,7 @@ module.exports.getResultByGraficoID = function(graficoID,callback){
     });
 }
 module.exports.insertMaschera = function(mascheraID,medicoID,titolo,descrizione,ordine,callback){
-    console.log("inserisco maschera");
+    console.log("inserisco maschera"); 
     var query = "INSERT INTO " + MASCHERA_DATA + " (mascheraID, medicoID, titolo, descrizione, ordine) VALUES('"+mascheraID+"','"+ medicoID +"','"+titolo+"','"+descrizione+"','"+ordine+"');";
     connection.query(query,function(err,res){
         if(err){
@@ -184,6 +183,19 @@ module.exports.insertMaschera = function(mascheraID,medicoID,titolo,descrizione,
         }else{
             console.log("Maschera inserita correttamente!");
             console.log(res);
+            callback(null,res);
+        }
+    });
+}
+module.exports.aggiornamentoMaschera = function(mascheraID,titolo,ordine,callback){
+    console.log("aggiorno il titolo della maschera maschera"); 
+    var query = "UPDATE mascheradata SET titolo ='"+titolo+"',ordine ='"+ordine+"' WHERE mascheraID = '"+mascheraID+"';";
+    connection.query(query,function(err,res){
+        if(err){
+            console.log(err);
+            callback(err,null);
+        }else{
+            console.log("Maschera aggiornata correttamente!");
             callback(null,res);
         }
     });
@@ -213,8 +225,6 @@ module.exports.eliminaMaschera = function(mascheraID,callback){
         if(err){
             callback(err,null);
         }else{
-            console.log(query);
-            console.log(res);
             callback(null,res);
         }
     })

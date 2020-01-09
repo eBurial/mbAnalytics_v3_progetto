@@ -104,6 +104,11 @@ cosa ho modificato e cosa non ho dovuto modificare
 
 
 TODO:
-bug della maschera faccio un edit del nome sul titolo della maschera cosi non si cambia l'id se risalvo 
-bug del checked dei database attivati
+bug della maschera faccio un edit del nome sul titolo della maschera cosi non si cambia l'id se risalvo  DONE
+bug del checked dei database attivati    DONE
 bug delle variabili aggiuntive che non vengono visualizzate 
+i range dell'età possono andare al massimo fino a 100
+
+
+praticamente quando faccio salva maschera faccio un check, se la maschera esiste già faccio solo un eventuale edit del nome
+ricordarsi di verificare anche per il salvataggio che fa dopo il tasto esci 

@@ -233,6 +233,7 @@ app.post('/cambioLingua',function(request,response){
     });
 });
 app.post('/gestioneMedici',function(request,response){
+    console.log(request.body);
     if(request.body.disabilita_medico){
         console.log("Richiesta di disabilitare un medico");
         admin_services.updateStatoMedico("0",request.body.disabilita_medico,function(err){
@@ -312,7 +313,8 @@ app.get("/pannelloGrafici",function(request,response){
         last_language: request.session.last_language,
         medicoID: request.session.userId,
         activeDatabases: request.session.databases,
-        maschera: null,
+        maschera: "",
+        mascheraID: "",
         grafici: null
     })
     response.end();
@@ -358,6 +360,7 @@ app.post("/pannelloGrafici",redirectUserLogin,function(request,response){
             last_language: request.session.last_language,
             medicoID: request.session.userId,
             maschera: maschera,
+            mascheraID: maschera[0].mascheraID,
             grafici: grafici,
             activeDatabases: request.session.databases
         });}
@@ -401,7 +404,6 @@ app.post("/getMotorBrainData",function(request,response){
         function queryCaricamentoGrafico(callback){
             console.log("richiesta caricamento grafico");
             if(request.body.graficoID){
-                console.log(request.body.graficoID);
                 data_services.getDataFromAverageHeaderAgeByGraficoID(request.body.graficoID,function(err,res){
                     if(err){
                         callback(err,null);
@@ -444,7 +446,6 @@ app.post("/setMotorBrainData",function(request,response){
 })
 app.post("/salvaMaschera",function(request,response){
         console.log("Salvataggio maschera");
-        console.log(request.body.salva_maschera);
         var maschera;
         var mascheraID;
         if(request.body.salva_maschera){
@@ -463,6 +464,7 @@ app.post("/salvaMaschera",function(request,response){
                         })}});
                     callback(null);
             },
+
             function checkTabellaGrafico(callback){
                 admin_services.checkExistGraficodataTable(function(err,res){
                     if(err){
@@ -514,6 +516,48 @@ app.post("/salvaMaschera",function(request,response){
         response.end();
 });
 
+
+app.post("/aggiornaMascheraEsistente",function(request,response){
+    
+        console.log("aggiornamento maschera già esistente");
+        var maschera;
+        var mascheraID;
+        if(request.body.salva_maschera){
+            maschera = JSON.parse(request.body.salva_maschera);
+        }
+        async.series([
+            function insertMaschera(callback){
+                admin_services.aggiornamentoMaschera(
+                    maschera.mascheraID,
+                    maschera.titolo,
+                    maschera.ordine,
+                    function(err,res){
+                        if(err) callback(err);
+                        else{
+                            callback(null);
+                        }
+                    })
+            },
+            function insertGrafico(callback){
+                maschera.jsonChartArray.forEach(function(grafico){
+                    console.log(grafico.listaVariabili);
+                    admin_services.insertGrafico(grafico,mascheraID,request.session.userId,function(err){
+                        if(err) callback(err);
+                        else{
+                            console.log("Grafico salvato correttamente"); 
+                        }
+                    })
+                })
+                callback(null);}
+            ]),function(err){
+                if(err) throw err;
+                else{
+                console.log("Salvataggio avvenuto correttamente");
+                 }
+        }
+        response.end();
+})
+
 app.post("/exportGraphs",function(request,response){
     console.log("Richiesta di esportazione");
     if(request.body.esporta_tutto){
@@ -546,8 +590,7 @@ app.post("/exportSession",function(request,response){
 })
 app.post("/eliminaMaschera",function(request,response){
     if(request.body.elimina_maschera){
-        console.log(request.body.elimina_maschera);
-        admin_services.eliminaMaschera(request.body._maschera,function(err,res){
+        admin_services.eliminaMaschera(request.body.elimina_maschera,function(err,res){
             if(err) throw err;
             })
     }

@@ -102,6 +102,7 @@ if (isset($_POST["visualizza-maschera"])) {
         <script type="text/javascript" src="../script_js/FourTargetExerciseChart.js"></script>
 
         <script type="text/javascript">
+        
             $(document).ready(function() {
              
                 var medicoID = document.getElementById("medicoID").dataset.test;
@@ -570,7 +571,6 @@ if (isset($_POST["visualizza-maschera"])) {
 
                         // Recupero il numero di variabili
                         var numCbVar = $(".cb-variabile-" + chartEntity.id).length;
-
                         if (chartEntity.variableList.length == numCbVar) {
                             chartEntity.variableList.push(VALUE_NOT_SELECTED);				
                         }
@@ -980,6 +980,16 @@ if (isset($_POST["visualizza-maschera"])) {
 
                 // Funzione per il salvataggio della maschera
                 $("#bt-salva-maschera").on("click", function() {
+
+                    if(document.getElementById("mascheraID").dataset.test != ""){
+                       mascheraID = document.getElementById("mascheraID").dataset.test;
+                       azione = "/aggiornaMascheraEsistente";
+                   } else{
+                       azione = "salvaMaschera";
+                       mascheraID = null;
+                   }
+
+
                     // Se il titolo non è compilato non permetto di salvare
                     if ($("#txt-titolo-maschera").val() == "") {
                         $("#txt-titolo-maschera").addClass("non-compilato");
@@ -1034,6 +1044,7 @@ if (isset($_POST["visualizza-maschera"])) {
                         var jsonMask = {
                             id: jsonMaskID,
                             medicoID: medicoID,
+                            mascheraID: mascheraID,
                             titolo: $("#txt-titolo-maschera").val(),
                             descrizione: $("#txt-descrizione-maschera").val(),
                             jsonChartArray: jsonChartArray,
@@ -1042,10 +1053,9 @@ if (isset($_POST["visualizza-maschera"])) {
                         
 						//debug
                         console.log(jsonMask);
-
                         $.ajax({
                             type: "POST",
-                            url: "/salvaMaschera", 
+                            url: azione,
                             data: { "salva_maschera": JSON.stringify(jsonMask) }, 
                             success: function(jsonData, status){ 
                                 updated = false;
@@ -1055,12 +1065,19 @@ if (isset($_POST["visualizza-maschera"])) {
                                 console.log(xhr);
                                 console.log("Dettaglio: " + desc + "\nErrore: " + err);
                             }
-                        });        
+                        });       
                     }
                 });
 
                 // Funzione per il salvataggio della maschera
                 $("#bt-esci-maschera").on("click", function() {
+                    if(document.getElementById("mascheraID").dataset.test != ""){
+                       mascheraID = document.getElementById("mascheraID").dataset.test;
+                       azione = "/aggiornaMascheraEsistente";
+                   } else{
+                       azione = "salvaMaschera";
+                       mascheraID = null;
+                   }
                     if (updated) {
                         // Se il titolo non è compilato non permetto di salvare
                         if ($("#txt-titolo-maschera").val() == "") {
@@ -1113,6 +1130,7 @@ if (isset($_POST["visualizza-maschera"])) {
                                     var jsonMask = {
                                         id: jsonMaskID,
                                         medicoID: medicoID,
+                                        mascheraID: mascheraID,
                                         titolo: $("#txt-titolo-maschera").val(),
                                         descrizione: $("#txt-descrizione-maschera").val(),
                                         jsonChartArray: jsonChartArray,
@@ -1121,7 +1139,7 @@ if (isset($_POST["visualizza-maschera"])) {
 
                                     $.ajax({
                                         type: "POST",
-                                        url: "/salvaMaschera", 
+                                        url: azione, 
                                         data: { "salva_maschera": JSON.stringify(jsonMask) }, 
                                         success: function(jsonData, status){ 
                                             updated = false;
@@ -1154,7 +1172,7 @@ if (isset($_POST["visualizza-maschera"])) {
                     
                     var contenitoreGraficoConStrumenti = $(this);
                     var graficoID = contenitoreGraficoConStrumenti.attr("id").replace("contenitore-", "");
-                    console.log("grafico ID: "+graficoID);
+                    
                     $.ajax({
                         type: "POST",
                         url: "/getMotorbrainData",
@@ -1165,7 +1183,6 @@ if (isset($_POST["visualizza-maschera"])) {
                             // Creo un oggetto di tipo ChartEntity
                             var listavariabili = []
                             var jsonData = JSON.parse(jsonData);
-                            console.log("sono qui");
                             console.log(jsonData["grafico"]["tipoGrafico"]);
                             var newChartEntity = new ChartEntity(jsonData["grafico"]["graficoID"]);
                             newChartEntity.setParameters(
@@ -1175,8 +1192,6 @@ if (isset($_POST["visualizza-maschera"])) {
                                 jsonData["grafico"]["listaVariabili"],
                                 jsonData["jsonData"]
                                 );
-
-
                             newChartEntity.setGenderFilter(jsonData["grafico"]["filtroGenere"]); 
                             newChartEntity.setDominantHandFilter(jsonData["grafico"]["filtroManoDominante"]);
                             newChartEntity.setSessionHandFilter(jsonData["grafico"]["filtroManoSessione"]);
@@ -1212,7 +1227,7 @@ if (isset($_POST["visualizza-maschera"])) {
                             $("#sp-agemin-" + newChartEntity.id).val(newChartEntity.minAge);					
                             $("#sp-agemax-" + newChartEntity.id).val(newChartEntity.maxAge);
                             $("#sp-agerange-" + newChartEntity.id).val(newChartEntity.rangeAge);
-
+                            
                             // Creo il filtro interattivo per l'età
                             newVisualChart.chartEntity.createVisualAgeFilter(jsonData["grafico"]["filtroListaValoriIntervalli"]);
                             bindEventToButtonGridAge();						
@@ -1256,7 +1271,7 @@ if (isset($_POST["visualizza-maschera"])) {
                 <label id="title-maschera" for="txt-titolo-maschera" class="lb-dati-maschera" ></label>
                 <input id="txt-titolo-maschera" class="input-text-maschera" type="text"
                        name="txt-titolo-maschera"
-                        placeholder = "<% if(maschera != null){%><%= maschera[0].titolo %><% }else{ 
+                        placeholder = "<% if(maschera != ''){%><%= maschera[0].titolo %><% }else{ 
                             switch (last_language){
                                 case 'IT': %>Descrizione <%; break;
                                 case 'EN': %>Description <%; break;
@@ -1267,7 +1282,7 @@ if (isset($_POST["visualizza-maschera"])) {
             </div>
             <div>
                 <label id="description-maschera"  for="txt-descrizione-maschera"  class="lb-dati-maschera"></label>					
-                <textarea id="txt-descrizione-maschera" class="input-textarea-maschera" name="txt-descrizione-maschera" maxlength="255"><% if(maschera != null){%><%= maschera[0].descrizione %><% }else{ 
+                <textarea id="txt-descrizione-maschera" class="input-textarea-maschera" name="txt-descrizione-maschera" maxlength="255"><% if(maschera != ''){%><%= maschera[0].descrizione %><% }else{ 
                         switch (last_language){
                             case 'IT': %>Descrizione <%; break;
                             case 'EN': %>Description <%; break;
@@ -1303,9 +1318,9 @@ if (isset($_POST["visualizza-maschera"])) {
         <div class="error" ></div>
         <div id="activeDatabases" data-test=<%= activeDatabases %>></div>
         <div id="maschera" data-test=<%= maschera %>></div>
+        <div id="mascheraID" data-test=<%= mascheraID %>></div>
+
         <div id="grafici" data-test=<%= grafici %>></div>
         <div id="medicoID" data-test=<%= medicoID %>></div>
-
-
     </body>
 </html>

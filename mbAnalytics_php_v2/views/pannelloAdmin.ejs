@@ -52,7 +52,6 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
 
                     // Recupero l'id del contenitore
                     var parentID = $(this).parent().attr("id");
-
                     // Se sto selezionando il valore ...
                     if($(this).is(":checked")) {
                         // ... gli metto l'attributo checked
@@ -69,33 +68,33 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                         // controllo che il valore sia checked e che l'id del contenitore coincida con quello della checkbox cliccata
                         if($this.is(":checked")) {
                             var db = $(this).val();
-
+                            console.log(db);
                             var index = $.inArray(db, databases);
-
                             if (index == -1) {
                                 databases.push(db);
                             }
                         }
                         else {
                             var db = $(this).val();
-
                             var index = $.inArray(db, databases);
-
                             if (index != -1) {
                                 databases.splice(index, 1);
                             }
                         }
                     });
-
                     databases.sort();
                 });
 
                 //Funzione per settare i database utilizzabili da un medico
                 $("#tbl-medici").on("click", "button.bt-attiva-database", function() {
+                    console.log(databases);
                     // Memorizzo il bottone
                     var btAttiva = $(this);
                     // Recupero l'id
-                    var idMedico = $(this).attr("id").replace("bt-attiva-database-", "");
+                    //var idMedico = $(this).attr("id").replace("bt-attiva-database-","");
+                    var idMedico =  $(this).attr("id").split("_");
+                    idMedico = "_"+idMedico[1];
+                    console.log(idMedico);
                     // Memorizzo il parent
                     var parentCorrente = $(this).parent();	
                     $.post("/gestioneMedici",
@@ -272,13 +271,14 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                 </div>
                 </div>
                 <% results.forEach(function(item){ %>
+
                     <%
                     if(item.activeDatabases != null){
                         var activeDatabases = item.activeDatabases.split(",");
                     }else{
                         var activeDatabases = "";
                     }
-                     %>
+                %>
                     <div id="tbl-row-<%= item.medicoID %>"class="tbl-row">
                     <div class="tbl-cell tbl-cell-max-width">
                     <%= item.cognome %>
@@ -295,16 +295,15 @@ require_once(dirname(__FILE__) . "/../dbMotorbrainGrafico.php");
                     
                     <div id="databases-<%= item.medicoID %>" class="tbl-cell tbl-cell-max-width databases" style="overflow: auto;">
                     <%  for(var i = 0; i < databaseArrayText.length; i++){ %>
-                        
                         <% if(activeDatabases.includes(databaseArrayText[i])){ %>
-
-                            <input id="' . $databaseArrayText[$i] . '" class="databases" type="checkbox" value="' . $databaseArrayText[$i] . '" checked="checked">
-                            <label for="' . $databaseArrayText[$i] . '"><%=  databaseArrayText[i] %></label>
+                            
+                            <input id="<%=databaseArrayText[i]%>" class="databases" type="checkbox" value="<%=databaseArrayText[i]%>" checked="checked">
+                            <label for="<%= databaseArrayText[i] %>"><%=  databaseArrayText[i] %></label>
                             <br>
                         <% }
                         else { %>
-                            <input id="' . $databaseArrayText[$i] . '" class="databases" type="checkbox" value="' . $databaseArrayText[$i] . '">
-                            <label for="' . $databaseArrayText[$i] . '"><%= databaseArrayText[i] %></label>
+                            <input id="<%= databaseArrayText[i] %>" class="databases" type="checkbox" value="<%= databaseArrayText[i] %>">
+                            <label for="<%= databaseArrayText[i] %>"><%= databaseArrayText[i] %></label>
                             <br>
                         <% }
                     } %>
