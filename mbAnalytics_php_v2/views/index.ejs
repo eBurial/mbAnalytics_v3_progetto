@@ -20,59 +20,21 @@ include("controllaAccessoMedico.php");
           
             $(document).ready(function() {
                 
-                var opEseguita = "";
-                // Quando la pagina viene caricata
-                // Nascondi tutti i contenuti delle tabs
-                $(".contenuto-tab").hide();
-
-                if (opEseguita == "esegui-login") {
-                    //Rimuovi ogni classe "active"
-                    $("ul.tabs li").removeClass("active");
-                    // Attiva la prima tab
-                    $("ul.tabs li:first").addClass("active").show();
-                    //Mostra il contenuto della prima tab
-                    $(".contenuto-tab:first").show();
-
-                } else if (opEseguita == "esegui-registrazione") {
-                    //Rimuovi ogni classe "active"
-                    $("ul.tabs li").removeClass("active");
-                    // Attiva la prima tab
-                    $("ul.tabs li:last").addClass("active").show();
-                    //Mostra il contenuto della prima tab
-                    $(".contenuto-tab:last").show();
-                } else {
-                    // Attiva la prima tab
-                    $("ul.tabs li:first").addClass("active").show();
-                    //Mostra il contenuto della prima tab
-                    $(".contenuto-tab:first").show();
-                }
-                // Al click sulla tab
-                $("ul.tabs li").click(function() {
-
-                    //Rimuovi ogni classe "active"
-                    $("ul.tabs li").removeClass("active");
-                    //E aggiungila solo a quella su cui ho cliccato
-                    $(this).addClass("active");
-                    //Nascondi tutti i contenuti delle tab
-                    $(".contenuto-tab").hide();
-
-                    //Trova l'href per identificare in modo univoco la tab ed il contenuto
-                    var activeTab = $(this).find("a").attr("href");
-                    //Mostrami quest'ultimo con effetto di fadeIn
-                    $(activeTab).fadeIn();
-                    return false;
-                });
+                $("ul.tabs li:first").addClass("active").show();
             });
         </script>
     </head>
     <body>
         <ul class="tabs">
             <li><a href="#login">Accedi</a></li>
-            <li><a href="#registrazione">Registrati</a></li>
+            <li><a href="/registrazione">Registrati</a></li>
         </ul>
         <div id="contenitore-tabs">
             <div id="login" class="contenuto-tab">
                 <p class="p-info-login">Inserisci le tue credenziali per accedere a Motorbrain Web:</p>
+                <% if(error == "login_errato"){ %>
+                    <p class="p-info-login" style="color:red;">Username o password errati! </p>  
+                    <% } %>
                 <form class="form-login"
                       action="/authUser"
                       method="post">
@@ -80,64 +42,20 @@ include("controllaAccessoMedico.php");
                            name="email_login_user"
                            class="input-text-login"
                            placeholder="Email"
-                           type="text">
+                           type="text"
+                           required>
                     <input id="txt-pwd-login"
                            name="pwd_login_user"
                            class="input-text-login"
                            placeholder="Password"
-                           type="password">
+                           type="password"
+                           required>
                     <input class="bt-login"
                            name="esegui-login"
                            type="submit"
                            value="Accedi">
                 </form>
-            </div>
-            <div id="registrazione" class="contenuto-tab">
-                <p class="p-info-login">Esegui la registrazione per accedere a Motorbrain Web:</p>
-                <form class="form-login"
-                      action="/registrazioneUtente"
-                      method="post">
-                    <input id="txt-email-registrazione"
-                           name="email_registrazione"
-                           class="input-text-login"
-                           placeholder="Email"
-                           type="text"
-                           value=""
-                           required>
-                    <input id="txt-nome-registrazione"
-                           name="nome_registrazione"
-                           class="input-text-login"
-                           placeholder="Nome"
-                           type="text"
-                           value=""
-                           required
-                           >
-                    <input id="txt-cognome-registrazione"
-                           name="cognome_registrazione"
-                           class="input-text-login"
-                           placeholder="Cognome"
-                           type="text"
-                           value=""
-                           required
-                           >
-                    <input id="txt-pwd-registrazione"
-                           name="pwd_registrazione"
-                           class="input-text-login"
-                           placeholder="Password"
-                           type="password">
-                    <input
-                           id="txt-conferma-pwd-registrazione"
-                           name="conferma_pwd_registrazione"
-                           class="input-text-login"
-                           placeholder="Conferma password"
-                           type="password">
-                           >
-                    <input class="bt-login"
-                           name="esegui-registrazione"
-                           type="submit"
-                           value="Registrati">
-                </form>
-            </div>
+            </div>            
         </div>
     </body>
 </html>

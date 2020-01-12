@@ -1,40 +1,3 @@
-<!-- 
-<?php
-include("sessionMedico.php");
-
-require_once("dbMotorbrainMedico.php");
-require_once("dbMotorbrainMaschera.php");
-require_once("dbMotorbrainGrafico.php");
-
-$mascheraID = null;
-$maschera = null;
-$grafici = null;
-$databases = null;
-
-// Controllo se il parametro passato è popolato
-if (isset($_POST["visualizza-maschera"])) {
-
-    // Recupero il valore che identifica la maschera
-    $mascheraID = filter_var($_POST["maschera-id"], FILTER_SANITIZE_STRING);
-
-    // Controllo se è popolato
-    if (!empty($mascheraID)) 
-    {
-        // Recupero la maschera
-        $maschera = getMascheraByMascheraID($mascheraID);
-
-        // Recupero l'ordine con cui i grafici sono stati salvati
-        $ordine = explode(";", $maschera[4]);
-
-        foreach ($ordine as $graficoID) {
-
-            $grafici[] = getResultByGraficoID($graficoID)[0];
-        }
-    }
-}
-?>
--->
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -404,7 +367,7 @@ if (isset($_POST["visualizza-maschera"])) {
                         chartEntity.setDatabase($(this).val());
 
                         // Aggiorno la parte relativa alle variabili
-                        chartEntity.getHtmlVariables();
+                        chartEntity.getHtmlVariables(null);
                         // Collego gli eventi
                         bindEventVariablesControl(chartEntity);
                         bindEventAggiungiVariable(chartEntity);
@@ -453,7 +416,7 @@ if (isset($_POST["visualizza-maschera"])) {
                         chartEntity.setExerciseType($(this).val());
 
                         // Aggiorno la parte relativa alle variabili
-                        chartEntity.getHtmlVariables();
+                        chartEntity.getHtmlVariables(null);
                         // Collego gli eventi
                         bindEventVariablesControl(chartEntity);
                         bindEventAggiungiVariable(chartEntity);
@@ -502,7 +465,7 @@ if (isset($_POST["visualizza-maschera"])) {
                         // Aggiorno il tipo di grafico
                         chartEntity.setChartType($(this).val());
                         // Aggiorno la parte relativa alle variabili
-                        chartEntity.getHtmlVariables();
+                        chartEntity.getHtmlVariables(null);
                         // Collego gli eventi
                         bindEventVariablesControl(chartEntity);
                         bindEventAggiungiVariable(chartEntity);
@@ -653,8 +616,10 @@ if (isset($_POST["visualizza-maschera"])) {
                     $("#cb-dominanthandfilter-" + newChart.chartEntity.id).on("change", function() {
                         updated = true;
                         var chartId = $(this).attr("id").replace("cb-dominanthandfilter-", "");
+                        console.log("Filtro cambiato");
                         var chartToBeUpd = getChartFromList(chartList, chartId);
                         chartToBeUpd.chartEntity.setDominantHandFilter($(this).val());
+
                         chartToBeUpd.updateVisualChart();
                     });
 
@@ -673,6 +638,7 @@ if (isset($_POST["visualizza-maschera"])) {
 
                     // ------------------------ AJAX ------------------------------
                     $("#sp-agemin-" + newChart.chartEntity.id).on("change", function() {
+                        console.log("sono qui");
                         updated = true;
                         var chartId = $(this).attr("id").replace("sp-agemin-", "");
                         var chartToBeUpd = getChartFromList(chartList, chartId);
@@ -1205,9 +1171,9 @@ if (isset($_POST["visualizza-maschera"])) {
 
                             // Popolo il container
                             contenitoreGraficoConStrumenti.append(popolateChartContainer(newChartEntity));
-
+                            console.log(newChartEntity.variableList.length);
                             // Aggiungo le variabili
-                            newChartEntity.getHtmlVariables()
+                            newChartEntity.getHtmlVariables(newChartEntity.variableList.length)
 
                             // Collego gli eventi alle varie combo per i parametri
                             bindEventParameterControls(newChartEntity);

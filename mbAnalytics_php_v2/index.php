@@ -78,14 +78,7 @@ include("controllaAccessoMedico.php");
             <div id="login" class="contenuto-tab">
                 <p class="p-info-login">Inserisci le tue credenziali per accedere a Motorbrain Web:</p>
                 
-                <?php
-                if (!empty($errLogin))
-                {
-                    echo "<div class=\"messaggio-errore\">";
-                    echo $errLogin;
-                    echo "</div>";
-                }
-                ?> 
+                
                 <form class="form-login"
                       action=""
                       method="post">

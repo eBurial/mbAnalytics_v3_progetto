@@ -126,7 +126,7 @@ module.exports.registraMedico = function(credenziali,callback){
         if(err){
             callback(err);
         }else{
-            console.log("Registrazione medico effettuata");
+            callback(null);
         }
     });
 
@@ -202,7 +202,6 @@ module.exports.aggiornamentoMaschera = function(mascheraID,titolo,ordine,callbac
 }
 module.exports.insertGrafico = function(grafico,mascheraID,medicoID,callback){
     
-   
     var query = "INSERT INTO " + GRAFICO_DATA + " (graficoID, mascheraID, medicoID,databaseID, tipoGrafico, tipoEsercizio,listaVariabili,filtroEtaMin, filtroEtaMax,filtroAmpiezzaIntervalloEta, filtroListaValoriIntervalli,filtroGenere, filtroManoDominante, filtroManoSessione) VALUES ('"+grafico.id +"','"+mascheraID +"','"+medicoID+"','"+grafico.database+"','"+grafico.chartType+"','"+grafico.exerciseType+"','"+grafico.variableList+"','"+grafico.minAge+"','"+grafico.maxAge+"','"+grafico.rangeAge+"','"+grafico.valuesRange+"','"+grafico.gender+"','"+grafico.dominantHand+"','"+grafico.sessionHand+"')";
     var query_elimina = "DELETE FROM "+GRAFICO_DATA+" WHERE graficoID ='"+grafico.id+"';";
     connection.query(query_elimina,function(err,res){

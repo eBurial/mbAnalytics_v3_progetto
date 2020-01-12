@@ -157,8 +157,9 @@ ChartEntity.prototype.setDominantHandFilter = function(hand) {
     if (!hand) {
         hand = VALUE_NOT_SELECTED;
     }
-
     this.dominantHand = hand;
+
+
 };
 
 ChartEntity.prototype.setSessionHandFilter = function(hand) {
@@ -277,7 +278,7 @@ ChartEntity.prototype.getHtmlParameters = function(db) {
 }
 
 // Metodo che ritorna la struttura HTML per la selezione delle variabili
-ChartEntity.prototype.getHtmlVariables = function() {
+ChartEntity.prototype.getHtmlVariables = function(maxVariables) {
     var htmlVariables = '';
 
     if ((this.exerciseType == null) || 
@@ -295,7 +296,13 @@ ChartEntity.prototype.getHtmlVariables = function() {
     //htmlVariables += '<div class="txt-seleziona-variabili">';
 
     // Numero massimo delle variabili da mostrare
-    var maxVarToShow = numVarChartArray[this.chartType].numero;
+    //var maxVarToShow = numVarChartArray[this.chartType].numero;
+    if(maxVariables != null){
+        var maxVarToShow = maxVariables;
+    }else{
+        var maxVarToShow = numVarChartArray[this.chartType].numero;
+    }
+
     // Variabile per mostrare il bottone che 
     //permette all'utente di aggiungere altre variabili
     var showBtAggiungiVar = !numVarChartArray[this.chartType].max;
@@ -621,6 +628,8 @@ ChartEntity.prototype.createVisualAgeFilter = function(stateArray) {
 // Funzione che testa se un elemento della collezione viene scartato dai filtri
 ChartEntity.prototype.filterElement = function(element) {
     // Controllo il sesso
+    //console.log("sono in filter element ");
+    //console.log(element);
     var genderTest = (element.gender == this.gender) || 
         (this.gender == genderArrayValue[0]);
 
@@ -628,18 +637,14 @@ ChartEntity.prototype.filterElement = function(element) {
         return false;
     }
 
-    // Controllo la mano dominante
-    var dominantHandTest = (element.dominantHand == this.dominantHand) || 
-        (this.dominantHand == handArrayValue[0]);
-
+    
+    var dominantHandTest = (element.dominantHand == this.dominantHand) || (this.dominantHand == handArrayValue[0]);
+    //console.log("risultato test "+element.dominantHand+"  "+this.dominantHand);
     if (!dominantHandTest) {
         return false;
     }
-
     // Controllo la mano della sessione
-    var sessionHandTest = (element.hand == this.sessionHand) || 
-        (this.sessionHand == handArrayValue[0]);
-
+    var sessionHandTest = (element.hand == this.sessionHand) || (this.sessionHand == handArrayValue[0]);
     if (!sessionHandTest) {
         return false;
     }

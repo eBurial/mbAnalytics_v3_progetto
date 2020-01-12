@@ -11,7 +11,6 @@ function Boxplot(chartEntity, jData)
 {
     //EntitÃ 
     this.chartEntity = chartEntity;
-
     //Dati relativi al contenitore del grafico
     this.margin = {top: 20, right: 20, bottom: 50, left: 80};		// Margini
     this.width = 850 - this.margin.left - this.margin.right;		// Larghezza
@@ -41,8 +40,8 @@ Boxplot.prototype.createVisualChart = function() {
     var variabileX = this.getVariabileX();
     var unitaDiMisuraX = this.getUnitaDiMisuraX();
     var labelVarX = this.getLabelVarX();
-
     var data = this.updateData(chartEntity, variabileX)
+
     var x = this.updateX(data);
     var minY = this.updateMinY(data);
     var maxY = this.updateMaxY(data);
@@ -88,23 +87,24 @@ Boxplot.prototype.createVisualChart = function() {
 
 // Funzione per aggiornare il grafico
 Boxplot.prototype.updateVisualChart = function() {
-
     var chartEntity = this.chartEntity;
+    console.log("sono in update");
     var variabileX = this.getVariabileX();
     var labelVarX = this.getLabelVarX();
+    
     var data = this.updateData(chartEntity, variabileX, labelVarX)
     var minY = this.updateMinY(data);
     var maxY = this.updateMaxY(data);
     var y = this.updateY(data);
     var yAxis = this.updateYAxis(y);
     var chart = this.updateBoxplotChart();
-
     var svg = d3.select("#grafico-" + chartEntity.id);
     svg.selectAll(".box-boxplot").data(data)
         .select(".g-boxplot")
         .call(chart.duration(1000));
 
     // Aggiorno l'asse y
+
     svg.selectAll("g.y.axis-boxplot").call(yAxis);
 }
 
@@ -117,20 +117,22 @@ Boxplot.prototype.updateBoxplotChart = function() {
     .showLabels(this.labels);
 
     return chart;
-
     //Returns a function to compute the interquartile range.
     function iqr(k) {
         return function(d, i) {
+
             var q1 = d.quartiles[0],
                 q3 = d.quartiles[2],
                 iqr = (q3 - q1) * k,
                 i = -1,
+
                 j = d.length;
             while (d[++i] < q1 - iqr);
             while (d[--j] > q3 + iqr);
             return [i, j];
         };
     }
+
 }
 
 Boxplot.prototype.getVariabileX = function() {
@@ -169,6 +171,7 @@ Boxplot.prototype.updateMinY = function(data) {
     this.minY = 0;
     if (this.getUnitaDiMisuraX() != PERCENTUALE) {
         this.minY = d3.min(data[0][1]);
+
     }
 
     return this.minY;
@@ -208,16 +211,16 @@ Boxplot.prototype.updateData = function(chartEntity, variabileX) {
     //Trasformo i dati in un array accettabile
     var data = [];
     data[0] = [];
-
     data[0][0] = this.getLabelVarX();
 
     data[0][1] = [];
     chartEntity.jsonData.forEach(function(d) {
         if (chartEntity.filterElement(d)) {
             data[0][1].push(parseFloat(d[variabileX]));
+        }else{
+            data[0][1].push(0);
         }
     });
-
     $("#totale-sessioni-" + chartEntity.id)
         .text(customLabelsArray.numberSessions + ": " + chartEntity.jsonData.length);
 

@@ -106,9 +106,13 @@ cosa ho modificato e cosa non ho dovuto modificare
 TODO:
 bug della maschera faccio un edit del nome sul titolo della maschera cosi non si cambia l'id se risalvo  DONE
 bug del checked dei database attivati    DONE
-bug delle variabili aggiuntive che non vengono visualizzate 
+bug delle variabili aggiuntive che non vengono visualizzate DONE
 i range dell'età possono andare al massimo fino a 100
+messagggi d'errore per il login errato
 
 
 praticamente quando faccio salva maschera faccio un check, se la maschera esiste già faccio solo un eventuale edit del nome
 ricordarsi di verificare anche per il salvataggio che fa dopo il tasto esci 
+mi da errore se aumento età massima 
+errore su visualizza maschera
+quando aggiorno la maschera non mi salva le variazioni al grafico

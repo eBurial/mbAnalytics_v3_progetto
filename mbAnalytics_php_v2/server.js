@@ -80,21 +80,23 @@ app.get('/',redirectLogin, function(request, response) {
     return response.redirect('/pannelloAdmin');
 });
 app.get('/login',redirectAdminPanel,function(request,response){
-    return response.sendfile(__dirname + '/PannelloAdmin/index.html')
+    return response.render(path.join(__dirname + '/views/login_admin.ejs'),{error:null});
 })
 app.post('/authAdmin',redirectAdminPanel, function(request, response) {
     var username = request.body.username_admin_login;
     var password = request.body.pwd_admin_login;
     if (username && password) {
         connection.query('SELECT * FROM medicodata WHERE ? = email AND ? = password;', [username, password], function(error, results, fields) {
-            if (results.length > 0) {
+            if (results.length > 0) {       
                 request.session.loggedin = true;
                 request.session.userId = username;
                 request.session.save(function(){
                     response.redirect('/pannelloAdmin');
                 })
             } else {
-                response.json({error:true});
+                response.render(path.join(__dirname + '/views/login_admin.ejs'),{
+                    error:true
+                });
             }			
              return response.end();
         });
@@ -120,7 +122,9 @@ app.post('/authUser',function(request,response){
                         response.redirect("/mainpage");
                     })
                 } else {
-                    response.status(409).json({error: "Username already exists"});       
+                    response.render(path.join(__dirname + '/views/index.ejs'),{
+                        error:"login_errato"
+                    });      
                 }			
                  return response.end();
             }
@@ -210,7 +214,6 @@ app.get('/pannelloAdmin',redirectLogin, function(request, response) {
                  mascheradataTableExists:mascheradataTableExists,
                  graficodataTableExists:graficodataTableExists
                 });
-            console.log(ejsLint("./views/pannelloAdmin.ejs"),null);
             return response.end(); 
         }
     })
@@ -233,7 +236,6 @@ app.post('/cambioLingua',function(request,response){
     });
 });
 app.post('/gestioneMedici',function(request,response){
-    console.log(request.body);
     if(request.body.disabilita_medico){
         console.log("Richiesta di disabilitare un medico");
         admin_services.updateStatoMedico("0",request.body.disabilita_medico,function(err){
@@ -274,17 +276,23 @@ app.post("/gestioneDbMotorbrain",function(request,response){
     }
     return response.end();
 });
+app.get("/registrazione",function(request,response){
+    return response.render(path.join(__dirname + '/views/registrazione.ejs'),{error:null});
+})
 app.post("/registrazioneUtente",function(request,response){
-    console.log(request.body.medicoID);
+    if(request.body.pwd_registrazione != request.body.conferma_pwd_registrazione){
+        return response.render(path.join(__dirname + '/views/registrazione.ejs'),{error:"registrazione_errata"});
+    }
     admin_services.registraMedico(request.body,function(err){
         if(err) throw err;
-        response.redirect("/index");
-    });
-    response.end();
+        else{
+            console.log("Registrazione effettuata correttamente");
+            return response.render(path.join(__dirname + '/views/index.ejs'),{error:null});
+        }
+    });    
 });
 app.get("/index",redirectMainPage,function(request,response){
-    response.render(path.join(__dirname + '/views/index.ejs'));
-    response.end();
+    return response.render(path.join(__dirname + '/views/index.ejs'),{error:null});
 });
 
 // LOGOUT 
@@ -369,7 +377,6 @@ app.post("/pannelloGrafici",redirectUserLogin,function(request,response){
 });
 
 
-
 app.post("/getChartInfo",function(request,response){
     if(request.body.chartInfo){
         console.log("Richiesta recupero dati");
@@ -389,11 +396,12 @@ app.post("/getMotorBrainData",function(request,response){
         function queryRecuperoDatiChartAge(callback){
             if(request.body.chartAge){
                 var json_request = JSON.parse(request.body.chartAge);
+                console.log(json_request);
                 data_services.getDataFromAverageHeaderAge(json_request.esercizio,json_request.min,json_request.max,function(err,res){
                     if(err) callback(err);
                     else{
                         callback(null,res);
-                        response.end(res);
+                        response.end(JSON.stringify(res));
                     }
                 })
                 
@@ -518,7 +526,6 @@ app.post("/salvaMaschera",function(request,response){
 
 
 app.post("/aggiornaMascheraEsistente",function(request,response){
-    
         console.log("aggiornamento maschera già esistente");
         var maschera;
         var mascheraID;
@@ -598,6 +605,7 @@ app.post("/eliminaMaschera",function(request,response){
 });
 
 // SERVER IN ASCOLTO
-app.listen(3001,function(){
+app.listen(3001,function(request){
     console.log("Listening on 3001");
+    console.log(request);
 });

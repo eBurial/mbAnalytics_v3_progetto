@@ -70,6 +70,28 @@ var getDataFromAverageHeaderAge = function(esercizio,min,max,callback){
         else callback(null,result);
     })
 }
+module.exports.getDataFromAverageHeaderAge = function(esercizio,min,max,callback){
+    // Recupero la tabella in base all'esercizio
+    tableName = 'averageheaderdata_' + esercizio;
+    // Colonne incluse nella tabella indicata da tableName
+    columns = 'ID, userID, sessionID, hand, status';
+    switch(esercizio){
+        case "1": columns += ', accuracy, distanceTot, time, deviationIndex';break;
+        case "2": columns += ', accuracy, distanceCorrect, totalSpeed, turnsInside, deviationIndex';break;
+        case "3": columns += ', accuracy, distanceTot, time, deviationIndex';break;
+        case "4": columns += ', adjustedAccuracy, time, adjustedSpeed, distanceTot, deviationIndex';break;
+        case "5": columns += ', meanReactionTime, accuracy, totTaps';break;
+        case "6": columns += ', meanReactionTime, accuracy, totTaps';break;
+        default: break;
+    }
+    var query = "SELECT TBL_USER.age, TBL_USER.gender, TBL_USER.dominantHand, TBL_AVERAGE.* FROM (SELECT DISTINCT userID, age, gender, dominantHand FROM userdata WHERE age >= "+min+" AND age <= "+max+") AS TBL_USER, (SELECT "+ columns +" FROM "+ tableName +") AS TBL_AVERAGE WHERE TBL_USER.userID = TBL_AVERAGE.userID"
+    connection.query(query,function(err,result){
+        if(err){
+            callback(err,null);
+        }
+        else callback(null,result)
+    })
+}
 
 module.exports.getDataFromAverageHeaderAgeByGraficoID = function(graficoID,callback){
     var graficoID_trovato;
@@ -77,11 +99,9 @@ module.exports.getDataFromAverageHeaderAgeByGraficoID = function(graficoID,callb
         function queryResultGraficoByID(callback){
             admin_services.getResultByGraficoID(graficoID,function(err,res){
             if(err){
-                console.log("errore prima query");
                 callback(err,null);
             }else {       
                 if(res.length >0 ){
-                    console.log(res);
                     graficoID_trovato = res;
                     callback(null,null);
                 }
@@ -110,7 +130,6 @@ module.exports.getDataFromAverageHeaderAgeByGraficoID = function(graficoID,callb
             console.log("errore qui");
             callback(err,null);
         }else{
-            //console.log(graficoID_trovato);
             callback(null,res[1]);
         }
     })
@@ -215,7 +234,7 @@ var getDataFromHeader = function(database,exerciseType,sessionID,userID,callback
         case '4': keyValues = ["screenWidth", "screenHeight", "width", "height","x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4", "x5", "y5",	"margin","adjustedAccuracy", "time", "totalLength", "adjustedSpeed", "distanceTot"];break;
         case '5': keyValues = ["screenWidth", "screenHeight", "x1", "y1", "x2", "y2", "margin","meanReactionTime", "accuracy", "totTaps"];break;
         case '6': keyValues = ["screenWidth", "screenHeight", "x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4", "margin","meanReactionTime", "accuracy", "totTaps"];break;
-        default:break;
+        default: break;
     }
     var selectSql = "SELECT userID, sessionID, repetitionID ";
     keyValues.forEach(function(keyValue){
@@ -341,19 +360,10 @@ var getDataFromUser = function(database,userID,callback){
     })
 }
 module.exports.exportData = function(datagrafico,callback){
-
-    //decode di datagrafico
-    //array_map('unlink', glob("files/*"));
-
     datagrafico = JSON.parse(datagrafico);
-    //ste operazioni vanno fatte prima dell'async 
     
     var url = "./public/files/"+datagrafico.id+".txt";
-    /*
-    fs.open(url,'w',function(err,file){
-        if(err) callback(err,null);
-        else console.log("file correttamente aperto");
-    }) */
+   
     
     var string = "Database: "+datagrafico.database+"\n"+"Exercise: "+datagrafico.exerciseType+"\n";
     var min = datagrafico.minAge;
@@ -367,9 +377,20 @@ module.exports.exportData = function(datagrafico,callback){
     })
     string += "Age classes: ";
     ranges.forEach(function(data){
-        string += "["+data+","+(data+datagrafico.rangeAge-1)+"], ";
+        if(data == datagrafico.maxAge){
+            var range =  "["+data+","+data+"] ";
+        }else{
+            if((data+datagrafico.rangeAge-1)>datagrafico.maxAge){
+                var range =  "["+data+","+(datagrafico.maxAge)+"]";
+            }else{
+                var range =  "["+data+","+(data+datagrafico.rangeAge-1)+"], ";
+
+            }
+
+        }
+        string += range;
     })
-    
+    console.log(string);
     string += "\n";
     string += "Gender: "+datagrafico.gender+"\n"+"Dominant hand: "+datagrafico.dominantHand+"\n"+"Session hand: "+datagrafico.sessionHand+"\n";
     string += "\n";
@@ -977,7 +998,6 @@ module.exports.exportSession = function(sessionData,callback){
 			})		
         }
         var zip = new AdmZip();
-        console.log(string);
         zip.addFile(""+sessioneInfo.sessionID+".txt", Buffer.alloc(string.length, string));
         zip.writeZip(url+".zip",function(err){
         if(err){
