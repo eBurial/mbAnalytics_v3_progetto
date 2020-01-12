@@ -997,7 +997,6 @@
                             };
                             jsonChartArray.push(jsonChart);
                         }
-                        //var maschera = document.getElementById("maschera").dataset.test;
 
                         if (jsonMaskID == ""){
                                 if (maschera){
@@ -1007,6 +1006,10 @@
                                     jsonMaskID = "";
                                 }
                         }
+                        sorted = $("#contenitore-grafici").sortable("serialize");
+
+                            // ... e la salvo nel sessionStorage
+                        sessionStorage.setItem('sorted', sorted);
                         var jsonMask = {
                             id: jsonMaskID,
                             medicoID: medicoID,

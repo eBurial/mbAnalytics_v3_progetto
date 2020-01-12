@@ -458,6 +458,7 @@ app.post("/salvaMaschera",function(request,response){
         var mascheraID;
         if(request.body.salva_maschera){
             maschera = JSON.parse(request.body.salva_maschera);
+            console.log(maschera);
         }
         async.series([
             function checkTabellaMaschera(callback){
